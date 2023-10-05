@@ -1,0 +1,9 @@
+go.work
+go.work.sum
+.vscode
+.DS_Store
+*.code-workspace
+.env
+vendor
+internal/templates/node_modules
+internal/templates/dist

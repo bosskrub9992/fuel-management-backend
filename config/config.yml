@@ -1,0 +1,22 @@
+server:
+  port: "8080"
+
+database:
+  host: "localhost"
+  port: "5432"
+  username: "postgres"
+  password: "postgres"
+  dbname: "testdb"
+  sslmode: "disable"
+
+logger:
+  isProductionEnv: false
+  maskingFields:
+    - "firstName"
+    - "lastName"
+  removingFields:
+
+error:
+  0: "unknown error"
+  1: "bind error"
+  2: "validate error"
