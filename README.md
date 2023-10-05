@@ -2,7 +2,7 @@
 
 1. start postgres, run
 ```sh
-docker run --rm -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e TZ=Asia/Bangkok --name postgres postgres:15.2-alpine
+docker run --rm -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e TZ=Asia/Bangkok --name postgres postgres:16-alpine
 ```
 
 2. drop and create database, run (data will be lost!)

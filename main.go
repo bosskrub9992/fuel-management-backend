@@ -61,6 +61,8 @@ func main() {
 	e.Renderer = &Template{
 		templates: template.Must(template.ParseGlob("internal/templates/src/*.html")),
 	}
+	e.Static("/dist", "./internal/templates/dist")
+	e.Static("/node_modules", "./internal/templates/node_modules")
 	e.Use(
 		middleware.Recover(),
 		middleware.CORS(),
