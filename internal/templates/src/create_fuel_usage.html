@@ -1,0 +1,63 @@
+{{define "create-fuel-usage"}}
+
+<tbody id="tbody" hx-swap-oob="#tbody">
+    {{range .Data}}
+      <tr class="border-b dark:border-gray-700">
+          <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"> {{.FuelUseDate}}</th>
+          <td class="px-4 py-3">{{.FuelUsers}}</td>
+          <td class="px-4 py-3">{{.Description}}</td>
+          <td class="px-4 py-3 max-w-[12rem] truncate">{{.KilometerBeforeUse}}</td>
+          <td class="px-4 py-3">{{.KilometerAfterUse}}</td>
+          <td class="px-4 py-3">{{.TotalMoney}}</td>
+      </tr>
+    {{ end }}
+  </tbody>
+
+<!-- Modal body -->
+<form action="#" hx-post="/create-fuel-usage" id="create-fuel-usage" hx-swap-oob="#create-fuel-usage">
+    <div class="grid gap-4 mb-4 sm:grid-cols-2">
+        <div>
+            <label for="fuelUseDate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">วันที่ใช้รถ <span class="text-red-600">*</span> </label>
+            <input type="date" name="fuelUseDate" id="fuelUseDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" value="{{.TodayDate}}" required>
+        </div>
+        <div>
+          <label for="PeopleUsed" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">ใครหารค่าน้ำมันบ้าง <span class="text-red-600">*</span></label>
+          <fieldset>
+            <legend class="sr-only">Checkbox variants</legend>
+            <div class="flex flex-row space-x-5">
+              {{range .AllUsers}}
+                <div class="flex items-center mb-4">
+                  <input id="userIdCheckbox" name="userIdCheckbox" type="checkbox" value="{{.ID}}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" >
+                  <label for="userIdCheckbox" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{.Nickname}}</label>
+                </div>
+              {{end}}
+            </div>
+          </fieldset>
+      </div>
+      <div>
+        <label for="kilometerBeforeUse" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">น้ำมันเริ่มต้น(กม.) <span class="text-red-600">*</span></label>
+        <input type="number" name="kilometerBeforeUse" id="kilometerBeforeUse" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" value="{{.LatestKilometerAfterUse}}" required>
+      </div>
+      <div>
+        <label for="kilometerAfterUse" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">น้ำมันสิ้นสุด(กม.) <span class="text-red-600">*</span></label>
+        <input type="number" name="kilometerAfterUse" id="kilometerAfterUse" onchange='calculateTotalMoney("{{.LatestFuelPrice}}")' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
+      </div>
+      <div>
+        <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">รายละเอียด</label>
+        <input type="text" name="description" id="description" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="กินข้าว">
+      </div>
+      <div>
+        <label for="totalMoney" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">เป็นเงิน(บาท)</label>
+        <input type="number" name="totalMoney" id="totalMoney" class="bg-gray-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" disabled required>
+      </div>
+      <input type="hidden" name="fuelPrice" value="{{.LatestFuelPrice}}">
+    </div>
+    <button type="submit" class="text-white inline-flex items-center bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+        <svg class="mr-1 -ml-1 w-6 h-6" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+        </svg>
+        เพิ่มรายการใช้น้ำมัน
+    </button>
+</form>
+
+{{end}}

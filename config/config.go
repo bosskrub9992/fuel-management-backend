@@ -13,7 +13,7 @@ type Config struct {
 		Port string
 	}
 	Database databases.PostgresConfig
-	Logger   slogger.SlogConfig
+	Logger   slogger.Config
 }
 
 func init() {

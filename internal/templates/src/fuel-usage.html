@@ -28,7 +28,7 @@
                       </form>
                   </div>
                   <div class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
-                      <button type="button" id="createProductModalButton" data-modal-target="createProductModal" data-modal-toggle="createProductModal" class="flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+                      <button type="button" id="createProductModalButton" data-modal-show="createProductModal" data-modal-toggle="createProductModal" class="flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
                           <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                               <path clip-rule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                           </svg>
@@ -51,15 +51,16 @@
                               </th>
                           </tr>
                       </thead>
-                      <tbody>
-                        {{range .FuelUsageRecords}}
+                      <tbody id="tbody">
+                        {{ block "fuel-usage-records-block" .}}
+                        {{range .Data}}
                           <tr class="border-b dark:border-gray-700">
-                              <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"> {{.FuelUsedDate}}</th>
-                              <td class="px-4 py-3">{{.PeopleUsed}}</td>
+                              <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"> {{.FuelUseDate}}</th>
+                              <td class="px-4 py-3">{{.FuelUsers}}</td>
                               <td class="px-4 py-3">{{.Description}}</td>
-                              <td class="px-4 py-3 max-w-[12rem] truncate">{{.StartFuelLeft}}</td>
-                              <td class="px-4 py-3">{{.EndFuelLeft}}</td>
-                              <td class="px-4 py-3">{{.Total}}</td>
+                              <td class="px-4 py-3 max-w-[12rem] truncate">{{.KilometerBeforeUse}}</td>
+                              <td class="px-4 py-3">{{.KilometerAfterUse}}</td>
+                              <td class="px-4 py-3">{{.TotalMoney}}</td>
                               <td class="px-4 py-3 flex items-center justify-end">
                                   <button id="apple-imac-27-dropdown-button" data-dropdown-toggle="apple-imac-27-dropdown" class="inline-flex items-center text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 p-1.5 dark:hover-bg-gray-800 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100" type="button">
                                       <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -98,6 +99,7 @@
                                   </div>
                               </td>
                           </tr>
+                        {{ end }}
                         {{end}}
                       </tbody>
                   </table>
@@ -106,15 +108,16 @@
       </div>
     </section>
 <!-- End block -->
+
 <!-- Create modal -->
-<div id="createProductModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+<div id="createProductModal" tabindex="-1" aria-hidden="false" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
   <div class="relative p-4 w-full max-w-2xl max-h-full">
       <!-- Modal content -->
       <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
           <!-- Modal header -->
           <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
               <h3 class="text-lg font-semibold text-gray-900 dark:text-white">เพิ่มรายการใช้น้ำมัน</h3>
-              <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-target="createProductModal" data-modal-toggle="createProductModal">
+              <button id="closeModalButton" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-target="createProductModal" data-modal-toggle="createProductModal">
                   <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                       <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                   </svg>
@@ -122,55 +125,43 @@
               </button>
           </div>
           <!-- Modal body -->
-          <form action="#">
+          <form hx-post="/create-fuel-usage" id="create-fuel-usage">
               <div class="grid gap-4 mb-4 sm:grid-cols-2">
                   <div>
-                      <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">วันที่ใช้รถ</label>
-                      <input type="date" name="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" value="{{.TodayDate}}" required>
+                      <label for="fuelUseDate" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">วันที่ใช้รถ <span class="text-red-600">*</span> </label>
+                      <input type="date" name="fuelUseDate" id="fuelUseDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" value="{{.TodayDate}}" required>
                   </div>
                   <div>
-                    <label for="brand" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">ใครหารค่าน้ำมันบ้าง</label>
+                    <label for="PeopleUsed" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">ใครหารค่าน้ำมันบ้าง <span class="text-red-600">*</span></label>
                     <fieldset>
                       <legend class="sr-only">Checkbox variants</legend>
                       <div class="flex flex-row space-x-5">
-                        <div class="flex items-center mb-4">
-                          <input checked id="checkbox-1" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" >
-                          <label for="checkbox-1" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">นัท</label>
-                        </div>
-                        <div class="flex items-center mb-4">
-                            <input id="checkbox-2" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                            <label for="checkbox-2" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">แพท</label>
-                        </div>
-                        <div class="flex items-center mb-4">
-                            <input id="checkbox-3" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                            <label for="checkbox-3" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">เบส</label>
-                        </div>
-                        <div class="flex items-center mb-4">
-                            <input id="checkbox-3" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                            <label for="checkbox-3" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">บอส</label>
-                        </div>
+                        {{range .AllUsers}}
+                          <div class="flex items-center mb-4">
+                            <input id="userIdCheckbox" name="userIdCheckbox" type="checkbox" value="{{.ID}}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" >
+                            <label for="userIdCheckbox" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{.Nickname}}</label>
+                          </div>
+                        {{end}}
                       </div>
-                      
                     </fieldset>
                 </div>
                 <div>
-                  <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">น้ำมันเริ่มต้น(กม.)</label>
-                  <input type="number" name="price" id="price" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" value="{{.LatestEndFuelLeft}}" required>
+                  <label for="kilometerBeforeUse" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">น้ำมันเริ่มต้น(กม.) <span class="text-red-600">*</span></label>
+                  <input type="number" name="kilometerBeforeUse" id="kilometerBeforeUse" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" value="{{.LatestKilometerAfterUse}}" required>
                 </div>
                 <div>
-                  <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">น้ำมันสิ้นสุด(กม.)</label>
-                  <input type="number" name="price" id="price" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
+                  <label for="kilometerAfterUse" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">น้ำมันสิ้นสุด(กม.) <span class="text-red-600">*</span></label>
+                  <input type="number" name="kilometerAfterUse" id="kilometerAfterUse" onchange='calculateTotalMoney("{{.LatestFuelPrice}}")' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
                 </div>
                 <div>
-                  <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">รายละเอียด</label>
-                  <input type="text" name="price" id="price" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="กินข้าว">
+                  <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">รายละเอียด</label>
+                  <input type="text" name="description" id="description" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="กินข้าว">
                 </div>
                 <div>
-                  <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">เป็นเงิน(บาท)</label>
-                  <input type="number" name="price" id="price" class="bg-gray-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required disabled>
+                  <label for="totalMoney" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">เป็นเงิน(บาท)</label>
+                  <input type="number" name="totalMoney" id="totalMoney" class="bg-gray-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" disabled required>
                 </div>
-                  
-
+                <input type="hidden" name="fuelPrice" value="{{.LatestFuelPrice}}">
               </div>
               <button type="submit" class="text-white inline-flex items-center bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
                   <svg class="mr-1 -ml-1 w-6 h-6" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -293,8 +284,32 @@
   </div>
 </div>
 
-<script src="/node_modules/flowbite/dist/flowbite.min.js"></script> <!-- for go -->
-<script src="../node_modules/flowbite/dist/flowbite.min.js"></script> <!-- for live server -->
+<!-- for go -->
+<!-- <script src="/node_modules/flowbite/dist/flowbite.min.js"></script> 
+<script src="/static/htmx.min.js"></script>  -->
+<!-- for live server -->
+<!-- <script src="../node_modules/flowbite/dist/flowbite.min.js"></script> 
+<script src="./htmx.min.js"></script>  -->
+<script src="/node_modules/flowbite/dist/flowbite.min.js"></script> 
+<script src="/static/htmx.min.js"></script> 
+<script>htmx.config.useTemplateFragments = true;</script>
   </body>
+<script>
+    function calculateTotalMoney(latestFuelPrice){
+        let kilometerBeforeUse = document.getElementById('kilometerBeforeUse').value;
+        let kilometerAfterUse = document.getElementById('kilometerAfterUse').value;
+        let totalMoney = (kilometerBeforeUse - kilometerAfterUse)*latestFuelPrice
+        if(kilometerBeforeUse && kilometerAfterUse){
+            document.getElementById('totalMoney').value= totalMoney.toFixed(2);
+        }
+    }
+
+    htmx.on("closeCreateFuelUsageModal", (e) => {
+        console.log("closeCreateFuelUsageModal");
+        let closeModalButton = document.getElementById('closeModalButton');
+        closeModalButton.click()
+    })
+
+</script>
 </html>
 {{end}}

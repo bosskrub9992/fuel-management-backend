@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"encoding/json"
 	"io"
 	"net/http"
 	"os"
@@ -10,13 +10,13 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/bosskrub9992/fuel-management/config"
-	"github.com/bosskrub9992/fuel-management/internal/adaptors/gormadaptor"
-	"github.com/bosskrub9992/fuel-management/internal/handlers/resthandler"
-	"github.com/bosskrub9992/fuel-management/internal/services"
-
 	"log/slog"
 
+	"github.com/bosskrub9992/fuel-management/config"
+	"github.com/bosskrub9992/fuel-management/internal/adaptors/gormadaptor"
+	"github.com/bosskrub9992/fuel-management/internal/handlers/htmxhandler"
+	"github.com/bosskrub9992/fuel-management/internal/handlers/resthandler"
+	"github.com/bosskrub9992/fuel-management/internal/services"
 	"github.com/jinleejun-corp/corelib/databases"
 	"github.com/jinleejun-corp/corelib/slogger"
 	"github.com/labstack/echo/v4"
@@ -29,17 +29,26 @@ type Template struct {
 
 func (t *Template) Render(w io.Writer, name string, data any, c echo.Context) error {
 	ctx := c.Request().Context()
+
 	if err := t.templates.ExecuteTemplate(w, name, data); err != nil {
-		slogger.Error(ctx, err.Error())
+		slog.ErrorContext(ctx, err.Error())
 		return err
 	}
+
+	dataInBytes, err := json.Marshal(data)
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return err
+	}
+	c.Set("data", string(dataInBytes))
+
 	return nil
 }
 
 func main() {
 	// dependency injection
 	cfg := config.New()
-	logger := slogger.Init(&cfg.Logger)
+	logger := slogger.New(&cfg.Logger)
 	slog.SetDefault(logger)
 	sqlDB, err := databases.NewPostgres(&cfg.Database)
 	if err != nil {
@@ -55,7 +64,8 @@ func main() {
 	db := gormadaptor.NewDatabase(gormDB)
 	healthService := services.NewHealthService()
 	service := services.New(cfg, db)
-	handler := resthandler.NewRESTHandler(healthService, service)
+	restHandler := resthandler.NewRESTHandler(healthService)
+	htmxHandler := htmxhandler.NewHTMXHandler(service)
 
 	e := echo.New()
 	e.Renderer = &Template{
@@ -63,20 +73,21 @@ func main() {
 	}
 	e.Static("/dist", "./internal/templates/dist")
 	e.Static("/node_modules", "./internal/templates/node_modules")
+	e.Static("/static", "./internal/templates/static")
 	e.Use(
 		middleware.Recover(),
 		middleware.CORS(),
-		slogger.EchoMiddleware(),
+		slogger.MiddlewareHTMX(),
 	)
-	e.GET("/fuel-usage", handler.FuelUsage) // TODO update middleware to support form value
-	apiV1 := e.Group("/api/v1")
-	apiV1.GET("/health", handler.GetHealth)
-	apiV1.POST("/customers", handler.CreateCustomer)
+	apiV1Group := e.Group("/api/v1", slogger.MiddlewareREST())
+	apiV1Group.GET("/health", restHandler.GetHealth, slogger.MiddlewareREST())
 
-	// run rest server
+	e.GET("/fuel-usage", htmxHandler.FuelUsage)
+	e.POST("/create-fuel-usage", htmxHandler.CreateFuelUsage)
+
+	// run server
 	go func() {
-		addr := fmt.Sprintf(":%s", cfg.Server.Port)
-		if err := e.Start(addr); err != nil && err != http.ErrServerClosed {
+		if err := e.Start(":" + cfg.Server.Port); err != nil && err != http.ErrServerClosed {
 			panic(err)
 		}
 	}()

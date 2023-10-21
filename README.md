@@ -11,13 +11,7 @@ docker exec -i postgres psql -U postgres -c "drop database if exists testdb" && 
 docker exec -i postgres psql -U postgres -c "create database testdb"
 ```
 
-3. migrate database
-```sh
-cd ./migration
-goose postgres "user=postgres password=postgres dbname=testdb sslmode=disable" up
-```
-
-4. start service
+3. start service
 ```sh
 go run main.go
 ```
