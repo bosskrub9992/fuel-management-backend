@@ -63,10 +63,7 @@ func (h *HTMXHandler) CreateFuelUsage(c echo.Context) error {
 		return c.JSON(response.HTTPStatusCode, response)
 	}
 
-	c.Response().Header().Set(
-		"HX-Trigger-After-Swap",
-		"closeCreateFuelUsageModal",
-	)
+	c.Response().Header().Set("HX-Trigger-After-Swap", "closeCreateFuelUsageModal")
 
 	return c.Render(http.StatusOK, "create-fuel-usage", data)
 }

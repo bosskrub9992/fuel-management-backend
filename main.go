@@ -84,6 +84,8 @@ func main() {
 
 	e.GET("/fuel-usage", htmxHandler.FuelUsage)
 	e.POST("/create-fuel-usage", htmxHandler.CreateFuelUsage)
+	e.GET("/test", htmxHandler.Test)
+	e.POST("/example", htmxHandler.Example)
 
 	// run server
 	go func() {

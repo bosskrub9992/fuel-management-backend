@@ -10,8 +10,8 @@ import (
 type CreateFuelUsageRequest struct {
 	FuelUseDate        string          `form:"fuelUseDate"`
 	FuelPrice          decimal.Decimal `form:"fuelPrice"`
-	KilometerBeforeUse int64           `form:"kilometerBeforeUse"`
-	KilometerAfterUse  int64           `form:"kilometerAfterUse"`
+	KilometerBeforeUse int64           `form:"kilometerBeforeUseInput"`
+	KilometerAfterUse  int64           `form:"kilometerAfterUseInput"`
 	Description        string          `form:"description" validate:"max=500"`
 	UserIDs            []int64
 }

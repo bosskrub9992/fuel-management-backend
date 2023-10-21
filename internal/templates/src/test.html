@@ -1,0 +1,28 @@
+{{define "test"}}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>test</title>
+    <script src="/static/htmx.min.js"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/multi-swap.js"></script>
+  </head>
+  <body hx-boost="true" hx-ext="multi-swap">
+    <button type="submit" hx-post="/example" hx-swap="multi:#input,#inputInDiv">
+      Click to swap content
+    </button>
+    <br />
+
+    <!-- htmx multi-swap not work on field input -->
+    <input id="input" type="text" value="100" required />
+
+    <div id="inputInDiv">
+      <label for="input">inputInDiv</label>
+      <input type="text" value="100" required />
+    </div>
+  </body>
+</html>
+
+{{ end }}

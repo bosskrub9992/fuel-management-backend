@@ -3,6 +3,7 @@ module github.com/bosskrub9992/fuel-management
 go 1.21.1
 
 require (
+	github.com/google/uuid v1.3.1
 	github.com/jinleejun-corp/corelib v0.0.16
 	github.com/labstack/echo/v4 v4.11.2
 	github.com/shopspring/decimal v1.3.1
@@ -18,7 +19,6 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.15.5 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
-	github.com/google/uuid v1.3.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
