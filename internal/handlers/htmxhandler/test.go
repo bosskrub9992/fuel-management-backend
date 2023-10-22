@@ -28,3 +28,7 @@ func (h *HTMXHandler) Example(c echo.Context) error {
 		),
 	)
 }
+
+func (h *HTMXHandler) TestNav(c echo.Context) error {
+	return c.Render(http.StatusOK, "test_nav", nil)
+}

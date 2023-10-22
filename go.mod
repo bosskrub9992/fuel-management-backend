@@ -4,7 +4,7 @@ go 1.21.1
 
 require (
 	github.com/google/uuid v1.3.1
-	github.com/jinleejun-corp/corelib v0.0.16
+	github.com/jinleejun-corp/corelib v0.0.17
 	github.com/labstack/echo/v4 v4.11.2
 	github.com/shopspring/decimal v1.3.1
 	github.com/spf13/viper v1.17.0
