@@ -2,6 +2,7 @@ package gormadaptor
 
 import (
 	"context"
+	"log/slog"
 	"sort"
 	"time"
 
@@ -49,17 +50,39 @@ type fuelUsageWithUser struct {
 	Nickname           string          `gorm:"column:nickname"`
 }
 
-func (adt *Database) GetAllFuelUsageWithUsers(ctx context.Context) ([]services.FuelUsageWithUser, error) {
-	var fuelUsageWithUsers []fuelUsageWithUser
-	err := adt.db.WithContext(ctx).
+func (adt *Database) GetCarFuelUsageWithUsers(ctx context.Context, params services.GetCarFuelUsageWithUsersParams) ([]services.FuelUsageWithUser, int64, error) {
+	tx := adt.db.WithContext(ctx).
 		Select("fuel_usages.*", "users.nickname", "users.id AS user_id").
 		Table("fuel_usages").
+		Joins("INNER JOIN cars ON cars.id = fuel_usages.car_id").
 		Joins("INNER JOIN fuel_usage_users ON fuel_usages.id = fuel_usage_users.fuel_usage_id").
 		Joins("INNER JOIN users ON fuel_usage_users.user_id = users.id").
-		Order("fuel_usages.id DESC").
-		Find(&fuelUsageWithUsers).Error
-	if err != nil {
-		return nil, err
+		Where("car_id = ?", params.CarID)
+
+	// should filter before count
+
+	var totalCount int64
+	if err := tx.Count(&totalCount).Error; err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return nil, 0, err
+	}
+
+	pageIndex := params.PageIndex
+	if pageIndex <= 0 {
+		pageIndex = 1
+	}
+
+	pageSize := params.PageSize
+	if pageSize <= 0 {
+		pageSize = 0
+	}
+
+	offset := (pageIndex - 1) * pageSize
+
+	var fuelUsageWithUsers []fuelUsageWithUser
+	if err := tx.Order("fuel_usages.id DESC").Limit(pageSize).Offset(offset).Find(&fuelUsageWithUsers).Error; err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return nil, 0, err
 	}
 
 	var idToFuelUsageWithUsers = make(map[int64]services.FuelUsageWithUser)
@@ -94,7 +117,7 @@ func (adt *Database) GetAllFuelUsageWithUsers(ctx context.Context) ([]services.F
 		return result[i].ID > result[j].ID
 	})
 
-	return result, nil
+	return result, totalCount, nil
 }
 
 func (adt *Database) GetAllUsers(ctx context.Context) ([]domains.User, error) {
@@ -111,4 +134,12 @@ func (adt *Database) GetLatestFuelRefill(ctx context.Context) (*domains.FuelRefi
 		return nil, err
 	}
 	return &fuelRefill, nil
+}
+
+func (adt *Database) GetAllCars(ctx context.Context) ([]domains.Car, error) {
+	var cars []domains.Car
+	if err := adt.db.WithContext(ctx).Model(&domains.Car{}).Find(&cars).Error; err != nil {
+		return nil, err
+	}
+	return cars, nil
 }

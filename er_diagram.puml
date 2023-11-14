@@ -1,0 +1,72 @@
+@startuml fuel-management
+!theme cerulean-outline
+
+' hide the spot
+hide circle
+
+' avoid problems with angled crows feet
+skinparam linetype ortho
+
+entity FuelRefill {
+    +ID: int64
+    CarID: int64
+    --
+    RefillDate: time.Time
+    TotalMoney: decimal.Decimal
+    KilometerBeforeRefill: int64
+    KilometerAfterRefill: int64
+    FuelPriceCalculated: decimal.Decimal
+    IsPaid: bool
+    CreateTime: time.Time
+    UpdateTime: time.Time
+    CreateBy: int64
+    UpdateBy: int64
+}
+
+entity FuelUsageUser {
+    +ID: int64
+    FuelUsageID: int64
+    UserID: int64
+    --
+}
+
+entity FuelUsage {
+    +ID: int64
+    CarID: int64
+    --
+    FuelUsedDate: time.Time
+    FuelPrice: decimal.Decimal
+    KilometerBeforeUse: int64
+    KilometerAfterUse: int64
+    Description: string
+    TotalMoney: decimal.Decimal
+    IsPaid: bool
+    CreateTime: time.Time
+    UpdateTime: time.Time
+}
+
+entity User {
+    +ID: int64
+    DefaultCarID: int64
+    --
+    Nickname: string
+    CreateTime: time.Time
+    UpdateTime: time.Time
+}
+
+entity Car {
+    +ID: int64
+    --
+    Name: string
+    CreateTime: time.Time
+    UpdateTime: time.Time
+}
+
+FuelUsage ||--|{ FuelUsageUser
+User ||..o{ FuelUsageUser
+FuelRefill }o..|| User
+Car ||..o{ FuelUsage
+Car ||..o{ FuelRefill
+Car ||..o{ User 
+
+@enduml

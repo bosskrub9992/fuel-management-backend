@@ -8,7 +8,6 @@ require (
 	github.com/labstack/echo/v4 v4.11.2
 	github.com/shopspring/decimal v1.3.1
 	github.com/spf13/viper v1.17.0
-	gopkg.in/guregu/null.v4 v4.0.0
 	gorm.io/gorm v1.25.5
 )
 

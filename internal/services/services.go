@@ -10,8 +10,9 @@ import (
 type DBConnector interface {
 	CreateFuelUsage(context.Context, domains.FuelUsage) (int64, error)
 	CreateFuelUsageUsers(context.Context, []domains.FuelUsageUser) error
-	GetAllFuelUsageWithUsers(context.Context) ([]FuelUsageWithUser, error)
+	GetCarFuelUsageWithUsers(context.Context, GetCarFuelUsageWithUsersParams) (records []FuelUsageWithUser, totalRecords int64, err error)
 	GetAllUsers(context.Context) ([]domains.User, error)
+	GetAllCars(context.Context) ([]domains.Car, error)
 	GetLatestFuelRefill(context.Context) (*domains.FuelRefill, error)
 }
 
@@ -27,7 +28,20 @@ func New(cfg *config.Config, db DBConnector) *Service {
 	}
 }
 
+type SearchField string
+
+const (
+	SearchFieldFuelUseDate = "fuelUseDate"
+	SearchFieldUser        = "user"
+)
+
 type FuelUsageWithUser struct {
 	domains.FuelUsage
 	Users []string
+}
+
+type GetCarFuelUsageWithUsersParams struct {
+	CarID     int64
+	PageIndex int
+	PageSize  int
 }

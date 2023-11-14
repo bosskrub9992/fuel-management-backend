@@ -4,13 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 	"text/template"
 	"time"
-
-	"log/slog"
 
 	"github.com/bosskrub9992/fuel-management/config"
 	"github.com/bosskrub9992/fuel-management/internal/adaptors/gormadaptor"
@@ -22,28 +21,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
-
-type Template struct {
-	templates *template.Template
-}
-
-func (t *Template) Render(w io.Writer, name string, data any, c echo.Context) error {
-	ctx := c.Request().Context()
-
-	if err := t.templates.ExecuteTemplate(w, name, data); err != nil {
-		slog.ErrorContext(ctx, err.Error())
-		return err
-	}
-
-	dataInBytes, err := json.Marshal(data)
-	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
-		return err
-	}
-	c.Set("data", string(dataInBytes))
-
-	return nil
-}
 
 func main() {
 	// dependency injection
@@ -62,10 +39,9 @@ func main() {
 		return
 	}
 	db := gormadaptor.NewDatabase(gormDB)
-	healthService := services.NewHealthService()
 	service := services.New(cfg, db)
-	restHandler := resthandler.NewRESTHandler(healthService)
-	htmxHandler := htmxhandler.NewHTMXHandler(service)
+	restHandler := resthandler.New(service)
+	htmxHandler := htmxhandler.New(service)
 
 	e := echo.New()
 	e.Renderer = &Template{
@@ -82,8 +58,10 @@ func main() {
 	apiV1Group := e.Group("/api/v1", slogger.MiddlewareREST())
 	apiV1Group.GET("/health", restHandler.GetHealth, slogger.MiddlewareREST())
 
-	e.GET("/fuel-usage", htmxHandler.FuelUsage)
-	e.POST("/create-fuel-usage", htmxHandler.CreateFuelUsage)
+	e.GET("/users", htmxHandler.GetUsers)
+	e.GET("/cars/:currentCarId/fuel-usages", htmxHandler.GetFuelUsages)
+	e.POST("/cars/:currentCarId/fuel-usages", htmxHandler.PostFuelUsages)
+
 	e.GET("/test", htmxHandler.Test)
 	e.POST("/example", htmxHandler.Example)
 	e.GET("/test-nav", htmxHandler.TestNav)
@@ -91,7 +69,8 @@ func main() {
 	// run server
 	go func() {
 		if err := e.Start(":" + cfg.Server.Port); err != nil && err != http.ErrServerClosed {
-			panic(err)
+			logger.Error(err.Error())
+			return
 		}
 	}()
 
@@ -102,6 +81,26 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err := e.Shutdown(ctx); err != nil {
-		panic(err)
+		logger.Error(err.Error())
+		return
 	}
+}
+
+type Template struct {
+	templates *template.Template
+}
+
+func (t *Template) Render(w io.Writer, name string, data any, c echo.Context) error {
+	ctx := c.Request().Context()
+	if err := t.templates.ExecuteTemplate(w, name, data); err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return err
+	}
+	dataInBytes, err := json.Marshal(data)
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return err
+	}
+	c.Set("data", string(dataInBytes))
+	return nil
 }

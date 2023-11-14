@@ -1,0 +1,19 @@
+{{define "get_users"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/dist/output.css" rel="stylesheet">
+</head>
+<body class="h-screen bg-gray-900 text-white text-center py-10">
+    <h1 class="text-3xl font-bold mb-6">Who's Using?</h1>
+    {{range .}}
+    <a href="/cars/{{.DefaultCarID}}/fuel-usages?currentUserId={{.ID}}&pageIndex=1&pageSize=20" class="m-4">
+        <img src="{{.ProfileImageURL}}" alt="Profile 1" class="w-24 h-24 mx-auto rounded-full mb-4">
+        <h2 class="text-xl font-bold mb-2">{{.Nickname}}</h2>
+    </a>
+    {{end}}
+</body>
+</html>
+{{end}}

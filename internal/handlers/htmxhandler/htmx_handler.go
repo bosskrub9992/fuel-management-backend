@@ -6,7 +6,7 @@ type HTMXHandler struct {
 	service *services.Service
 }
 
-func NewHTMXHandler(
+func New(
 	service *services.Service,
 ) *HTMXHandler {
 	return &HTMXHandler{

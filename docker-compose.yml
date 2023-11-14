@@ -1,0 +1,15 @@
+services:
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    develop:
+      watch:
+        - action: sync
+          path: ./internal/templates
+          target: /src/web
+        - action: rebuild
+          files:
+            - ./**/*.go
+            - ./go.mod
+            - ./go.sum

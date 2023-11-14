@@ -1,28 +1,60 @@
-{{define "test"}}
-
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>test</title>
-    <script src="/static/htmx.min.js"></script>
-    <script src="https://unpkg.com/htmx.org/dist/ext/multi-swap.js"></script>
-  </head>
-  <body hx-boost="true" hx-ext="multi-swap">
-    <button type="submit" hx-post="/example" hx-swap="multi:#input,#inputInDiv">
-      Click to swap content
-    </button>
-    <br />
-
-    <!-- htmx multi-swap not work on field input -->
-    <input id="input" type="text" value="100" required />
-
-    <div id="inputInDiv">
-      <label for="input">inputInDiv</label>
-      <input type="text" value="100" required />
+<!-- HTML Structure -->
+<table class="min-w-full">
+    <tr class="cursor-pointer" id="row1">
+      <td class="data-cell">John Doe</td>
+      <td class="data-cell">john.doe@email.com</td>
+      <td class="data-cell">Edit</td>
+    </tr>
+    <tr class="cursor-pointer" id="row2">
+      <td class="data-cell">Jane Smith</td>
+      <td class="data-cell">jane.smith@email.com</td>
+      <td class="data-cell">Edit</td>
+    </tr>
+    <!-- Add more rows as needed -->
+  </table>
+  
+  <!-- Modal -->
+  <div id="updateModal" class="hidden fixed inset-0 flex items-center justify-center z-50 bg-gray-500 bg-opacity-75">
+    <div class="modal-content bg-white p-8 rounded shadow-lg">
+      <!-- Input fields for updating data -->
+      <input type="text" id="updateName" class="mb-4" />
+      <input type="text" id="updateEmail" class="mb-4" />
+      <button id="updateButton" class="bg-blue-500 text-white px-4 py-2">Update</button>
     </div>
-  </body>
-</html>
-
-{{ end }}
+  </div>
+  
+  <!-- JavaScript -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const rows = document.querySelectorAll('.data-cell');
+  
+      rows.forEach(cell => {
+        cell.addEventListener('click', function () {
+          const rowData = this.parentElement.querySelectorAll('.data-cell');
+          const name = rowData[0].innerText;
+          const email = rowData[1].innerText;
+  
+          document.getElementById('updateName').value = name;
+          document.getElementById('updateEmail').value = email;
+  
+          document.getElementById('updateModal').classList.remove('hidden');
+        });
+      });
+  
+      // Add event listener for update button
+      document.getElementById('updateButton').addEventListener('click', function () {
+        // Retrieve updated data from input fields
+        const updatedName = document.getElementById('updateName').value;
+        const updatedEmail = document.getElementById('updateEmail').value;
+  
+        // Update the row with the new data
+        const selectedRow = document.querySelector('.selected-row');
+        selectedRow.querySelectorAll('.data-cell')[0].innerText = updatedName;
+        selectedRow.querySelectorAll('.data-cell')[1].innerText = updatedEmail;
+  
+        // Close the modal
+        document.getElementById('updateModal').classList.add('hidden');
+      });
+    });
+  </script>
+  
