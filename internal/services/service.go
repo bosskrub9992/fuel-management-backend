@@ -6,30 +6,55 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bosskrub9992/fuel-management/config"
 	"github.com/bosskrub9992/fuel-management/internal/domains"
 	"github.com/bosskrub9992/fuel-management/internal/models"
+	"github.com/jinleejun-corp/corelib/errs"
 	"github.com/shopspring/decimal"
 )
 
-func (s *Service) GetUsers(ctx context.Context) ([]models.GetUserDatum, error) {
+type Service struct {
+	cfg *config.Config
+	db  DatabaseAdaptor
+}
+
+func New(cfg *config.Config, db DatabaseAdaptor) *Service {
+	return &Service{
+		cfg: cfg,
+		db:  db,
+	}
+}
+
+func (s *Service) GetUsers(ctx context.Context) (*models.GetUserData, error) {
 	allUsers, err := s.db.GetAllUsers(ctx)
 	if err != nil {
 		slog.ErrorContext(ctx, err.Error())
 		return nil, err
 	}
-	var users []models.GetUserDatum
+
+	data := models.GetUserData{
+		Data: []models.GetUserDatum{},
+	}
+
 	for _, user := range allUsers {
-		users = append(users, models.GetUserDatum{
+		data.Data = append(data.Data, models.GetUserDatum{
 			ID:              user.ID,
 			DefaultCarID:    user.DefaultCarID,
 			Nickname:        user.Nickname,
 			ProfileImageURL: user.ProfileImageURL,
 		})
 	}
-	return users, nil
+
+	return &data, nil
 }
 
 func (s *Service) GetCarFuelUsages(ctx context.Context, req models.GetCarFuelUsagesRequest) (*models.GetCarFuelUsageData, error) {
+	if err := req.Validate(); err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		response := errs.NewValidate(err)
+		return nil, response
+	}
+
 	latestFuelRefill, err := s.db.GetLatestFuelRefill(ctx)
 	if err != nil {
 		slog.ErrorContext(ctx, err.Error())
@@ -83,7 +108,7 @@ func (s *Service) GetCarFuelUsages(ctx context.Context, req models.GetCarFuelUsa
 		}
 	}
 
-	var getAllFuelUsageData = models.GetCarFuelUsageData{
+	getAllFuelUsageData := models.GetCarFuelUsageData{
 		TodayDate:               time.Now().Format("2006-01-02"),
 		LatestKilometerAfterUse: latestKilometerAfterUse,
 		LatestFuelPrice:         latestFuelRefill.FuelPriceCalculated,
@@ -116,18 +141,18 @@ func (s *Service) GetCarFuelUsages(ctx context.Context, req models.GetCarFuelUsa
 	return &getAllFuelUsageData, nil
 }
 
-func (s *Service) CreateFuelUsage(ctx context.Context, req models.CreateFuelUsageRequest) (*models.GetCarFuelUsageData, error) {
+func (s *Service) CreateFuelUsage(ctx context.Context, req models.CreateFuelUsageRequest) error {
+	if err := req.Validate(); err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		response := errs.NewValidate(err)
+		return response
+	}
+
 	kmUsed := decimal.NewFromInt(req.KilometerBeforeUse - req.KilometerAfterUse)
 	totalMoney := kmUsed.Mul(req.FuelPrice)
 
-	fuelUseDate, err := time.Parse("2006-01-02", req.FuelUseDate)
-	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
-		return nil, err
-	}
-
 	newFuelUsage := domains.FuelUsage{
-		FuelUseDate:        fuelUseDate,
+		FuelUseDate:        req.FuelUseDate,
 		FuelPrice:          req.FuelPrice,
 		KilometerBeforeUse: req.KilometerBeforeUse,
 		KilometerAfterUse:  req.KilometerAfterUse,
@@ -137,30 +162,10 @@ func (s *Service) CreateFuelUsage(ctx context.Context, req models.CreateFuelUsag
 		UpdateTime:         time.Now(),
 	}
 
-	newFuelUsageID, err := s.db.CreateFuelUsage(ctx, newFuelUsage)
-	if err != nil {
+	if err := s.db.CreateFuelUsage(ctx, newFuelUsage, req.UserIDs); err != nil {
 		slog.ErrorContext(ctx, err.Error())
-		return nil, err
+		return err
 	}
 
-	var newFuelUsageUsers []domains.FuelUsageUser
-	for _, userID := range req.UserIDs {
-		newFuelUsageUsers = append(newFuelUsageUsers, domains.FuelUsageUser{
-			FuelUsageID: newFuelUsageID,
-			UserID:      userID,
-		})
-	}
-
-	if len(newFuelUsageUsers) > 0 {
-		if err := s.db.CreateFuelUsageUsers(ctx, newFuelUsageUsers); err != nil {
-			slog.ErrorContext(ctx, err.Error())
-			return nil, err
-		}
-	}
-
-	return s.GetCarFuelUsages(ctx, models.GetCarFuelUsagesRequest{
-		CarID:     req.CarID,
-		PageIndex: 1,
-		PageSize:  20,
-	})
+	return nil
 }
