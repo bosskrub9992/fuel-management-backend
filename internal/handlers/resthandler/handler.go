@@ -26,6 +26,7 @@ func New(service *services.Service) *RESTHandler {
 
 func (h RESTHandler) GetUsers(c echo.Context) error {
 	ctx := c.Request().Context()
+
 	users, err := h.service.GetUsers(ctx)
 	if err != nil {
 		if response, ok := err.(errs.Err); ok {
@@ -34,17 +35,20 @@ func (h RESTHandler) GetUsers(c echo.Context) error {
 		response := errs.ErrAPIFailed
 		return c.JSON(response.Status, response)
 	}
+
 	return c.JSON(http.StatusOK, users)
 }
 
 func (h RESTHandler) GetFuelUsages(c echo.Context) error {
 	ctx := c.Request().Context()
+
 	var req models.GetCarFuelUsagesRequest
 	if err := c.Bind(&req); err != nil {
 		slog.ErrorContext(ctx, err.Error())
 		response := errs.ErrBadRequest
 		return c.JSON(response.Status, response)
 	}
+
 	data, err := h.service.GetCarFuelUsages(ctx, req)
 	if err != nil {
 		if response, ok := err.(errs.Err); ok {
@@ -53,17 +57,20 @@ func (h RESTHandler) GetFuelUsages(c echo.Context) error {
 		response := errs.ErrAPIFailed
 		return c.JSON(response.Status, response)
 	}
+
 	return c.JSON(http.StatusOK, data)
 }
 
 func (h RESTHandler) PostFuelUsage(c echo.Context) error {
 	ctx := c.Request().Context()
+
 	var req models.CreateFuelUsageRequest
 	if err := c.Bind(&req); err != nil {
 		slog.ErrorContext(ctx, err.Error())
 		response := errs.ErrBadRequest
 		return c.JSON(response.Status, response)
 	}
+
 	if err := h.service.CreateFuelUsage(ctx, req); err != nil {
 		if response, ok := err.(errs.Err); ok {
 			return c.JSON(response.Status, response)
@@ -71,17 +78,20 @@ func (h RESTHandler) PostFuelUsage(c echo.Context) error {
 		response := errs.ErrAPIFailed
 		return c.JSON(response.Status, response)
 	}
+
 	return c.JSON(http.StatusOK, nil)
 }
 
 func (h RESTHandler) PutFuelUsage(c echo.Context) error {
 	ctx := c.Request().Context()
+
 	var req models.PutFuelUsageRequest
 	if err := c.Bind(&req); err != nil {
 		slog.ErrorContext(ctx, err.Error())
 		response := errs.ErrBadRequest
 		return c.JSON(response.Status, response)
 	}
+
 	if err := h.service.UpdateFuelUsage(ctx, req); err != nil {
 		if response, ok := err.(errs.Err); ok {
 			return c.JSON(response.Status, response)
@@ -89,6 +99,7 @@ func (h RESTHandler) PutFuelUsage(c echo.Context) error {
 		response := errs.ErrAPIFailed
 		return c.JSON(response.Status, response)
 	}
+
 	return c.JSON(http.StatusOK, nil)
 }
 
