@@ -1,15 +1,17 @@
 package models
 
 import (
+	"time"
+
 	"github.com/jinleejun-corp/corelib/validators"
 	"github.com/shopspring/decimal"
 )
 
 type GetCarFuelUsagesRequest struct {
-	CarID         int64 `query:"currentCarId" validate:"required"`
+	CurrentCarID  int64 `query:"currentCarId" validate:"required"`
 	CurrentUserID int64 `query:"currentUserId" validate:"required"`
-	PageIndex     int   `query:"PageIndex"`
-	PageSize      int   `query:"PageSize"`
+	PageIndex     int   `query:"pageIndex"`
+	PageSize      int   `query:"pageSize"`
 }
 
 func (req GetCarFuelUsagesRequest) Validate() error {
@@ -17,7 +19,7 @@ func (req GetCarFuelUsagesRequest) Validate() error {
 }
 
 type GetCarFuelUsageData struct {
-	TodayDate               string              `json:"todayDate"`
+	Now                     time.Time           `json:"now"`
 	LatestKilometerAfterUse int64               `json:"latestKilometerAfterUse"`
 	LatestFuelPrice         decimal.Decimal     `json:"latestFuelPrice"`
 	AllUsers                []User              `json:"allUsers"`
@@ -30,7 +32,7 @@ type GetCarFuelUsageData struct {
 
 type CarFuelUsageDatum struct {
 	ID                 int64           `json:"id"`
-	FuelUseDate        string          `json:"fuelUseDate"`
+	FuelUseTime        string          `json:"fuelUseTime"`
 	FuelPrice          decimal.Decimal `json:"fuelPrice"`
 	KilometerBeforeUse int64           `json:"kilometerBeforeUse"`
 	KilometerAfterUse  int64           `json:"kilometerAfterUse"`

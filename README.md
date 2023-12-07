@@ -7,8 +7,8 @@ docker run --rm -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e TZ=Asia/Bangkok --
 
 2. drop and create database, run (data will be lost!)
 ```sh
-docker exec -i postgres psql -U postgres -c "drop database if exists testdb" && \
-docker exec -i postgres psql -U postgres -c "create database testdb"
+docker exec -i fuel-management-postgres psql -U postgres -c "drop database if exists fuel" && \
+docker exec -i fuel-management-postgres psql -U postgres -c "create database fuel"
 ```
 
 3. start service

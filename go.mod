@@ -3,7 +3,7 @@ module github.com/bosskrub9992/fuel-management-backend
 go 1.21.1
 
 require (
-	github.com/jinleejun-corp/corelib v0.0.17
+	github.com/jinleejun-corp/corelib v0.0.22
 	github.com/labstack/echo/v4 v4.11.3
 	github.com/shopspring/decimal v1.3.1
 	github.com/spf13/viper v1.18.0
@@ -27,7 +27,6 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/labstack/gommon v0.4.1 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
-	github.com/lmittmann/tint v1.0.3 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

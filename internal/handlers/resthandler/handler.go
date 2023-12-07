@@ -3,9 +3,10 @@ package resthandler
 import (
 	"log/slog"
 	"net/http"
+	"strconv"
 	"time"
 
-	"github.com/bosskrub9992/fuel-management-backend/internal/models"
+	"github.com/bosskrub9992/fuel-management-backend/internal/entities/models"
 	"github.com/bosskrub9992/fuel-management-backend/internal/services"
 	"github.com/jinleejun-corp/corelib/errs"
 	"github.com/labstack/echo/v4"
@@ -25,88 +26,127 @@ func New(service *services.Service) *RESTHandler {
 
 func (h RESTHandler) GetUsers(c echo.Context) error {
 	ctx := c.Request().Context()
-
 	users, err := h.service.GetUsers(ctx)
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
-		response := errs.NewUnknown(err)
-		return c.JSON(response.HTTPStatusCode, response)
+		if response, ok := err.(errs.Err); ok {
+			return c.JSON(response.Status, response)
+		}
+		response := errs.ErrAPIFailed
+		return c.JSON(response.Status, response)
 	}
-
 	return c.JSON(http.StatusOK, users)
 }
 
 func (h RESTHandler) GetFuelUsages(c echo.Context) error {
 	ctx := c.Request().Context()
-
 	var req models.GetCarFuelUsagesRequest
 	if err := c.Bind(&req); err != nil {
 		slog.ErrorContext(ctx, err.Error())
-		response := errs.NewBind(err)
-		return c.JSON(response.HTTPStatusCode, response)
+		response := errs.ErrBadRequest
+		return c.JSON(response.Status, response)
 	}
-
 	data, err := h.service.GetCarFuelUsages(ctx, req)
 	if err != nil {
-		response := errs.NewUnknown(err)
-		return c.JSON(response.HTTPStatusCode, response)
+		if response, ok := err.(errs.Err); ok {
+			return c.JSON(response.Status, response)
+		}
+		response := errs.ErrAPIFailed
+		return c.JSON(response.Status, response)
 	}
-
 	return c.JSON(http.StatusOK, data)
 }
 
-func (h RESTHandler) PostFuelUsages(c echo.Context) error {
+func (h RESTHandler) PostFuelUsage(c echo.Context) error {
 	ctx := c.Request().Context()
-
 	var req models.CreateFuelUsageRequest
 	if err := c.Bind(&req); err != nil {
 		slog.ErrorContext(ctx, err.Error())
-		response := errs.NewBind(err)
-		return c.JSON(response.HTTPStatusCode, response)
+		response := errs.ErrBadRequest
+		return c.JSON(response.Status, response)
 	}
-
 	if err := h.service.CreateFuelUsage(ctx, req); err != nil {
-		slog.ErrorContext(ctx, err.Error())
-		response := errs.NewUnknown(err)
-		return c.JSON(response.HTTPStatusCode, response)
+		if response, ok := err.(errs.Err); ok {
+			return c.JSON(response.Status, response)
+		}
+		response := errs.ErrAPIFailed
+		return c.JSON(response.Status, response)
 	}
-
 	return c.JSON(http.StatusOK, nil)
 }
 
 func (h RESTHandler) PutFuelUsage(c echo.Context) error {
 	ctx := c.Request().Context()
-
 	var req models.PutFuelUsageRequest
 	if err := c.Bind(&req); err != nil {
 		slog.ErrorContext(ctx, err.Error())
-		response := errs.NewBind(err)
-		return c.JSON(response.HTTPStatusCode, response)
+		response := errs.ErrBadRequest
+		return c.JSON(response.Status, response)
+	}
+	if err := h.service.UpdateFuelUsage(ctx, req); err != nil {
+		if response, ok := err.(errs.Err); ok {
+			return c.JSON(response.Status, response)
+		}
+		response := errs.ErrAPIFailed
+		return c.JSON(response.Status, response)
+	}
+	return c.JSON(http.StatusOK, nil)
+}
+
+func (h RESTHandler) DeleteFuelUsage(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	fuelUsageID, err := strconv.Atoi(c.Param("fuelUsageId"))
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		response := errs.ErrBadRequest
+		return c.JSON(response.Status, response)
 	}
 
-	return c.JSON(200, nil)
+	req := models.DeleteFuelUsageByIDRequest{
+		FuelUsageID: int64(fuelUsageID),
+	}
+
+	if err := h.service.DeleteFuelUsageByID(ctx, req); err != nil {
+		if response, ok := err.(errs.Err); ok {
+			return c.JSON(response.Status, response)
+		}
+		response := errs.ErrAPIFailed
+		return c.JSON(response.Status, response)
+	}
+
+	return c.JSON(http.StatusOK, nil)
 }
 
-func (h RESTHandler) DeleteFuelUsages(c echo.Context) error {
-	return c.JSON(200, nil)
-}
+func (h RESTHandler) GetFuelUsageByID(c echo.Context) error {
+	ctx := c.Request().Context()
 
-func (h RESTHandler) GetFuelRefills(c echo.Context) error {
-	return c.JSON(200, nil)
-}
+	fuelUsageID, err := strconv.Atoi(c.Param("fuelUsageId"))
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		response := errs.ErrBadRequest
+		return c.JSON(response.Status, response)
+	}
 
-func (h RESTHandler) PostFuelRefills(c echo.Context) error {
-	return c.JSON(200, nil)
-}
+	req := models.GetFuelUsageByIDRequest{
+		FuelUsageID: int64(fuelUsageID),
+	}
 
-func (h RESTHandler) PutFuelRefill(c echo.Context) error {
-	return c.JSON(200, nil)
-}
+	data, err := h.service.GetFuelUsageByID(ctx, req)
+	if err != nil {
+		if response, ok := err.(errs.Err); ok {
+			return c.JSON(response.Status, response)
+		}
+		response := errs.ErrAPIFailed
+		return c.JSON(response.Status, response)
+	}
 
-func (h RESTHandler) DeleteFuelRefills(c echo.Context) error {
-	return c.JSON(200, nil)
+	return c.JSON(http.StatusOK, data)
 }
 
 func (h RESTHandler) GetHealth(c echo.Context) error {
-	return c.JSON(http.StatusOK, h.serverStartTime)
+	return c.JSON(http.StatusOK, struct {
+		ServerStartTime time.Time `json:"serverStartTime"`
+	}{
+		ServerStartTime: h.serverStartTime,
+	})
 }

@@ -6,7 +6,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/bosskrub9992/fuel-management-backend/internal/domains"
+	"github.com/bosskrub9992/fuel-management-backend/internal/constants"
+	"github.com/bosskrub9992/fuel-management-backend/internal/entities/domains"
 	"github.com/bosskrub9992/fuel-management-backend/internal/services"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
@@ -22,32 +23,38 @@ func NewDatabase(db *gorm.DB) *Database {
 	}
 }
 
-func (adt *Database) CreateFuelUsage(ctx context.Context, fuelUsage domains.FuelUsage, userIDs []int64) error {
-	return adt.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		if err := tx.Create(&fuelUsage).Error; err != nil {
-			slog.ErrorContext(ctx, err.Error())
-			return err
-		}
-		var fuelUsageUsers []domains.FuelUsageUser
-		for _, userID := range userIDs {
-			fuelUsageUsers = append(fuelUsageUsers, domains.FuelUsageUser{
-				FuelUsageID: fuelUsage.ID,
-				UserID:      userID,
-			})
-		}
-		if len(fuelUsageUsers) > 0 {
-			if err := tx.Create(&fuelUsageUsers).Error; err != nil {
-				slog.ErrorContext(ctx, err.Error())
-				return err
-			}
-		}
-		return nil
+func (adt *Database) Transaction(ctx context.Context, fn func(ctxTx context.Context) error) error {
+	return adt.db.Transaction(func(tx *gorm.DB) error {
+		ctxTx := context.WithValue(ctx, constants.WithTx, tx)
+		return fn(ctxTx)
 	})
+}
+
+func (adt *Database) dbOrTx(ctx context.Context) *gorm.DB {
+	tx, ok := ctx.Value(constants.WithTx).(*gorm.DB)
+	if ok {
+		return tx
+	}
+	return adt.db
+}
+
+func (adt *Database) CreateFuelUsage(ctx context.Context, fuelUsage domains.FuelUsage) (int64, error) {
+	db := adt.dbOrTx(ctx)
+	if err := db.WithContext(ctx).Create(&fuelUsage).Error; err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return 0, err
+	}
+	return fuelUsage.ID, nil
+}
+
+func (adt *Database) CreateFuelUsageUsers(ctx context.Context, fuelUsageUsers []domains.FuelUsageUser) error {
+	db := adt.dbOrTx(ctx)
+	return db.WithContext(ctx).Create(&fuelUsageUsers).Error
 }
 
 type fuelUsageWithUser struct {
 	ID                 int64           `gorm:"column:id"`
-	FuelUseDate        time.Time       `gorm:"column:fuel_use_date"`
+	FuelUseTime        time.Time       `gorm:"column:fuel_use_time"`
 	FuelPrice          decimal.Decimal `gorm:"column:fuel_price"`
 	KilometerBeforeUse int64           `gorm:"column:kilometer_before_use"`
 	KilometerAfterUse  int64           `gorm:"column:kilometer_after_use"`
@@ -60,7 +67,8 @@ type fuelUsageWithUser struct {
 }
 
 func (adt *Database) GetCarFuelUsageWithUsers(ctx context.Context, params services.GetCarFuelUsageWithUsersParams) ([]services.FuelUsageWithUser, int64, error) {
-	stmt := adt.db.WithContext(ctx).
+	db := adt.dbOrTx(ctx)
+	stmt := db.WithContext(ctx).
 		Select("fuel_usages.*", "users.nickname", "users.id AS user_id").
 		Table("fuel_usages").
 		Joins("INNER JOIN cars ON cars.id = fuel_usages.car_id").
@@ -99,7 +107,7 @@ func (adt *Database) GetCarFuelUsageWithUsers(ctx context.Context, params servic
 			idToFuelUsageWithUsers[f.ID] = services.FuelUsageWithUser{
 				FuelUsage: domains.FuelUsage{
 					ID:                 f.ID,
-					FuelUseDate:        f.FuelUseDate,
+					FuelUseTime:        f.FuelUseTime,
 					FuelPrice:          f.FuelPrice,
 					KilometerBeforeUse: f.KilometerBeforeUse,
 					KilometerAfterUse:  f.KilometerAfterUse,
@@ -130,7 +138,8 @@ func (adt *Database) GetCarFuelUsageWithUsers(ctx context.Context, params servic
 
 func (adt *Database) GetAllUsers(ctx context.Context) ([]domains.User, error) {
 	var users []domains.User
-	stmt := adt.db.WithContext(ctx).Model(&domains.User{}).Order("nickname ASC")
+	db := adt.dbOrTx(ctx)
+	stmt := db.WithContext(ctx).Model(&domains.User{}).Order("nickname ASC")
 	if err := stmt.Find(&users).Error; err != nil {
 		return nil, err
 	}
@@ -139,7 +148,8 @@ func (adt *Database) GetAllUsers(ctx context.Context) ([]domains.User, error) {
 
 func (adt *Database) GetLatestFuelRefill(ctx context.Context) (*domains.FuelRefill, error) {
 	var fuelRefill domains.FuelRefill
-	stmt := adt.db.WithContext(ctx).Model(&domains.FuelRefill{})
+	db := adt.dbOrTx(ctx)
+	stmt := db.WithContext(ctx).Model(&domains.FuelRefill{})
 	if err := stmt.Last(&fuelRefill).Error; err != nil {
 		return nil, err
 	}
@@ -148,8 +158,46 @@ func (adt *Database) GetLatestFuelRefill(ctx context.Context) (*domains.FuelRefi
 
 func (adt *Database) GetAllCars(ctx context.Context) ([]domains.Car, error) {
 	var cars []domains.Car
-	if err := adt.db.WithContext(ctx).Model(&domains.Car{}).Find(&cars).Error; err != nil {
+	db := adt.dbOrTx(ctx)
+	if err := db.WithContext(ctx).Model(&domains.Car{}).Find(&cars).Error; err != nil {
 		return nil, err
 	}
 	return cars, nil
+}
+
+func (adt *Database) GetFuelUsageByID(ctx context.Context, id int64) (*domains.FuelUsage, error) {
+	var fuelUsage domains.FuelUsage
+	db := adt.dbOrTx(ctx)
+	if err := db.Model(&domains.FuelUsage{}).First(&fuelUsage).Error; err != nil {
+		return nil, err
+	}
+	return &fuelUsage, nil
+}
+
+func (adt *Database) GetFuelUsageUsersByFuelUsageID(ctx context.Context, fuelUsageID int64) ([]services.FuelUsageUsers, error) {
+	var fuelUsageUsers []services.FuelUsageUsers
+	db := adt.dbOrTx(ctx)
+	stmt := db.Table("fuel_usage_users").
+		Joins("INNER JOIN users ON users.id = fuel_usage_users.user_id").
+		Where("fuel_usage_users.fuel_usage_id = ?", fuelUsageID)
+	if err := stmt.Find(&fuelUsageUsers).Error; err != nil {
+		return nil, err
+	}
+	return fuelUsageUsers, nil
+}
+
+func (adt *Database) UpdateFuelUsage(ctx context.Context, fuelUsage domains.FuelUsage) error {
+	db := adt.dbOrTx(ctx)
+	return db.Save(&fuelUsage).Error
+}
+
+func (adt *Database) DeleteFuelUsageUsersByFuelUsageID(ctx context.Context, fuelUsageID int64) error {
+	db := adt.dbOrTx(ctx)
+	stmt := db.Where("fuel_usage_id = ?", fuelUsageID)
+	return stmt.Delete(&domains.FuelUsageUser{}).Error
+}
+
+func (adt *Database) DeleteFuelUsageByID(ctx context.Context, id int64) error {
+	db := adt.dbOrTx(ctx)
+	return db.Delete(&domains.FuelUsage{}, id).Error
 }

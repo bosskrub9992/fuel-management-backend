@@ -3,20 +3,17 @@ server:
 
 database:
   host: "localhost"
-  port: "5433"
+  port: "5432"
   username: "postgres"
   password: "postgres"
-  dbname: "testdb"
+  dbname: "fuel"
   sslmode: "disable"
 
 logger:
   isProductionEnv: false
   maskingFields:
-    - "firstName"
-    - "lastName"
+    - firstName
+    - lastName
   removingFields:
-
-error:
-  0: "unknown error"
-  1: "bind error"
-  2: "validate error"
+    - firstName
+    - lastName

@@ -1,0 +1,18 @@
+meta {
+  name: fuel usages
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{local}}/fuel/usages?currentCarId=1&currentUserId=1&PageIndex=1&PageSize=20
+  body: none
+  auth: none
+}
+
+query {
+  currentCarId: 1
+  currentUserId: 1
+  PageIndex: 1
+  PageSize: 20
+}

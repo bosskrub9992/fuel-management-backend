@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -21,6 +22,7 @@ import (
 func main() {
 	cfg := config.New()
 	logger := slogger.New(&cfg.Logger)
+	slog.SetDefault(logger)
 	sqlDB, err := databases.NewPostgres(&cfg.Database)
 	if err != nil {
 		logger.Error(err.Error())
