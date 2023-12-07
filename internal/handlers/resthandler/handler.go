@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/bosskrub9992/fuel-management/internal/models"
-	"github.com/bosskrub9992/fuel-management/internal/services"
+	"github.com/bosskrub9992/fuel-management-backend/internal/models"
+	"github.com/bosskrub9992/fuel-management-backend/internal/services"
 	"github.com/jinleejun-corp/corelib/errs"
 	"github.com/labstack/echo/v4"
 )

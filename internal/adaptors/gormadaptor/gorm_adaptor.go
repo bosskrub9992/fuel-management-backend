@@ -6,8 +6,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/bosskrub9992/fuel-management/internal/domains"
-	"github.com/bosskrub9992/fuel-management/internal/services"
+	"github.com/bosskrub9992/fuel-management-backend/internal/domains"
+	"github.com/bosskrub9992/fuel-management-backend/internal/services"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )

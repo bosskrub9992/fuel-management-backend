@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"github.com/bosskrub9992/fuel-management/internal/handlers/resthandler"
+	"github.com/bosskrub9992/fuel-management-backend/internal/handlers/resthandler"
 	"github.com/jinleejun-corp/corelib/slogger"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"

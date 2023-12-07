@@ -1,4 +1,4 @@
-module github.com/bosskrub9992/fuel-management
+module github.com/bosskrub9992/fuel-management-backend
 
 go 1.21.1
 
