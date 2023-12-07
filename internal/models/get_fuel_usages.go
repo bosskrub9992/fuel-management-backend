@@ -6,7 +6,7 @@ import (
 )
 
 type GetCarFuelUsagesRequest struct {
-	CarID         int64 `param:"currentCarId" validate:"required"`
+	CarID         int64 `query:"currentCarId" validate:"required"`
 	CurrentUserID int64 `query:"currentUserId" validate:"required"`
 	PageIndex     int   `query:"PageIndex"`
 	PageSize      int   `query:"PageSize"`

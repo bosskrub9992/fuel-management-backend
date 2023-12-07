@@ -2,31 +2,25 @@ package main
 
 import (
 	"context"
-	"encoding/json"
-	"io"
-	"log/slog"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
-	"text/template"
 	"time"
 
 	"github.com/bosskrub9992/fuel-management/config"
 	"github.com/bosskrub9992/fuel-management/internal/adaptors/gormadaptor"
-	"github.com/bosskrub9992/fuel-management/internal/handlers/htmxhandler"
 	"github.com/bosskrub9992/fuel-management/internal/handlers/resthandler"
+	"github.com/bosskrub9992/fuel-management/internal/routers"
 	"github.com/bosskrub9992/fuel-management/internal/services"
 	"github.com/jinleejun-corp/corelib/databases"
 	"github.com/jinleejun-corp/corelib/slogger"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
-	// dependency injection
 	cfg := config.New()
 	logger := slogger.New(&cfg.Logger)
-	slog.SetDefault(logger)
 	sqlDB, err := databases.NewPostgres(&cfg.Database)
 	if err != nil {
 		logger.Error(err.Error())
@@ -41,34 +35,15 @@ func main() {
 	db := gormadaptor.NewDatabase(gormDB)
 	service := services.New(cfg, db)
 	restHandler := resthandler.New(service)
-	htmxHandler := htmxhandler.New(service)
 
 	e := echo.New()
-	e.Renderer = &Template{
-		templates: template.Must(template.ParseGlob("internal/templates/src/*.html")),
-	}
-	e.Static("/dist", "./internal/templates/dist")
-	e.Static("/node_modules", "./internal/templates/node_modules")
-	e.Static("/static", "./internal/templates/static")
-	e.Use(
-		middleware.Recover(),
-		middleware.CORS(),
-		slogger.MiddlewareHTMX(),
-	)
-	apiV1Group := e.Group("/api/v1", slogger.MiddlewareREST())
-	apiV1Group.GET("/health", restHandler.GetHealth, slogger.MiddlewareREST())
-
-	e.GET("/users", htmxHandler.GetUsers)
-	e.GET("/cars/:currentCarId/fuel-usages", htmxHandler.GetFuelUsages)
-	e.POST("/cars/:currentCarId/fuel-usages", htmxHandler.PostFuelUsages)
-
-	e.GET("/test", htmxHandler.Test)
-	e.POST("/example", htmxHandler.Example)
-	e.GET("/test-nav", htmxHandler.TestNav)
+	router := routers.New(e, restHandler)
+	e = router.Init()
 
 	// run server
 	go func() {
-		if err := e.Start(":" + cfg.Server.Port); err != nil && err != http.ErrServerClosed {
+		address := fmt.Sprintf(":%s", cfg.Server.Port)
+		if err := e.Start(address); err != nil && err != http.ErrServerClosed {
 			logger.Error(err.Error())
 			return
 		}
@@ -84,23 +59,4 @@ func main() {
 		logger.Error(err.Error())
 		return
 	}
-}
-
-type Template struct {
-	templates *template.Template
-}
-
-func (t *Template) Render(w io.Writer, name string, data any, c echo.Context) error {
-	ctx := c.Request().Context()
-	if err := t.templates.ExecuteTemplate(w, name, data); err != nil {
-		slog.ErrorContext(ctx, err.Error())
-		return err
-	}
-	dataInBytes, err := json.Marshal(data)
-	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
-		return err
-	}
-	c.Set("data", string(dataInBytes))
-	return nil
 }

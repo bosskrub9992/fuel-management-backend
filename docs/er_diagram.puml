@@ -16,7 +16,6 @@ entity FuelRefill {
     KilometerBeforeRefill: int64
     KilometerAfterRefill: int64
     FuelPriceCalculated: decimal.Decimal
-    IsPaid: bool
     CreateTime: time.Time
     UpdateTime: time.Time
     CreateBy: int64
@@ -28,6 +27,7 @@ entity FuelUsageUser {
     FuelUsageID: int64
     UserID: int64
     --
+    IsPaid: bool
 }
 
 entity FuelUsage {

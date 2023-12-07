@@ -15,7 +15,7 @@ RUN go mod download && go mod verify
 
 COPY . .
 
-RUN go build
+RUN go build -o main
 
 FROM alpine:3.18
 
@@ -29,4 +29,4 @@ RUN echo "Asia/Bangkok" > /etc/timezone
 
 EXPOSE 8080
 
-CMD [ "./app/backend" ]
+CMD [ "./app/main" ]
