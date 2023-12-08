@@ -1,0 +1,32 @@
+meta {
+  name: post fuel usages
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{local}}/fuel/usages
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "currentCarId": 1,
+    "fuelUseTime": "2023-01-01T01:00:00+07:00",
+    "fuelPrice": 1,
+    "fuelUsers": [
+      {
+        "userId": 1,
+        "isPaid": true
+      },
+      {
+        "userId": 3,
+        "isPaid": false
+      }
+    ],
+    "description": "dinner 2",
+    "kilometerBeforeUse": 700,
+    "kilometerAfterUse": 600
+  }
+}

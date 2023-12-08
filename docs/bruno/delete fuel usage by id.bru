@@ -1,0 +1,11 @@
+meta {
+  name: delete fuel usage by id
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{local}}/fuel/usages/{{fuelUsageId}}
+  body: none
+  auth: none
+}

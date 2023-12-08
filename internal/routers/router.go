@@ -32,6 +32,7 @@ func (r Router) Init() *echo.Echo {
 	apiV1.GET("/users", r.restHandler.GetUsers)
 	apiV1.GET("/fuel/usages", r.restHandler.GetFuelUsages)
 	apiV1.POST("/fuel/usages", r.restHandler.PostFuelUsage)
+
 	apiV1.GET("/fuel/usages/:fuelUsageId", r.restHandler.GetFuelUsageByID)
 	apiV1.PUT("/fuel/usages/:fuelUsageId", r.restHandler.PutFuelUsage)
 	apiV1.DELETE("/fuel/usages/:fuelUsageId", r.restHandler.DeleteFuelUsage)

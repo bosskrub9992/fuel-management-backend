@@ -3,7 +3,7 @@ module github.com/bosskrub9992/fuel-management-backend
 go 1.21.1
 
 require (
-	github.com/jinleejun-corp/corelib v0.0.22
+	github.com/jinleejun-corp/corelib v0.0.23
 	github.com/labstack/echo/v4 v4.11.3
 	github.com/shopspring/decimal v1.3.1
 	github.com/spf13/viper v1.18.0

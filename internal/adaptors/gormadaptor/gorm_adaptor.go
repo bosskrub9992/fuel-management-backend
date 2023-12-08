@@ -178,6 +178,7 @@ func (adt *Database) GetFuelUsageUsersByFuelUsageID(ctx context.Context, fuelUsa
 	var fuelUsageUsers []services.FuelUsageUsers
 	db := adt.dbOrTx(ctx)
 	stmt := db.Table("fuel_usage_users").
+		Select("fuel_usage_users.*, users.nickname").
 		Joins("INNER JOIN users ON users.id = fuel_usage_users.user_id").
 		Where("fuel_usage_users.fuel_usage_id = ?", fuelUsageID)
 	if err := stmt.Find(&fuelUsageUsers).Error; err != nil {

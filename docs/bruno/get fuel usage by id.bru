@@ -1,0 +1,11 @@
+meta {
+  name: get fuel usage by id
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{local}}/fuel/usages/{{fuelUsageId}}
+  body: none
+  auth: none
+}

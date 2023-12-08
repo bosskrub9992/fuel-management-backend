@@ -34,6 +34,8 @@ github.com/jackc/puddle/v2 v2.2.1 h1:RhxXJtFG022u4ibrCSMSiu5aOq1i77R3OHKNJj77OAk
 github.com/jackc/puddle/v2 v2.2.1/go.mod h1:vriiEXHvEE654aYKXXjOvZM39qJ0q+azkZFrfEOc3H4=
 github.com/jinleejun-corp/corelib v0.0.22 h1:5ilpYm7ds7Uclb7RS1KxBvNBFLPZb7B0jwpYeRNAY0c=
 github.com/jinleejun-corp/corelib v0.0.22/go.mod h1:ix578LSpKFfOGxMQgV2dRv7Fgb3TfzU5QTwOloiXNX0=
+github.com/jinleejun-corp/corelib v0.0.23 h1:QRVd3qZ0CXF1HRMjMWVm9dHEO3VPB84mgIsVYGT6U/c=
+github.com/jinleejun-corp/corelib v0.0.23/go.mod h1:ix578LSpKFfOGxMQgV2dRv7Fgb3TfzU5QTwOloiXNX0=
 github.com/jinzhu/inflection v1.0.0 h1:K317FqzuhWc8YvSVlFMCCUb36O/S9MCKRDI7QkRKD/E=
 github.com/jinzhu/inflection v1.0.0/go.mod h1:h+uFLlag+Qp1Va5pdKtLDYj+kHp5pxUVkryuEj+Srlc=
 github.com/jinzhu/now v1.1.5 h1:/o9tlHleP7gOFmsnYNz3RGnqzefHA47wQpKrrdTIwXQ=
