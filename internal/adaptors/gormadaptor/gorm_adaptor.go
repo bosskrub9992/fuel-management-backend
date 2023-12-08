@@ -41,7 +41,6 @@ func (adt *Database) dbOrTx(ctx context.Context) *gorm.DB {
 func (adt *Database) CreateFuelUsage(ctx context.Context, fuelUsage domains.FuelUsage) (int64, error) {
 	db := adt.dbOrTx(ctx)
 	if err := db.WithContext(ctx).Create(&fuelUsage).Error; err != nil {
-		slog.ErrorContext(ctx, err.Error())
 		return 0, err
 	}
 	return fuelUsage.ID, nil
@@ -97,7 +96,6 @@ func (adt *Database) GetCarFuelUsageWithUsers(ctx context.Context, params servic
 	var fuelUsageWithUsers []fuelUsageWithUser
 	stmt = stmt.Order("fuel_usages.id DESC").Limit(pageSize).Offset(offset)
 	if err := stmt.Find(&fuelUsageWithUsers).Error; err != nil {
-		slog.ErrorContext(ctx, err.Error())
 		return nil, 0, err
 	}
 
@@ -201,4 +199,61 @@ func (adt *Database) DeleteFuelUsageUsersByFuelUsageID(ctx context.Context, fuel
 func (adt *Database) DeleteFuelUsageByID(ctx context.Context, id int64) error {
 	db := adt.dbOrTx(ctx)
 	return db.Delete(&domains.FuelUsage{}, id).Error
+}
+
+func (adt *Database) GetFuelRefillPagination(ctx context.Context, params services.GetFuelRefillPaginationParams) ([]domains.FuelRefill, int, error) {
+	db := adt.dbOrTx(ctx)
+	stmt := db.Model(&domains.FuelRefill{}).
+		Where("car_id = ?", params.CarID)
+
+	var totalCount int64
+	if err := stmt.Count(&totalCount).Error; err != nil {
+		return nil, 0, err
+	}
+
+	pageIndex := params.PageIndex
+	if pageIndex <= 0 {
+		pageIndex = 1
+	}
+	pageSize := params.PageSize
+	if pageSize <= 0 {
+		pageSize = 0
+	}
+	offset := (pageIndex - 1) * pageSize
+
+	var fuelRefills []domains.FuelRefill
+	stmt = stmt.Order("refill_time DESC").Limit(pageSize).Offset(offset)
+	if err := stmt.Find(&fuelRefills).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return fuelRefills, int(totalCount), nil
+}
+
+func (adt *Database) CreateFuelRefill(ctx context.Context, fr domains.FuelRefill) error {
+	db := adt.dbOrTx(ctx)
+	return db.Create(&fr).Error
+}
+
+func (adt *Database) GetFuelRefillByID(ctx context.Context, fuelRefillID int64) (*domains.FuelRefill, error) {
+	var fr domains.FuelRefill
+	db := adt.dbOrTx(ctx)
+	stmt := db.Model(&domains.FuelRefill{}).
+		Where(domains.FuelRefill{
+			ID: fuelRefillID,
+		})
+	if err := stmt.First(&fr).Error; err != nil {
+		return nil, err
+	}
+	return &fr, nil
+}
+
+func (adt *Database) DeleteFuelRefillByID(ctx context.Context, fuelRefillID int64) error {
+	db := adt.dbOrTx(ctx)
+	return db.Delete(&domains.FuelRefill{}, fuelRefillID).Error
+}
+
+func (adt *Database) UpdateFuelRefill(ctx context.Context, fr domains.FuelRefill) error {
+	db := adt.dbOrTx(ctx)
+	return db.Save(&fr).Error
 }

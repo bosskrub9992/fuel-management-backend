@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -194,7 +195,6 @@ func (s *Service) GetCarFuelUsages(ctx context.Context, req models.GetCarFuelUsa
 	}
 
 	getAllFuelUsageData := models.GetCarFuelUsageData{
-		Now:                     time.Now(),
 		LatestKilometerAfterUse: latestKilometerAfterUse,
 		LatestFuelPrice:         latestFuelRefill.FuelPriceCalculated,
 		AllUsers:                allUsers,
@@ -338,4 +338,178 @@ func calculateTotalMoney(kmBeforeUse, kmAfterUse int64, fuelPrice decimal.Decima
 	}
 	kmUsed := decimal.NewFromInt(kmBeforeUse - kmAfterUse)
 	return kmUsed.Mul(fuelPrice), nil
+}
+
+func (s *Service) GetFuelRefills(ctx context.Context, req models.GetFuelRefillRequest) (*models.GetFuelRefillResponse, error) {
+	if err := req.Validate(); err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		response := errs.ErrValidateFailed
+		return nil, response
+	}
+
+	fuelRefills, totalRecord, err := s.db.GetFuelRefillPagination(ctx, GetFuelRefillPaginationParams{
+		CarID:     req.CurrentCarID,
+		PageIndex: req.PageIndex,
+		PageSize:  req.PageSize,
+	})
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return nil, err
+	}
+
+	response := models.GetFuelRefillResponse{
+		Data:        []models.FuelRefillDatum{},
+		TotalRecord: totalRecord,
+	}
+
+	for _, fr := range fuelRefills {
+		response.Data = append(response.Data, models.FuelRefillDatum{
+			RefillTime:            fr.RefillTime,
+			KilometerBeforeRefill: fr.KilometerBeforeRefill,
+			KilometerAfterRefill:  fr.KilometerAfterRefill,
+			TotalMoney:            fr.TotalMoney,
+			FuelPriceCalculated:   fr.FuelPriceCalculated,
+			IsPaid:                fr.IsPaid,
+		})
+	}
+
+	return &response, nil
+}
+
+func (s *Service) CreateFuelRefill(ctx context.Context, req models.CreateFuelRefillRequest) error {
+	if err := req.Validate(); err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		response := errs.ErrValidateFailed
+		return response
+	}
+
+	fuelPrice, err := calculateFuelPrice(
+		req.TotalMoney,
+		req.KilometerBeforeRefill,
+		req.KilometerAfterRefill,
+	)
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return err
+	}
+
+	now := time.Now()
+
+	fuelRefill := domains.FuelRefill{
+		CarID:                 req.CurrentCarID,
+		RefillTime:            req.RefillTime,
+		TotalMoney:            req.TotalMoney,
+		KilometerBeforeRefill: req.KilometerBeforeRefill,
+		KilometerAfterRefill:  req.KilometerAfterRefill,
+		FuelPriceCalculated:   fuelPrice,
+		IsPaid:                req.IsPaid,
+		UpdateBy:              req.CurrentUserID,
+		CreateBy:              req.CurrentUserID,
+		CreateTime:            now,
+		UpdateTime:            now,
+	}
+
+	if err := s.db.CreateFuelRefill(ctx, fuelRefill); err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func (s *Service) GetFuelRefillByID(ctx context.Context, req models.GetFuelRefillByIDRequest) (*models.GetFuelRefillByIDResponse, error) {
+	if err := req.Validate(); err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		response := errs.ErrValidateFailed
+		return nil, response
+	}
+
+	fuelRefill, err := s.db.GetFuelRefillByID(ctx, req.FuelRefillID)
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return nil, err
+	}
+
+	return &models.GetFuelRefillByIDResponse{
+		RefillTime:            fuelRefill.RefillTime,
+		KilometerBeforeRefill: fuelRefill.KilometerBeforeRefill,
+		KilometerAfterRefill:  fuelRefill.KilometerAfterRefill,
+		TotalMoney:            fuelRefill.TotalMoney,
+		FuelPriceCalculated:   fuelRefill.FuelPriceCalculated,
+		IsPaid:                fuelRefill.IsPaid,
+	}, nil
+}
+
+func (s *Service) UpdateFuelRefillByID(ctx context.Context, req models.PutFuelRefillByIDRequest) error {
+	if err := req.Validate(); err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		response := errs.ErrValidateFailed
+		return response
+	}
+
+	oldFuelRefill, err := s.db.GetFuelRefillByID(ctx, req.FuelRefillID)
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return err
+	}
+
+	newFuelPrice, err := calculateFuelPrice(
+		req.TotalMoney,
+		req.KilometerBeforeRefill,
+		req.KilometerAfterRefill,
+	)
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return err
+	}
+
+	newFuelRefill := domains.FuelRefill{
+		ID:                    req.FuelRefillID,
+		CarID:                 req.CurrentCarID,
+		RefillTime:            req.RefillTime,
+		TotalMoney:            req.TotalMoney,
+		KilometerBeforeRefill: req.KilometerBeforeRefill,
+		KilometerAfterRefill:  req.KilometerAfterRefill,
+		FuelPriceCalculated:   newFuelPrice,
+		IsPaid:                req.IsPaid,
+		CreateBy:              oldFuelRefill.CreateBy,
+		CreateTime:            oldFuelRefill.CreateTime,
+		UpdateBy:              req.CurrentUserID,
+		UpdateTime:            time.Now(),
+	}
+
+	if err := s.db.UpdateFuelRefill(ctx, newFuelRefill); err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func calculateFuelPrice(
+	totalMoney decimal.Decimal,
+	kmBeforeRefill, kmAfterRefill int64,
+) (
+	decimal.Decimal, error,
+) {
+	if kmAfterRefill <= kmBeforeRefill {
+		return decimal.Zero, errors.New("kmAfterRefill should > kmBeforeRefill")
+	}
+	increaseKm := decimal.NewFromInt(kmAfterRefill - kmBeforeRefill)
+	return totalMoney.DivRound(increaseKm, 2), nil
+}
+
+func (s *Service) DeleteFuelRefillByID(ctx context.Context, req models.DeleteFuelRefillByIDRequest) error {
+	if err := req.Validate(); err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		response := errs.ErrValidateFailed
+		return response
+	}
+
+	if err := s.db.DeleteFuelUsageByID(ctx, req.FuelRefillID); err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return err
+	}
+
+	return nil
 }

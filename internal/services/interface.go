@@ -19,6 +19,11 @@ type DatabaseAdaptor interface {
 	UpdateFuelUsage(context.Context, domains.FuelUsage) error
 	DeleteFuelUsageUsersByFuelUsageID(ctx context.Context, fuelUsageID int64) error
 	DeleteFuelUsageByID(ctx context.Context, id int64) error
+	GetFuelRefillPagination(ctx context.Context, params GetFuelRefillPaginationParams) ([]domains.FuelRefill, int, error)
+	CreateFuelRefill(context.Context, domains.FuelRefill) error
+	GetFuelRefillByID(ctx context.Context, fuelRefillID int64) (*domains.FuelRefill, error)
+	UpdateFuelRefill(ctx context.Context, fr domains.FuelRefill) error
+	DeleteFuelRefillByID(ctx context.Context, fuelRefillID int64) error
 }
 
 type FuelUsageWithUser struct {
@@ -35,4 +40,10 @@ type GetCarFuelUsageWithUsersParams struct {
 type FuelUsageUsers struct {
 	domains.FuelUsageUser
 	Nickname string `gorm:"column:nickname"`
+}
+
+type GetFuelRefillPaginationParams struct {
+	CarID     int64
+	PageIndex int
+	PageSize  int
 }

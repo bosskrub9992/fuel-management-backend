@@ -1,8 +1,6 @@
 package models
 
 import (
-	"time"
-
 	"github.com/jinleejun-corp/corelib/validators"
 	"github.com/shopspring/decimal"
 )
@@ -19,7 +17,6 @@ func (req GetCarFuelUsagesRequest) Validate() error {
 }
 
 type GetCarFuelUsageData struct {
-	Now                     time.Time           `json:"now"`
 	LatestKilometerAfterUse int64               `json:"latestKilometerAfterUse"`
 	LatestFuelPrice         decimal.Decimal     `json:"latestFuelPrice"`
 	AllUsers                []User              `json:"allUsers"`
