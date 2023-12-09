@@ -31,16 +31,16 @@ func (r Router) Init() *echo.Echo {
 	apiV1 := r.e.Group("/api/v1")
 	apiV1.GET("/users", r.restHandler.GetUsers)
 
-	apiV1.GET("/fuel/usages", r.restHandler.GetFuelUsages)
 	apiV1.POST("/fuel/usages", r.restHandler.PostFuelUsage)
+	apiV1.GET("/fuel/usages", r.restHandler.GetFuelUsages)
 	apiV1.GET("/fuel/usages/:fuelUsageId", r.restHandler.GetFuelUsageByID)
 	apiV1.PUT("/fuel/usages/:fuelUsageId", r.restHandler.PutFuelUsage)
 	apiV1.DELETE("/fuel/usages/:fuelUsageId", r.restHandler.DeleteFuelUsage)
 
-	apiV1.GET("/fuel/refills", r.restHandler.GetFuelRefills)
 	apiV1.POST("/fuel/refills", r.restHandler.CreateFuelRefill)
-	apiV1.GET("/fuel/refills/:refillId", r.restHandler.GetFuelRefillByID)
-	apiV1.PUT("/fuel/refills/:refillId", r.restHandler.PutFuelRefillByID)
-	apiV1.DELETE("/fuel/refills/:refillId", r.restHandler.DeleteFuelRefillByID)
+	apiV1.GET("/fuel/refills", r.restHandler.GetFuelRefills)
+	apiV1.GET("/fuel/refills/:fuelRefillId", r.restHandler.GetFuelRefillByID)
+	apiV1.PUT("/fuel/refills/:fuelRefillId", r.restHandler.PutFuelRefillByID)
+	apiV1.DELETE("/fuel/refills/:fuelRefillId", r.restHandler.DeleteFuelRefillByID)
 	return r.e
 }

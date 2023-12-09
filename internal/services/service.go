@@ -506,7 +506,7 @@ func (s *Service) DeleteFuelRefillByID(ctx context.Context, req models.DeleteFue
 		return response
 	}
 
-	if err := s.db.DeleteFuelUsageByID(ctx, req.FuelRefillID); err != nil {
+	if err := s.db.DeleteFuelRefillByID(ctx, req.FuelRefillID); err != nil {
 		slog.ErrorContext(ctx, err.Error())
 		return err
 	}

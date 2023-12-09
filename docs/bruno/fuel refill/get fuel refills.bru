@@ -1,0 +1,17 @@
+meta {
+  name: get fuel refills
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{local}}/fuel/refills?currentCarId=1&pageIndex=1&pageSize=20
+  body: none
+  auth: none
+}
+
+query {
+  currentCarId: 1
+  pageIndex: 1
+  pageSize: 20
+}

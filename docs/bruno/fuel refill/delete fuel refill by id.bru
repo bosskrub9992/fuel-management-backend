@@ -1,0 +1,11 @@
+meta {
+  name: delete fuel refill by id
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{local}}/fuel/refills/{{fuelRefillId}}
+  body: none
+  auth: none
+}

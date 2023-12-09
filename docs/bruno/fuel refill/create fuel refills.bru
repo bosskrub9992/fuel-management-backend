@@ -1,0 +1,23 @@
+meta {
+  name: create fuel refills
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{local}}/fuel/refills
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "currentCarId": 1,
+    "refillTime": "2023-01-01T00:00:00+07:00",
+    "kilometerBeforeRefill": 800,
+    "kilometerAfterRefill": 1000,
+    "totalMoney": "200.00",
+    "isPaid": true,
+    "currentUserId": 1
+  }
+}

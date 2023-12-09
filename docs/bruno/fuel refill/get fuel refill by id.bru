@@ -1,0 +1,11 @@
+meta {
+  name: get fuel refill by id
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{local}}/fuel/refills/{{fuelRefillId}}
+  body: none
+  auth: none
+}
