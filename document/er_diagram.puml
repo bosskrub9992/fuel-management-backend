@@ -11,15 +11,16 @@ entity FuelRefill {
     +ID: int64
     CarID: int64
     --
-    RefillDate: time.Time
+    RefillTime: time.Time
     TotalMoney: decimal.Decimal
     KilometerBeforeRefill: int64
     KilometerAfterRefill: int64
     FuelPriceCalculated: decimal.Decimal
-    CreateTime: time.Time
-    UpdateTime: time.Time
+    IsPaid: bool
     CreateBy: int64
+    CreateTime: time.Time
     UpdateBy: int64
+    UpdateTime: time.Time
 }
 
 entity FuelUsageUser {
@@ -34,13 +35,12 @@ entity FuelUsage {
     +ID: int64
     CarID: int64
     --
-    FuelUsedDate: time.Time
+    FuelUsedTime: time.Time
     FuelPrice: decimal.Decimal
     KilometerBeforeUse: int64
     KilometerAfterUse: int64
     Description: string
     TotalMoney: decimal.Decimal
-    IsPaid: bool
     CreateTime: time.Time
     UpdateTime: time.Time
 }
