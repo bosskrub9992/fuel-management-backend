@@ -12,10 +12,6 @@ type GetCarFuelUsagesRequest struct {
 	PageSize      int   `query:"pageSize"`
 }
 
-func (req GetCarFuelUsagesRequest) Validate() error {
-	return validators.Validate(req)
-}
-
 type GetCarFuelUsageData struct {
 	LatestKilometerAfterUse int64               `json:"latestKilometerAfterUse"`
 	LatestFuelPrice         decimal.Decimal     `json:"latestFuelPrice"`
@@ -51,4 +47,8 @@ type Car struct {
 type UserWithImageURL struct {
 	User
 	UserImageURL string `json:"userImageUrl"`
+}
+
+func (req GetCarFuelUsagesRequest) Validate() error {
+	return validators.Validate(req)
 }

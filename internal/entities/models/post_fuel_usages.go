@@ -23,13 +23,13 @@ type FuelUser struct {
 	IsPaid bool  `json:"isPaid" validate:"required"`
 }
 
-func (req CreateFuelUsageRequest) Validate() error {
-	err := validators.Validate(req)
+func (req CreateFuelUsageRequest) Validate() (err error) {
+	err = validators.Validate(req)
+
 	if req.KilometerBeforeUse < req.KilometerAfterUse {
 		err = errors.Join(err, errors.New("kmBeforeUse should be > kmAfterUse"))
 	}
 
-	var hasDuplicateFuelUser bool
 	numberOfFuelUser := len(req.FuelUsers)
 	if numberOfFuelUser > 0 {
 		uniqueUserID := make(map[int64]bool)
@@ -37,12 +37,8 @@ func (req CreateFuelUsageRequest) Validate() error {
 			uniqueUserID[fuelUser.UserID] = true
 		}
 		if numberOfFuelUser > len(uniqueUserID) {
-			hasDuplicateFuelUser = true
+			err = errors.Join(err, errors.New("fuelUsers has duplicate userId"))
 		}
-	}
-
-	if hasDuplicateFuelUser {
-		err = errors.Join(err, errors.New("fuelUsers has duplicate userId"))
 	}
 
 	return err

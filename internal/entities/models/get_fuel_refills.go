@@ -13,10 +13,6 @@ type GetFuelRefillRequest struct {
 	PageSize     int   `query:"pageSize"`
 }
 
-func (req GetFuelRefillRequest) Validate() error {
-	return validators.Validate(req)
-}
-
 type GetFuelRefillResponse struct {
 	Data        []FuelRefillDatum `json:"data"`
 	TotalRecord int               `json:"totalRecord"`
@@ -29,4 +25,8 @@ type FuelRefillDatum struct {
 	TotalMoney            decimal.Decimal `json:"totalMoney"`
 	FuelPriceCalculated   decimal.Decimal `json:"fuelPriceCalculated"`
 	IsPaid                bool            `json:"isPaid"`
+}
+
+func (req GetFuelRefillRequest) Validate() error {
+	return validators.Validate(req)
 }
