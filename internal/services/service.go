@@ -5,12 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"math"
 	"strings"
 	"time"
 
 	"github.com/bosskrub9992/fuel-management-backend/config"
-	"github.com/bosskrub9992/fuel-management-backend/internal/entities/domains"
-	"github.com/bosskrub9992/fuel-management-backend/internal/entities/models"
+	"github.com/bosskrub9992/fuel-management-backend/internal/domains"
+	"github.com/bosskrub9992/fuel-management-backend/internal/models"
 	"github.com/jinleejun-corp/corelib/errs"
 	"github.com/shopspring/decimal"
 )
@@ -113,18 +114,15 @@ func (s *Service) UpdateFuelUsage(ctx context.Context, req models.PutFuelUsageRe
 }
 
 func (s *Service) GetUsers(ctx context.Context) (*models.GetUserData, error) {
-	allUsers, err := s.db.GetAllUsers(ctx)
+	users, err := s.db.GetAllUsers(ctx)
 	if err != nil {
 		slog.ErrorContext(ctx, err.Error())
 		return nil, err
 	}
 
-	data := models.GetUserData{
-		Data: []models.GetUserDatum{},
-	}
-
-	for _, user := range allUsers {
-		data.Data = append(data.Data, models.GetUserDatum{
+	var userData []models.GetUserDatum
+	for _, user := range users {
+		userData = append(userData, models.GetUserDatum{
 			ID:              user.ID,
 			DefaultCarID:    user.DefaultCarID,
 			Nickname:        user.Nickname,
@@ -132,7 +130,29 @@ func (s *Service) GetUsers(ctx context.Context) (*models.GetUserData, error) {
 		})
 	}
 
-	return &data, nil
+	return &models.GetUserData{
+		Data: userData,
+	}, nil
+}
+
+func (s *Service) GetCars(ctx context.Context) (*models.GetCarData, error) {
+	cars, err := s.db.GetAllCars(ctx)
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return nil, err
+	}
+
+	var carData []models.CarDatum
+	for _, car := range cars {
+		carData = append(carData, models.CarDatum{
+			ID:   car.ID,
+			Name: car.Name,
+		})
+	}
+
+	return &models.GetCarData{
+		Data: carData,
+	}, nil
 }
 
 func (s *Service) GetCarFuelUsages(ctx context.Context, req models.GetCarFuelUsagesRequest) (*models.GetCarFuelUsageData, error) {
@@ -153,7 +173,7 @@ func (s *Service) GetCarFuelUsages(ctx context.Context, req models.GetCarFuelUsa
 		return nil, err
 	}
 
-	allCars, err := s.db.GetAllCars(ctx)
+	cars, err := s.db.GetAllCars(ctx)
 	if err != nil {
 		slog.ErrorContext(ctx, err.Error())
 		return nil, err
@@ -194,44 +214,64 @@ func (s *Service) GetCarFuelUsages(ctx context.Context, req models.GetCarFuelUsa
 		}
 	}
 
-	getAllFuelUsageData := models.GetCarFuelUsageData{
-		LatestKilometerAfterUse: latestKilometerAfterUse,
-		LatestFuelPrice:         latestFuelRefill.FuelPriceCalculated,
-		AllUsers:                allUsers,
-		CurrentUser:             currentUser,
-		Data: func() (data []models.CarFuelUsageDatum) {
-			for _, fuelUsage := range carFuelUsages {
-				fuelUsageDatum := models.CarFuelUsageDatum{
-					ID:                 fuelUsage.ID,
-					FuelUseTime:        fuelUsage.FuelUseTime.Format("2006-01-02"),
-					FuelPrice:          fuelUsage.FuelPrice,
-					KilometerBeforeUse: fuelUsage.KilometerBeforeUse,
-					KilometerAfterUse:  fuelUsage.KilometerAfterUse,
-					Description:        fuelUsage.Description,
-					TotalMoney:         fuelUsage.TotalMoney,
-					FuelUsers:          strings.Join(fuelUsage.Users, ", ")}
-				data = append(data, fuelUsageDatum)
+	var data []models.CarFuelUsageDatum
+	for _, fuelUsage := range carFuelUsages {
+		var fuelUsers []string
+		for _, user := range fuelUsage.Users {
+			isPaid := "❌"
+			if user.IsPaid {
+				isPaid = "✅"
 			}
-			return data
-		}(),
-		AllCars: func() (cars []models.Car) {
-			for _, car := range allCars {
-				cars = append(cars, models.Car{ID: car.ID, Name: car.Name})
-			}
-			return cars
-		}(),
-		TotalRecord: totalRecord,
-		CurrentCar: func() models.Car {
-			for _, car := range allCars {
-				if car.ID == req.CurrentCarID {
-					return models.Car{ID: car.ID, Name: car.Name}
-				}
-			}
-			return models.Car{ID: allCars[0].ID, Name: allCars[0].Name}
-		}(),
+			fuelUsers = append(fuelUsers, fmt.Sprintf("%s %s",
+				isPaid,
+				user.Nickname,
+			))
+		}
+		data = append(data, models.CarFuelUsageDatum{
+			ID:                 fuelUsage.ID,
+			FuelUseTime:        fuelUsage.FuelUseTime.Format("_2 Jan 15:04"),
+			FuelPrice:          fuelUsage.FuelPrice,
+			KilometerBeforeUse: fuelUsage.KilometerBeforeUse,
+			KilometerAfterUse:  fuelUsage.KilometerAfterUse,
+			Description:        fuelUsage.Description,
+			TotalMoney:         fuelUsage.TotalMoney,
+			FuelUsers:          strings.Join(fuelUsers, " "),
+		})
 	}
 
-	return &getAllFuelUsageData, nil
+	var (
+		allCars    []models.Car
+		currentCar models.Car
+	)
+	for _, car := range cars {
+		allCars = append(allCars, models.Car{
+			ID:   car.ID,
+			Name: car.Name,
+		})
+		if car.ID == req.CurrentCarID {
+			currentCar = models.Car{
+				ID:   car.ID,
+				Name: car.Name,
+			}
+		}
+	}
+
+	return &models.GetCarFuelUsageData{
+		FuelUsageData: models.FuelUsageData{
+			LatestKilometerAfterUse: latestKilometerAfterUse,
+			LatestFuelPrice:         latestFuelRefill.FuelPriceCalculated,
+			AllUsers:                allUsers,
+			CurrentUser:             currentUser,
+			Data:                    data,
+			AllCars:                 allCars,
+			TotalRecord:             totalRecord,
+			TotalPage:               int64(math.Ceil(float64(totalRecord) / float64(req.PageSize))),
+			CurrentCar:              currentCar,
+		},
+		TodayDate:        time.Now().Format("2006-01-02"),
+		CurrentPageIndex: req.PageIndex,
+		CurrentPageSize:  len(carFuelUsages),
+	}, nil
 }
 
 func (s *Service) CreateFuelUsage(ctx context.Context, req models.CreateFuelUsageRequest) error {

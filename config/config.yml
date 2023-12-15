@@ -8,6 +8,7 @@ database:
   password: "postgres"
   dbname: "fuel"
   sslmode: "disable"
+  filePath: "./test.db"
 
 logger:
   isProductionEnv: false

@@ -13,12 +13,20 @@ type GetCarFuelUsagesRequest struct {
 }
 
 type GetCarFuelUsageData struct {
+	FuelUsageData    FuelUsageData `json:"fuelUsageData"`
+	CurrentPageIndex int           `json:"currentPageIndex"`
+	CurrentPageSize  int           `json:"currentPageSize"`
+	TodayDate        string        `json:"todayDate"`
+}
+
+type FuelUsageData struct {
 	LatestKilometerAfterUse int64               `json:"latestKilometerAfterUse"`
 	LatestFuelPrice         decimal.Decimal     `json:"latestFuelPrice"`
 	AllUsers                []User              `json:"allUsers"`
 	Data                    []CarFuelUsageDatum `json:"data"`
 	AllCars                 []Car               `json:"allCars"`
 	TotalRecord             int64               `json:"totalRecord"`
+	TotalPage               int64               `json:"totalPage"`
 	CurrentCar              Car                 `json:"currentCar"`
 	CurrentUser             UserWithImageURL    `json:"currentUser"`
 }

@@ -29,6 +29,7 @@ func (r Router) Init() *echo.Echo {
 	)
 	r.e.GET("/health", r.restHandler.GetHealth)
 	apiV1 := r.e.Group("/api/v1")
+	apiV1.GET("/cars", r.restHandler.GetCars)
 	apiV1.GET("/users", r.restHandler.GetUsers)
 
 	apiV1.POST("/fuel/usages", r.restHandler.PostFuelUsage)

@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/bosskrub9992/fuel-management-backend/internal/entities/models"
+	"github.com/bosskrub9992/fuel-management-backend/internal/models"
 	"github.com/bosskrub9992/fuel-management-backend/internal/services"
 	"github.com/jinleejun-corp/corelib/errs"
 	"github.com/labstack/echo/v4"
@@ -28,6 +28,21 @@ func (h RESTHandler) GetUsers(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	users, err := h.service.GetUsers(ctx)
+	if err != nil {
+		if response, ok := err.(errs.Err); ok {
+			return c.JSON(response.Status, response)
+		}
+		response := errs.ErrAPIFailed
+		return c.JSON(response.Status, response)
+	}
+
+	return c.JSON(http.StatusOK, users)
+}
+
+func (h RESTHandler) GetCars(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	users, err := h.service.GetCars(ctx)
 	if err != nil {
 		if response, ok := err.(errs.Err); ok {
 			return c.JSON(response.Status, response)

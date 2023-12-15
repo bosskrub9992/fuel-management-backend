@@ -3,7 +3,6 @@ package config
 import (
 	"strings"
 
-	"github.com/jinleejun-corp/corelib/databases"
 	"github.com/jinleejun-corp/corelib/slogger"
 	"github.com/spf13/viper"
 )
@@ -12,8 +11,10 @@ type Config struct {
 	Server struct {
 		Port string
 	}
-	Database databases.PostgresConfig
-	Logger   slogger.Config
+	Database struct {
+		FilePath string
+	}
+	Logger slogger.Config
 }
 
 func init() {

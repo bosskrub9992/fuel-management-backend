@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/bosskrub9992/fuel-management-backend/internal/constants"
-	"github.com/bosskrub9992/fuel-management-backend/internal/entities/domains"
+	"github.com/bosskrub9992/fuel-management-backend/internal/domains"
 	"github.com/bosskrub9992/fuel-management-backend/internal/services"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
@@ -63,22 +63,21 @@ type fuelUsageWithUser struct {
 	UpdateTime         time.Time       `gorm:"column:update_time"`
 	UserID             int64           `gorm:"column:user_id"`
 	Nickname           string          `gorm:"column:nickname"`
+	IsPaid             bool            `gorm:"column:is_paid"`
 }
 
 func (adt *Database) GetCarFuelUsageWithUsers(ctx context.Context, params services.GetCarFuelUsageWithUsersParams) ([]services.FuelUsageWithUser, int64, error) {
-	db := adt.dbOrTx(ctx)
-	stmt := db.WithContext(ctx).
-		Select("fuel_usages.*", "users.nickname", "users.id AS user_id").
-		Table("fuel_usages").
-		Joins("INNER JOIN cars ON cars.id = fuel_usages.car_id").
-		Joins("INNER JOIN fuel_usage_users ON fuel_usages.id = fuel_usage_users.fuel_usage_id").
-		Joins("INNER JOIN users ON fuel_usage_users.user_id = users.id").
-		Where("car_id = ?", params.CarID)
-
 	// should filter before count
-
 	var totalCount int64
-	if err := stmt.Count(&totalCount).Error; err != nil {
+
+	err := adt.dbOrTx(ctx).
+		WithContext(ctx).
+		Model(&domains.FuelUsage{}).
+		Where(domains.FuelUsage{
+			CarID: params.CarID,
+		}).
+		Count(&totalCount).Error
+	if err != nil {
 		slog.ErrorContext(ctx, err.Error())
 		return nil, 0, err
 	}
@@ -94,15 +93,30 @@ func (adt *Database) GetCarFuelUsageWithUsers(ctx context.Context, params servic
 	offset := (pageIndex - 1) * pageSize
 
 	var fuelUsageWithUsers []fuelUsageWithUser
-	stmt = stmt.Order("fuel_usages.id DESC").Limit(pageSize).Offset(offset)
-	if err := stmt.Find(&fuelUsageWithUsers).Error; err != nil {
+	err = adt.dbOrTx(ctx).
+		WithContext(ctx).
+		Select("fuel_usages.*", "users.nickname", "users.id AS user_id", "fuel_usage_users.is_paid").
+		Table("fuel_usages").
+		Joins("INNER JOIN cars ON cars.id = fuel_usages.car_id").
+		Joins("INNER JOIN fuel_usage_users ON fuel_usages.id = fuel_usage_users.fuel_usage_id").
+		Joins("INNER JOIN users ON fuel_usage_users.user_id = users.id").
+		Where(domains.FuelUsage{
+			CarID: params.CarID,
+		}).
+		Order("fuel_usages.id DESC").
+		Limit(pageSize).
+		Offset(offset).
+		Find(&fuelUsageWithUsers).Error
+	if err != nil {
 		return nil, 0, err
 	}
 
-	var idToFuelUsageWithUsers = make(map[int64]services.FuelUsageWithUser)
+	var idToFuelUsageWithUser = make(map[int64]services.FuelUsageWithUser)
+
 	for _, f := range fuelUsageWithUsers {
-		if _, found := idToFuelUsageWithUsers[f.ID]; !found {
-			idToFuelUsageWithUsers[f.ID] = services.FuelUsageWithUser{
+		fuelUsageWithUser, found := idToFuelUsageWithUser[f.ID]
+		if !found {
+			idToFuelUsageWithUser[f.ID] = services.FuelUsageWithUser{
 				FuelUsage: domains.FuelUsage{
 					ID:                 f.ID,
 					FuelUseTime:        f.FuelUseTime,
@@ -114,16 +128,24 @@ func (adt *Database) GetCarFuelUsageWithUsers(ctx context.Context, params servic
 					CreateTime:         f.CreateTime,
 					UpdateTime:         f.UpdateTime,
 				},
-				Users: []string{},
+				Users: []services.User{
+					{
+						IsPaid:   f.IsPaid,
+						Nickname: f.Nickname,
+					},
+				},
 			}
+		} else {
+			fuelUsageWithUser.Users = append(fuelUsageWithUser.Users, services.User{
+				IsPaid:   f.IsPaid,
+				Nickname: f.Nickname,
+			})
+			idToFuelUsageWithUser[f.ID] = fuelUsageWithUser
 		}
-		temp := idToFuelUsageWithUsers[f.ID]
-		temp.Users = append(temp.Users, f.Nickname)
-		idToFuelUsageWithUsers[f.ID] = temp
 	}
 
 	var result []services.FuelUsageWithUser
-	for _, fuelUsageWithUser := range idToFuelUsageWithUsers {
+	for _, fuelUsageWithUser := range idToFuelUsageWithUser {
 		result = append(result, fuelUsageWithUser)
 	}
 

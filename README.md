@@ -34,3 +34,9 @@ go env -u GONOSUMDB
 go env -u GOPRIVATE
 go env -u GOPROXY
 ```
+
+check vulnability
+```sh
+go install golang.org/x/vuln/cmd/govulncheck@latest
+~/go/bin/govulncheck ./...
+```

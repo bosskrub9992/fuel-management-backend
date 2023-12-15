@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 
-	"github.com/bosskrub9992/fuel-management-backend/internal/entities/domains"
+	"github.com/bosskrub9992/fuel-management-backend/internal/domains"
 )
 
 type DatabaseAdaptor interface {
@@ -28,7 +28,12 @@ type DatabaseAdaptor interface {
 
 type FuelUsageWithUser struct {
 	domains.FuelUsage
-	Users []string
+	Users []User
+}
+
+type User struct {
+	IsPaid   bool
+	Nickname string
 }
 
 type GetCarFuelUsageWithUsersParams struct {

@@ -21,13 +21,7 @@ import (
 func main() {
 	cfg := config.New()
 	logger := slogger.New(&cfg.Logger)
-	sqlDB, err := databases.NewPostgres(&cfg.Database)
-	if err != nil {
-		logger.Error(err.Error())
-		return
-	}
-	defer sqlDB.Close()
-	gormDB, err := databases.NewGormDBPostgres(sqlDB)
+	gormDB, err := databases.NewGormDBSqlite(cfg.Database.FilePath)
 	if err != nil {
 		logger.Error(err.Error())
 		return
