@@ -553,3 +553,22 @@ func (s *Service) DeleteFuelRefillByID(ctx context.Context, req models.DeleteFue
 
 	return nil
 }
+
+func (s *Service) GetLatestFuelInfoResponse(ctx context.Context) (*models.GetLatestFuelInfoResponse, error) {
+	latestFuelUsage, err := s.db.GetLatestFuelUsage(ctx)
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return nil, err
+	}
+
+	latestFuelRefill, err := s.db.GetLatestFuelRefill(ctx)
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return nil, err
+	}
+
+	return &models.GetLatestFuelInfoResponse{
+		LatestFuelPrice:         latestFuelRefill.FuelPriceCalculated,
+		LatestKilometerAfterUse: latestFuelUsage.KilometerAfterUse,
+	}, nil
+}

@@ -284,6 +284,21 @@ func (h RESTHandler) DeleteFuelRefillByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, nil)
 }
 
+func (h RESTHandler) GetLatestFuelInfoResponse(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	response, err := h.service.GetLatestFuelInfoResponse(ctx)
+	if err != nil {
+		if response, ok := err.(errs.Err); ok {
+			return c.JSON(response.Status, response)
+		}
+		response := errs.ErrAPIFailed
+		return c.JSON(response.Status, response)
+	}
+
+	return c.JSON(http.StatusOK, response)
+}
+
 func (h RESTHandler) GetHealth(c echo.Context) error {
 	return c.JSON(http.StatusOK, struct {
 		ServerStartTime time.Time `json:"serverStartTime"`

@@ -279,3 +279,15 @@ func (adt *Database) UpdateFuelRefill(ctx context.Context, fr domains.FuelRefill
 	db := adt.dbOrTx(ctx)
 	return db.Save(&fr).Error
 }
+
+func (adt *Database) GetLatestFuelUsage(ctx context.Context) (*domains.FuelUsage, error) {
+	var fuelUsage domains.FuelUsage
+	err := adt.dbOrTx(ctx).
+		Model(&fuelUsage).
+		Order("fuel_use_time DESC").
+		First(&fuelUsage).Error
+	if err != nil {
+		return nil, err
+	}
+	return &fuelUsage, nil
+}

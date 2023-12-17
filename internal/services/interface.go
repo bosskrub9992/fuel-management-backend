@@ -16,6 +16,7 @@ type DatabaseAdaptor interface {
 	CreateFuelUsageUsers(ctx context.Context, fuelUsageUsers []domains.FuelUsageUser) error
 	GetFuelUsageByID(ctx context.Context, id int64) (*domains.FuelUsage, error)
 	GetFuelUsageUsersByFuelUsageID(ctx context.Context, fuelUsageID int64) ([]FuelUsageUsers, error)
+	GetLatestFuelUsage(ctx context.Context) (*domains.FuelUsage, error)
 	UpdateFuelUsage(context.Context, domains.FuelUsage) error
 	DeleteFuelUsageUsersByFuelUsageID(ctx context.Context, fuelUsageID int64) error
 	DeleteFuelUsageByID(ctx context.Context, id int64) error
