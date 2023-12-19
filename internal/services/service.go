@@ -155,31 +155,13 @@ func (s *Service) GetCars(ctx context.Context) (*models.GetCarData, error) {
 	}, nil
 }
 
-func (s *Service) GetCarFuelUsages(ctx context.Context, req models.GetCarFuelUsagesRequest) (*models.GetCarFuelUsageData, error) {
+func (s *Service) GetFuelUsages(ctx context.Context, req models.GetFuelUsagesRequest) (*models.GetFuelUsagesResponse, error) {
 	if err := req.Validate(); err != nil {
 		slog.ErrorContext(ctx, err.Error())
 		return nil, errs.ErrValidateFailed
 	}
 
-	latestFuelRefill, err := s.db.GetLatestFuelRefill(ctx)
-	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
-		return nil, err
-	}
-
-	users, err := s.db.GetAllUsers(ctx)
-	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
-		return nil, err
-	}
-
-	cars, err := s.db.GetAllCars(ctx)
-	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
-		return nil, err
-	}
-
-	carFuelUsages, totalRecord, err := s.db.GetCarFuelUsageWithUsers(ctx, GetCarFuelUsageWithUsersParams{
+	fuelUsages, totalRecord, err := s.db.GetFuelUsageInPagination(ctx, GetFuelUsageInPaginationParams{
 		CarID:     req.CurrentCarID,
 		PageIndex: req.PageIndex,
 		PageSize:  req.PageSize,
@@ -189,45 +171,46 @@ func (s *Service) GetCarFuelUsages(ctx context.Context, req models.GetCarFuelUsa
 		return nil, err
 	}
 
-	var latestKilometerAfterUse int64
-	if len(carFuelUsages) > 0 {
-		latestKilometerAfterUse = carFuelUsages[0].KilometerAfterUse
+	fuelUsageIDs := []int64{}
+	for _, fuelUsage := range fuelUsages {
+		fuelUsageIDs = append(fuelUsageIDs, fuelUsage.ID)
 	}
 
-	var (
-		allUsers    []models.User
-		currentUser models.UserWithImageURL
-	)
-	for _, user := range users {
-		allUsers = append(allUsers, models.User{
-			ID:       user.ID,
-			Nickname: user.Nickname,
-		})
-		if user.ID == req.CurrentUserID {
-			currentUser = models.UserWithImageURL{
-				User: models.User{
-					ID:       user.ID,
-					Nickname: user.Nickname,
-				},
-				UserImageURL: user.ProfileImageURL,
-			}
+	fuelUsers, err := s.db.GetFuelUsageUsersByFuelUsageIDs(ctx, fuelUsageIDs)
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return nil, err
+	}
+
+	usageIdToUser := make(map[int64][]FuelUsageUser)
+	for _, user := range fuelUsers {
+		_, found := usageIdToUser[user.FuelUsageID]
+		if !found {
+			usageIdToUser[user.FuelUsageID] = []FuelUsageUser{}
 		}
+		usageIdToUser[user.FuelUsageID] = append(usageIdToUser[user.FuelUsageID], user)
 	}
 
-	var data []models.CarFuelUsageDatum
-	for _, fuelUsage := range carFuelUsages {
-		var fuelUsers []string
-		for _, user := range fuelUsage.Users {
+	var fuelUsageData []models.FuelUsageDatum
+	for _, fuelUsage := range fuelUsages {
+		var fuelUserNames []string
+		fuelUsers, found := usageIdToUser[fuelUsage.ID]
+		if !found {
+			err := fmt.Errorf("not found fuel usage id: [%d]", fuelUsage.ID)
+			slog.ErrorContext(ctx, err.Error())
+			return nil, err
+		}
+		for _, fuelUser := range fuelUsers {
 			isPaid := "❌"
-			if user.IsPaid {
+			if fuelUser.IsPaid {
 				isPaid = "✅"
 			}
-			fuelUsers = append(fuelUsers, fmt.Sprintf("%s %s",
+			fuelUserNames = append(fuelUserNames, fmt.Sprintf("%s%s",
 				isPaid,
-				user.Nickname,
+				fuelUser.Nickname,
 			))
 		}
-		data = append(data, models.CarFuelUsageDatum{
+		fuelUsageData = append(fuelUsageData, models.FuelUsageDatum{
 			ID:                 fuelUsage.ID,
 			FuelUseTime:        fuelUsage.FuelUseTime.Format("_2 Jan 15:04"),
 			FuelPrice:          fuelUsage.FuelPrice,
@@ -235,42 +218,14 @@ func (s *Service) GetCarFuelUsages(ctx context.Context, req models.GetCarFuelUsa
 			KilometerAfterUse:  fuelUsage.KilometerAfterUse,
 			Description:        fuelUsage.Description,
 			TotalMoney:         fuelUsage.TotalMoney,
-			FuelUsers:          strings.Join(fuelUsers, " "),
+			FuelUsers:          strings.Join(fuelUserNames, " "),
 		})
 	}
 
-	var (
-		allCars    []models.Car
-		currentCar models.Car
-	)
-	for _, car := range cars {
-		allCars = append(allCars, models.Car{
-			ID:   car.ID,
-			Name: car.Name,
-		})
-		if car.ID == req.CurrentCarID {
-			currentCar = models.Car{
-				ID:   car.ID,
-				Name: car.Name,
-			}
-		}
-	}
-
-	return &models.GetCarFuelUsageData{
-		FuelUsageData: models.FuelUsageData{
-			LatestKilometerAfterUse: latestKilometerAfterUse,
-			LatestFuelPrice:         latestFuelRefill.FuelPriceCalculated,
-			AllUsers:                allUsers,
-			CurrentUser:             currentUser,
-			Data:                    data,
-			AllCars:                 allCars,
-			TotalRecord:             totalRecord,
-			TotalPage:               int64(math.Ceil(float64(totalRecord) / float64(req.PageSize))),
-			CurrentCar:              currentCar,
-		},
-		TodayDate:        time.Now().Format("2006-01-02"),
-		CurrentPageIndex: req.PageIndex,
-		CurrentPageSize:  len(carFuelUsages),
+	return &models.GetFuelUsagesResponse{
+		FuelUsageData: fuelUsageData,
+		TotalRecord:   totalRecord,
+		TotalPage:     int64(math.Ceil(float64(totalRecord) / float64(req.PageSize))),
 	}, nil
 }
 

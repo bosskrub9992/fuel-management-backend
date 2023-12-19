@@ -57,14 +57,14 @@ func (h RESTHandler) GetCars(c echo.Context) error {
 func (h RESTHandler) GetFuelUsages(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	var req models.GetCarFuelUsagesRequest
+	var req models.GetFuelUsagesRequest
 	if err := c.Bind(&req); err != nil {
 		slog.ErrorContext(ctx, err.Error())
 		response := errs.ErrBadRequest
 		return c.JSON(response.Status, response)
 	}
 
-	data, err := h.service.GetCarFuelUsages(ctx, req)
+	data, err := h.service.GetFuelUsages(ctx, req)
 	if err != nil {
 		if response, ok := err.(errs.Err); ok {
 			return c.JSON(response.Status, response)

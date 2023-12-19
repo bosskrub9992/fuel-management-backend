@@ -5,33 +5,20 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-type GetCarFuelUsagesRequest struct {
+type GetFuelUsagesRequest struct {
 	CurrentCarID  int64 `query:"currentCarId" validate:"required"`
 	CurrentUserID int64 `query:"currentUserId" validate:"required"`
 	PageIndex     int   `query:"pageIndex"`
 	PageSize      int   `query:"pageSize"`
 }
 
-type GetCarFuelUsageData struct {
-	FuelUsageData    FuelUsageData `json:"fuelUsageData"`
-	CurrentPageIndex int           `json:"currentPageIndex"`
-	CurrentPageSize  int           `json:"currentPageSize"`
-	TodayDate        string        `json:"todayDate"`
+type GetFuelUsagesResponse struct {
+	FuelUsageData []FuelUsageDatum `json:"fuelUsageData"`
+	TotalRecord   int64            `json:"totalRecord"`
+	TotalPage     int64            `json:"totalPage"`
 }
 
-type FuelUsageData struct {
-	LatestKilometerAfterUse int64               `json:"latestKilometerAfterUse"`
-	LatestFuelPrice         decimal.Decimal     `json:"latestFuelPrice"`
-	AllUsers                []User              `json:"allUsers"`
-	Data                    []CarFuelUsageDatum `json:"data"`
-	AllCars                 []Car               `json:"allCars"`
-	TotalRecord             int64               `json:"totalRecord"`
-	TotalPage               int64               `json:"totalPage"`
-	CurrentCar              Car                 `json:"currentCar"`
-	CurrentUser             UserWithImageURL    `json:"currentUser"`
-}
-
-type CarFuelUsageDatum struct {
+type FuelUsageDatum struct {
 	ID                 int64           `json:"id"`
 	FuelUseTime        string          `json:"fuelUseTime"`
 	FuelPrice          decimal.Decimal `json:"fuelPrice"`
@@ -57,6 +44,6 @@ type UserWithImageURL struct {
 	UserImageURL string `json:"userImageUrl"`
 }
 
-func (req GetCarFuelUsagesRequest) Validate() error {
+func (req GetFuelUsagesRequest) Validate() error {
 	return validators.Validate(req)
 }
