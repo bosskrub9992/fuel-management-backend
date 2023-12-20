@@ -338,8 +338,7 @@ func calculateTotalMoney(kmBeforeUse, kmAfterUse int64, fuelPrice decimal.Decima
 func (s *Service) GetFuelRefills(ctx context.Context, req models.GetFuelRefillRequest) (*models.GetFuelRefillResponse, error) {
 	if err := req.Validate(); err != nil {
 		slog.ErrorContext(ctx, err.Error())
-		response := errs.ErrValidateFailed
-		return nil, response
+		return nil, errs.ErrValidateFailed
 	}
 
 	fuelRefills, totalRecord, err := s.db.GetFuelRefillPagination(ctx, GetFuelRefillPaginationParams{
@@ -374,8 +373,7 @@ func (s *Service) GetFuelRefills(ctx context.Context, req models.GetFuelRefillRe
 func (s *Service) CreateFuelRefill(ctx context.Context, req models.CreateFuelRefillRequest) error {
 	if err := req.Validate(); err != nil {
 		slog.ErrorContext(ctx, err.Error())
-		response := errs.ErrValidateFailed
-		return response
+		return errs.ErrValidateFailed
 	}
 
 	fuelPrice, err := calculateFuelPrice(
@@ -415,8 +413,7 @@ func (s *Service) CreateFuelRefill(ctx context.Context, req models.CreateFuelRef
 func (s *Service) GetFuelRefillByID(ctx context.Context, req models.GetFuelRefillByIDRequest) (*models.GetFuelRefillByIDResponse, error) {
 	if err := req.Validate(); err != nil {
 		slog.ErrorContext(ctx, err.Error())
-		response := errs.ErrValidateFailed
-		return nil, response
+		return nil, errs.ErrValidateFailed
 	}
 
 	fuelRefill, err := s.db.GetFuelRefillByID(ctx, req.FuelRefillID)
@@ -438,8 +435,7 @@ func (s *Service) GetFuelRefillByID(ctx context.Context, req models.GetFuelRefil
 func (s *Service) UpdateFuelRefillByID(ctx context.Context, req models.PutFuelRefillByIDRequest) error {
 	if err := req.Validate(); err != nil {
 		slog.ErrorContext(ctx, err.Error())
-		response := errs.ErrValidateFailed
-		return response
+		return errs.ErrValidateFailed
 	}
 
 	oldFuelRefill, err := s.db.GetFuelRefillByID(ctx, req.FuelRefillID)
@@ -497,8 +493,7 @@ func calculateFuelPrice(
 func (s *Service) DeleteFuelRefillByID(ctx context.Context, req models.DeleteFuelRefillByIDRequest) error {
 	if err := req.Validate(); err != nil {
 		slog.ErrorContext(ctx, err.Error())
-		response := errs.ErrValidateFailed
-		return response
+		return errs.ErrValidateFailed
 	}
 
 	if err := s.db.DeleteFuelRefillByID(ctx, req.FuelRefillID); err != nil {
@@ -509,14 +504,19 @@ func (s *Service) DeleteFuelRefillByID(ctx context.Context, req models.DeleteFue
 	return nil
 }
 
-func (s *Service) GetLatestFuelInfoResponse(ctx context.Context) (*models.GetLatestFuelInfoResponse, error) {
-	latestFuelUsage, err := s.db.GetLatestFuelUsage(ctx)
+func (s *Service) GetLatestFuelInfoResponse(ctx context.Context, req models.GetLatestFuelInfoRequest) (*models.GetLatestFuelInfoResponse, error) {
+	if err := req.Validate(); err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return nil, errs.ErrValidateFailed
+	}
+
+	latestFuelUsage, err := s.db.GetLatestFuelUsageByCarID(ctx, req.CarID)
 	if err != nil {
 		slog.ErrorContext(ctx, err.Error())
 		return nil, err
 	}
 
-	latestFuelRefill, err := s.db.GetLatestFuelRefill(ctx)
+	latestFuelRefill, err := s.db.GetLatestFuelRefillByCarID(ctx, req.CarID)
 	if err != nil {
 		slog.ErrorContext(ctx, err.Error())
 		return nil, err

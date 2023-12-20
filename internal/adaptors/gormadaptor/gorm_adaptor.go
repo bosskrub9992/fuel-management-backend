@@ -117,11 +117,15 @@ func (adt *Database) GetAllUsers(ctx context.Context) ([]domains.User, error) {
 	return users, nil
 }
 
-func (adt *Database) GetLatestFuelRefill(ctx context.Context) (*domains.FuelRefill, error) {
+func (adt *Database) GetLatestFuelRefillByCarID(ctx context.Context, carID int64) (*domains.FuelRefill, error) {
 	var fuelRefill domains.FuelRefill
 	err := adt.dbOrTx(ctx).
 		Model(&fuelRefill).
-		Last(&fuelRefill).Error
+		Where(domains.FuelRefill{
+			CarID: carID,
+		}).
+		Order("datetime(refill_time) DESC, id DESC").
+		First(&fuelRefill).Error
 	if err != nil {
 		return nil, err
 	}
@@ -250,10 +254,13 @@ func (adt *Database) UpdateFuelRefill(ctx context.Context, fr domains.FuelRefill
 		Error
 }
 
-func (adt *Database) GetLatestFuelUsage(ctx context.Context) (*domains.FuelUsage, error) {
+func (adt *Database) GetLatestFuelUsageByCarID(ctx context.Context, carID int64) (*domains.FuelUsage, error) {
 	var fuelUsage domains.FuelUsage
 	err := adt.dbOrTx(ctx).
 		Model(&fuelUsage).
+		Where(domains.FuelUsage{
+			CarID: carID,
+		}).
 		Order("datetime(fuel_use_time) DESC, id DESC").
 		First(&fuelUsage).Error
 	if err != nil {

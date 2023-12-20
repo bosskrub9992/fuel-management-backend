@@ -287,7 +287,18 @@ func (h RESTHandler) DeleteFuelRefillByID(c echo.Context) error {
 func (h RESTHandler) GetLatestFuelInfoResponse(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	response, err := h.service.GetLatestFuelInfoResponse(ctx)
+	carID, err := strconv.Atoi(c.QueryParam("carId"))
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		response := errs.ErrBadRequest
+		return c.JSON(response.Status, response)
+	}
+
+	req := models.GetLatestFuelInfoRequest{
+		CarID: int64(carID),
+	}
+
+	response, err := h.service.GetLatestFuelInfoResponse(ctx, req)
 	if err != nil {
 		if response, ok := err.(errs.Err); ok {
 			return c.JSON(response.Status, response)
