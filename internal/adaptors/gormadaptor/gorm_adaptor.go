@@ -147,6 +147,9 @@ func (adt *Database) GetFuelUsageByID(ctx context.Context, id int64) (*domains.F
 	var fuelUsage domains.FuelUsage
 	err := adt.dbOrTx(ctx).
 		Model(&fuelUsage).
+		Where(domains.FuelUsage{
+			ID: id,
+		}).
 		First(&fuelUsage).Error
 	if err != nil {
 		return nil, err
