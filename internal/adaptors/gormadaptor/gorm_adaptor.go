@@ -32,11 +32,11 @@ func (adt *Database) dbOrTx(ctx context.Context) *gorm.DB {
 	if ok {
 		return tx
 	}
-	return adt.db
+	return adt.db.WithContext(ctx)
 }
 
 func (adt *Database) CreateFuelUsage(ctx context.Context, fuelUsage domains.FuelUsage) (int64, error) {
-	if err := adt.dbOrTx(ctx).WithContext(ctx).Create(&fuelUsage).Error; err != nil {
+	if err := adt.dbOrTx(ctx).Create(&fuelUsage).Error; err != nil {
 		return 0, err
 	}
 	return fuelUsage.ID, nil
@@ -44,7 +44,6 @@ func (adt *Database) CreateFuelUsage(ctx context.Context, fuelUsage domains.Fuel
 
 func (adt *Database) CreateFuelUsageUsers(ctx context.Context, fuelUsageUsers []domains.FuelUsageUser) error {
 	return adt.dbOrTx(ctx).
-		WithContext(ctx).
 		Create(&fuelUsageUsers).
 		Error
 }
@@ -59,7 +58,6 @@ func (adt *Database) GetFuelUsageInPagination(
 ) {
 	var totalCount int64
 	stmt := adt.dbOrTx(ctx).
-		WithContext(ctx).
 		Model(&domains.FuelUsage{}).
 		Where(domains.FuelUsage{
 			CarID: params.CarID,
@@ -96,7 +94,6 @@ func (adt *Database) GetFuelUsageInPagination(
 func (adt *Database) GetFuelUsageUsersByFuelUsageIDs(ctx context.Context, fuelUsageIDs []int64) ([]services.FuelUsageUser, error) {
 	var fuelUsageUsers []services.FuelUsageUser
 	err := adt.dbOrTx(ctx).
-		WithContext(ctx).
 		Table("fuel_usage_users").
 		Select("fuel_usage_users.*, users.nickname").
 		Joins("INNER JOIN users ON users.id = fuel_usage_users.user_id").
@@ -111,7 +108,6 @@ func (adt *Database) GetFuelUsageUsersByFuelUsageIDs(ctx context.Context, fuelUs
 func (adt *Database) GetAllUsers(ctx context.Context) ([]domains.User, error) {
 	var users []domains.User
 	err := adt.dbOrTx(ctx).
-		WithContext(ctx).
 		Model(&domains.User{}).
 		Order("nickname ASC").
 		Find(&users).Error
@@ -124,7 +120,6 @@ func (adt *Database) GetAllUsers(ctx context.Context) ([]domains.User, error) {
 func (adt *Database) GetLatestFuelRefill(ctx context.Context) (*domains.FuelRefill, error) {
 	var fuelRefill domains.FuelRefill
 	err := adt.dbOrTx(ctx).
-		WithContext(ctx).
 		Model(&fuelRefill).
 		Last(&fuelRefill).Error
 	if err != nil {
@@ -136,7 +131,6 @@ func (adt *Database) GetLatestFuelRefill(ctx context.Context) (*domains.FuelRefi
 func (adt *Database) GetAllCars(ctx context.Context) ([]domains.Car, error) {
 	var cars []domains.Car
 	err := adt.dbOrTx(ctx).
-		WithContext(ctx).
 		Model(&domains.Car{}).
 		Find(&cars).Error
 	if err != nil {
@@ -148,7 +142,6 @@ func (adt *Database) GetAllCars(ctx context.Context) ([]domains.Car, error) {
 func (adt *Database) GetFuelUsageByID(ctx context.Context, id int64) (*domains.FuelUsage, error) {
 	var fuelUsage domains.FuelUsage
 	err := adt.dbOrTx(ctx).
-		WithContext(ctx).
 		Model(&fuelUsage).
 		Where(domains.FuelUsage{
 			ID: id,
@@ -163,7 +156,6 @@ func (adt *Database) GetFuelUsageByID(ctx context.Context, id int64) (*domains.F
 func (adt *Database) GetFuelUsageUsersByFuelUsageID(ctx context.Context, fuelUsageID int64) ([]services.FuelUsageUser, error) {
 	var fuelUsageUsers []services.FuelUsageUser
 	err := adt.dbOrTx(ctx).
-		WithContext(ctx).
 		Table("fuel_usage_users").
 		Select("fuel_usage_users.*, users.nickname").
 		Joins("INNER JOIN users ON users.id = fuel_usage_users.user_id").
@@ -177,14 +169,12 @@ func (adt *Database) GetFuelUsageUsersByFuelUsageID(ctx context.Context, fuelUsa
 
 func (adt *Database) UpdateFuelUsage(ctx context.Context, fuelUsage domains.FuelUsage) error {
 	return adt.dbOrTx(ctx).
-		WithContext(ctx).
 		Save(&fuelUsage).
 		Error
 }
 
 func (adt *Database) DeleteFuelUsageUsersByFuelUsageID(ctx context.Context, fuelUsageID int64) error {
 	return adt.dbOrTx(ctx).
-		WithContext(ctx).
 		Where("fuel_usage_id = ?", fuelUsageID).
 		Delete(&domains.FuelUsageUser{}).
 		Error
@@ -192,14 +182,12 @@ func (adt *Database) DeleteFuelUsageUsersByFuelUsageID(ctx context.Context, fuel
 
 func (adt *Database) DeleteFuelUsageByID(ctx context.Context, id int64) error {
 	return adt.dbOrTx(ctx).
-		WithContext(ctx).
 		Delete(&domains.FuelUsage{}, id).
 		Error
 }
 
 func (adt *Database) GetFuelRefillPagination(ctx context.Context, params services.GetFuelRefillPaginationParams) ([]domains.FuelRefill, int, error) {
 	stmt := adt.dbOrTx(ctx).
-		WithContext(ctx).
 		Model(&domains.FuelRefill{}).
 		Where("car_id = ?", params.CarID)
 
@@ -232,7 +220,6 @@ func (adt *Database) GetFuelRefillPagination(ctx context.Context, params service
 
 func (adt *Database) CreateFuelRefill(ctx context.Context, fr domains.FuelRefill) error {
 	return adt.dbOrTx(ctx).
-		WithContext(ctx).
 		Create(&fr).
 		Error
 }
@@ -240,7 +227,6 @@ func (adt *Database) CreateFuelRefill(ctx context.Context, fr domains.FuelRefill
 func (adt *Database) GetFuelRefillByID(ctx context.Context, fuelRefillID int64) (*domains.FuelRefill, error) {
 	var fr domains.FuelRefill
 	err := adt.dbOrTx(ctx).
-		WithContext(ctx).
 		Model(&domains.FuelRefill{}).
 		Where(domains.FuelRefill{
 			ID: fuelRefillID,
@@ -254,14 +240,12 @@ func (adt *Database) GetFuelRefillByID(ctx context.Context, fuelRefillID int64) 
 
 func (adt *Database) DeleteFuelRefillByID(ctx context.Context, fuelRefillID int64) error {
 	return adt.dbOrTx(ctx).
-		WithContext(ctx).
 		Delete(&domains.FuelRefill{}, fuelRefillID).
 		Error
 }
 
 func (adt *Database) UpdateFuelRefill(ctx context.Context, fr domains.FuelRefill) error {
 	return adt.dbOrTx(ctx).
-		WithContext(ctx).
 		Save(&fr).
 		Error
 }
@@ -269,7 +253,6 @@ func (adt *Database) UpdateFuelRefill(ctx context.Context, fr domains.FuelRefill
 func (adt *Database) GetLatestFuelUsage(ctx context.Context) (*domains.FuelUsage, error) {
 	var fuelUsage domains.FuelUsage
 	err := adt.dbOrTx(ctx).
-		WithContext(ctx).
 		Model(&fuelUsage).
 		Order("datetime(fuel_use_time) DESC, id DESC").
 		First(&fuelUsage).Error
