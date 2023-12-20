@@ -35,7 +35,7 @@ entity FuelUsage {
     +ID: int64
     CarID: int64
     --
-    FuelUsedTime: time.Time
+    FuelUseTime: time.Time
     FuelPrice: decimal.Decimal
     KilometerBeforeUse: int64
     KilometerAfterUse: int64
@@ -50,6 +50,7 @@ entity User {
     DefaultCarID: int64
     --
     Nickname: string
+    ProfileImageURL: string
     CreateTime: time.Time
     UpdateTime: time.Time
 }

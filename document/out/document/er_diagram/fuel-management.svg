@@ -1,0 +1,598 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="1138.5417px" preserveAspectRatio="none" style="width:478px;height:1138px;background:#00000000;" version="1.1" viewBox="0 0 478 1138" width="478.125px" zoomAndPan="magnify"><defs><linearGradient id="gncfz1erv5bje0" x1="50%" x2="50%" y1="0%" y2="100%"><stop offset="0%" stop-color="#2FA4E7"/><stop offset="100%" stop-color="#2683B9"/></linearGradient></defs><g><!--MD5=[bf09a98b9c35bbcbd5bc4628ed77eccf]
+class FuelRefill--><g id="elem_FuelRefill"><rect codeLine="9" fill="none" height="337.9333" id="FuelRefill" rx="4.1667" ry="4.1667" style="stroke:#2FA4E7;stroke-width:1.0416666666666667;" width="227.0833" x="17.7083" y="226.8438"/><rect fill="url(#gncfz1erv5bje0)" height="34.3282" rx="4.1667" ry="4.1667" style="stroke:url(#gncfz1erv5bje0);stroke-width:1.0416666666666667;" width="227.0833" x="17.7083" y="226.8438"/><rect fill="url(#gncfz1erv5bje0)" height="4.1667" style="stroke:url(#gncfz1erv5bje0);stroke-width:1.0416666666666667;" width="227.0833" x="17.7083" y="257.0053"/><rect codeLine="9" fill="none" height="337.9333" id="FuelRefill" rx="4.1667" ry="4.1667" style="stroke:#2FA4E7;stroke-width:1.0416666666666667;" width="227.0833" x="17.7083" y="226.8438"/><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="50" x="106.25" y="248.3383">FuelRefill</text><line style="stroke:#2FA4E7;stroke-width:1.0416666666666667;" x1="18.75" x2="243.75" y1="261.172" y2="261.172"/><ellipse cx="29.1667" cy="278.8569" fill="none" rx="3.125" ry="3.125" style="stroke:#2683B9;stroke-width:1.0416666666666667;"/><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="46.875" x="42.7083" y="281.6248">ID: int64</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="66.6667" x="42.7083" y="305.5364">CarID: int64</text><line style="stroke:#2FA4E7;stroke-width:1.0416666666666667;" x1="18.75" x2="243.75" y1="317.3284" y2="317.3284"/><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="114.5833" x="29.1667" y="337.7813">RefillTime: time.Time</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="160.4167" x="29.1667" y="361.6928">TotalMoney: decimal.Decimal</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="151.0417" x="29.1667" y="385.6043">KilometerBeforeRefill: int64</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="143.75" x="29.1667" y="409.5159">KilometerAfterRefill: int64</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="204.1667" x="29.1667" y="433.4274">FuelPriceCalculated: decimal.Decimal</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="63.5417" x="29.1667" y="457.3389">IsPaid: bool</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="84.375" x="29.1667" y="481.2505">CreateBy: int64</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="123.9583" x="29.1667" y="505.162">CreateTime: time.Time</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="87.5" x="29.1667" y="529.0736">UpdateBy: int64</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="127.0833" x="29.1667" y="552.9851">UpdateTime: time.Time</text></g><!--MD5=[42c14dbc2c1040a2793bffcc144b2f2e]
+class FuelUsageUser--><g id="elem_FuelUsageUser"><rect codeLine="25" fill="none" height="146.641" id="FuelUsageUser" rx="4.1667" ry="4.1667" style="stroke:#2FA4E7;stroke-width:1.0416666666666667;" width="140.625" x="201.5625" y="979.8854"/><rect fill="url(#gncfz1erv5bje0)" height="34.3282" rx="4.1667" ry="4.1667" style="stroke:url(#gncfz1erv5bje0);stroke-width:1.0416666666666667;" width="140.625" x="201.5625" y="979.8854"/><rect fill="url(#gncfz1erv5bje0)" height="4.1667" style="stroke:url(#gncfz1erv5bje0);stroke-width:1.0416666666666667;" width="140.625" x="201.5625" y="1010.047"/><rect codeLine="25" fill="none" height="146.641" id="FuelUsageUser" rx="4.1667" ry="4.1667" style="stroke:#2FA4E7;stroke-width:1.0416666666666667;" width="140.625" x="201.5625" y="979.8854"/><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="83.3333" x="230.2083" y="1001.38">FuelUsageUser</text><line style="stroke:#2FA4E7;stroke-width:1.0416666666666667;" x1="202.6042" x2="341.1458" y1="1014.2136" y2="1014.2136"/><ellipse cx="213.0208" cy="1031.8986" fill="none" rx="3.125" ry="3.125" style="stroke:#2683B9;stroke-width:1.0416666666666667;"/><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="46.875" x="226.5625" y="1034.6665">ID: int64</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="104.1667" x="226.5625" y="1058.578">FuelUsageID: int64</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="72.9167" x="226.5625" y="1082.4896">UserID: int64</text><line style="stroke:#2FA4E7;stroke-width:1.0416666666666667;" x1="202.6042" x2="341.1458" y1="1094.2816" y2="1094.2816"/><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="63.5417" x="213.0208" y="1114.7345">IsPaid: bool</text></g><!--MD5=[837a2240396b70d4e81fb506f3cde66e]
+class FuelUsage--><g id="elem_FuelUsage"><rect codeLine="33" fill="none" height="290.1103" id="FuelUsage" rx="4.1667" ry="4.1667" style="stroke:#2FA4E7;stroke-width:1.0416666666666667;" width="183.3333" x="282.2917" y="627.2813"/><rect fill="url(#gncfz1erv5bje0)" height="34.3282" rx="4.1667" ry="4.1667" style="stroke:url(#gncfz1erv5bje0);stroke-width:1.0416666666666667;" width="183.3333" x="282.2917" y="627.2813"/><rect fill="url(#gncfz1erv5bje0)" height="4.1667" style="stroke:url(#gncfz1erv5bje0);stroke-width:1.0416666666666667;" width="183.3333" x="282.2917" y="657.4428"/><rect codeLine="33" fill="none" height="290.1103" id="FuelUsage" rx="4.1667" ry="4.1667" style="stroke:#2FA4E7;stroke-width:1.0416666666666667;" width="183.3333" x="282.2917" y="627.2813"/><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="57.2917" x="345.3125" y="648.7758">FuelUsage</text><line style="stroke:#2FA4E7;stroke-width:1.0416666666666667;" x1="283.3333" x2="464.5833" y1="661.6095" y2="661.6095"/><ellipse cx="293.75" cy="679.2944" fill="none" rx="3.125" ry="3.125" style="stroke:#2683B9;stroke-width:1.0416666666666667;"/><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="46.875" x="307.2917" y="682.0623">ID: int64</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="66.6667" x="307.2917" y="705.9739">CarID: int64</text><line style="stroke:#2FA4E7;stroke-width:1.0416666666666667;" x1="283.3333" x2="464.5833" y1="717.7659" y2="717.7659"/><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="131.25" x="293.75" y="738.2188">FuelUseTime: time.Time</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="145.8333" x="293.75" y="762.1303">FuelPrice: decimal.Decimal</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="144.7917" x="293.75" y="786.0418">KilometerBeforeUse: int64</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="137.5" x="293.75" y="809.9534">KilometerAfterUse: int64</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="104.1667" x="293.75" y="833.8649">Description: string</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="160.4167" x="293.75" y="857.7764">TotalMoney: decimal.Decimal</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="123.9583" x="293.75" y="881.688">CreateTime: time.Time</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="127.0833" x="293.75" y="905.5995">UpdateTime: time.Time</text></g><!--MD5=[3fd616f346a44cd59a91eb10b19e157c]
+class User--><g id="elem_User"><rect codeLine="47" fill="none" height="194.4641" id="User" rx="4.1667" ry="4.1667" style="stroke:#2FA4E7;stroke-width:1.0416666666666667;" width="153.125" x="93.2292" y="675.1042"/><rect fill="url(#gncfz1erv5bje0)" height="34.3282" rx="4.1667" ry="4.1667" style="stroke:url(#gncfz1erv5bje0);stroke-width:1.0416666666666667;" width="153.125" x="93.2292" y="675.1042"/><rect fill="url(#gncfz1erv5bje0)" height="4.1667" style="stroke:url(#gncfz1erv5bje0);stroke-width:1.0416666666666667;" width="153.125" x="93.2292" y="705.2657"/><rect codeLine="47" fill="none" height="194.4641" id="User" rx="4.1667" ry="4.1667" style="stroke:#2FA4E7;stroke-width:1.0416666666666667;" width="153.125" x="93.2292" y="675.1042"/><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="26.0417" x="156.7708" y="696.5987">User</text><line style="stroke:#2FA4E7;stroke-width:1.0416666666666667;" x1="94.2708" x2="245.3125" y1="709.4324" y2="709.4324"/><ellipse cx="104.6875" cy="727.1173" fill="none" rx="3.125" ry="3.125" style="stroke:#2683B9;stroke-width:1.0416666666666667;"/><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="46.875" x="118.2292" y="729.8853">ID: int64</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="106.25" x="118.2292" y="753.7968">DefaultCarID: int64</text><line style="stroke:#2FA4E7;stroke-width:1.0416666666666667;" x1="94.2708" x2="245.3125" y1="765.5888" y2="765.5888"/><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="93.75" x="104.6875" y="786.0417">Nickname: string</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="130.2083" x="104.6875" y="809.9532">ProfileImageURL: string</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="123.9583" x="104.6875" y="833.8647">CreateTime: time.Time</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="127.0833" x="104.6875" y="857.7763">UpdateTime: time.Time</text></g><!--MD5=[3f0ef310aaa84a542276992c5216544d]
+class Car--><g id="elem_Car"><rect codeLine="57" fill="none" height="146.641" id="Car" rx="4.1667" ry="4.1667" style="stroke:#2FA4E7;stroke-width:1.0416666666666667;" width="150" x="225" y="17.7083"/><rect fill="url(#gncfz1erv5bje0)" height="34.3282" rx="4.1667" ry="4.1667" style="stroke:url(#gncfz1erv5bje0);stroke-width:1.0416666666666667;" width="150" x="225" y="17.7083"/><rect fill="url(#gncfz1erv5bje0)" height="4.1667" style="stroke:url(#gncfz1erv5bje0);stroke-width:1.0416666666666667;" width="150" x="225" y="47.8699"/><rect codeLine="57" fill="none" height="146.641" id="Car" rx="4.1667" ry="4.1667" style="stroke:#2FA4E7;stroke-width:1.0416666666666667;" width="150" x="225" y="17.7083"/><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="19.7917" x="290.1042" y="39.2029">Car</text><line style="stroke:#2FA4E7;stroke-width:1.0416666666666667;" x1="226.0417" x2="373.9583" y1="52.0365" y2="52.0365"/><ellipse cx="236.4583" cy="69.7215" fill="none" rx="3.125" ry="3.125" style="stroke:#2683B9;stroke-width:1.0416666666666667;"/><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="46.875" x="250" y="72.4894">ID: int64</text><line style="stroke:#2FA4E7;stroke-width:1.0416666666666667;" x1="226.0417" x2="373.9583" y1="84.2814" y2="84.2814"/><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="70.8333" x="236.4583" y="104.7343">Name: string</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="123.9583" x="236.4583" y="128.6458">CreateTime: time.Time</text><text fill="#343A40" font-family="&quot;Verdana&quot;" font-size="11.4583" lengthAdjust="spacing" textLength="127.0833" x="236.4583" y="152.5574">UpdateTime: time.Time</text></g><!--MD5=[a8d5e400d79fe7da0ef83909628ecb84]
+link FuelUsage to FuelUsageUser--><g id="link_FuelUsage_FuelUsageUser"><path codeLine="65" d="M312.2396,927.6146 C312.2396,927.6146 312.2396,969.5938 312.2396,969.5938 " fill="none" id="FuelUsage-FuelUsageUser" style="stroke:#2FA4E7;stroke-width:3.125;"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="312.2396" x2="318.4896" y1="969.5938" y2="977.9271"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="312.2396" x2="305.9896" y1="969.5938" y2="977.9271"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="312.2396" x2="312.2396" y1="969.5938" y2="977.9271"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="316.4063" x2="308.0729" y1="967.5104" y2="967.5104"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="308.0729" x2="316.4063" y1="923.4479" y2="923.4479"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="308.0729" x2="316.4063" y1="926.5729" y2="926.5729"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="312.2396" x2="312.2396" y1="927.6146" y2="919.2813"/></g><!--MD5=[f56cc92a9879d09a032a7ad235d80508]
+link User to FuelUsageUser--><g id="link_User_FuelUsageUser"><path codeLine="66" d="M223.9583,879.6979 C223.9583,879.6979 223.9583,969.5 223.9583,969.5 " fill="none" id="User-FuelUsageUser" style="stroke:#2FA4E7;stroke-width:3.125;stroke-dasharray:7.0,7.0;"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="223.9583" x2="230.2083" y1="969.5" y2="977.8333"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="223.9583" x2="217.7083" y1="969.5" y2="977.8333"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="223.9583" x2="223.9583" y1="969.5" y2="977.8333"/><ellipse cx="223.9583" cy="963.25" fill="none" rx="4.1667" ry="4.1667" style="stroke:#2FA4E7;stroke-width:3.125;"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="219.7917" x2="228.125" y1="875.5313" y2="875.5313"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="219.7917" x2="228.125" y1="878.6563" y2="878.6563"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="223.9583" x2="223.9583" y1="879.6979" y2="871.3646"/></g><!--MD5=[e1f03b078505c878bcf40370945fee83]
+link FuelRefill to User--><g id="link_FuelRefill_User"><path codeLine="67" d="M169.0104,574.9896 C169.0104,574.9896 169.0104,664.6979 169.0104,664.6979 " fill="none" id="FuelRefill-User" style="stroke:#2FA4E7;stroke-width:3.125;stroke-dasharray:7.0,7.0;"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="173.1771" x2="164.8438" y1="668.8646" y2="668.8646"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="173.1771" x2="164.8438" y1="665.7396" y2="665.7396"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="169.0104" x2="169.0104" y1="664.6979" y2="673.0313"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="169.0104" x2="162.7604" y1="574.9896" y2="566.6563"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="169.0104" x2="175.2604" y1="574.9896" y2="566.6563"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="169.0104" x2="169.0104" y1="574.9896" y2="566.6563"/><ellipse cx="169.0104" cy="581.2396" fill="none" rx="4.1667" ry="4.1667" style="stroke:#2FA4E7;stroke-width:3.125;"/></g><!--MD5=[261e00336fd62509f27c195edaa43628]
+link Car to FuelUsage--><g id="link_Car_FuelUsage"><path codeLine="68" d="M328.6458,174.5 C328.6458,174.5 328.6458,616.9167 328.6458,616.9167 " fill="none" id="Car-FuelUsage" style="stroke:#2FA4E7;stroke-width:3.125;stroke-dasharray:7.0,7.0;"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="328.6458" x2="334.8958" y1="616.9167" y2="625.25"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="328.6458" x2="322.3958" y1="616.9167" y2="625.25"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="328.6458" x2="328.6458" y1="616.9167" y2="625.25"/><ellipse cx="328.6458" cy="610.6667" fill="none" rx="4.1667" ry="4.1667" style="stroke:#2FA4E7;stroke-width:3.125;"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="324.4792" x2="332.8125" y1="170.3333" y2="170.3333"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="324.4792" x2="332.8125" y1="173.4583" y2="173.4583"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="328.6458" x2="328.6458" y1="174.5" y2="166.1667"/></g><!--MD5=[2076731768d1624c390559bb8713ba2a]
+link Car to FuelRefill--><g id="link_Car_FuelRefill"><path codeLine="69" d="M234.8958,174.7188 C234.8958,174.7188 234.8958,216.6354 234.8958,216.6354 " fill="none" id="Car-FuelRefill" style="stroke:#2FA4E7;stroke-width:3.125;stroke-dasharray:7.0,7.0;"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="234.8958" x2="241.1458" y1="216.6354" y2="224.9688"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="234.8958" x2="228.6458" y1="216.6354" y2="224.9688"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="234.8958" x2="234.8958" y1="216.6354" y2="224.9688"/><ellipse cx="234.8958" cy="210.3854" fill="none" rx="4.1667" ry="4.1667" style="stroke:#2FA4E7;stroke-width:3.125;"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="230.7292" x2="239.0625" y1="170.5521" y2="170.5521"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="230.7292" x2="239.0625" y1="173.6771" y2="173.6771"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="234.8958" x2="234.8958" y1="174.7188" y2="166.3854"/></g><!--MD5=[1e35eccd2fbe1e6ea62ac87a2d6b3226]
+link Car to User--><g id="link_Car_User"><path codeLine="70" d="M264.3229,174.5 C264.3229,174.5 264.3229,772.3646 264.3229,772.3646 C264.3229,772.3646 256.4479,772.3646 256.4479,772.3646 " fill="none" id="Car-User" style="stroke:#2FA4E7;stroke-width:3.125;stroke-dasharray:7.0,7.0;"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="256.4479" x2="248.1146" y1="772.3646" y2="778.6146"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="256.4479" x2="248.1146" y1="772.3646" y2="766.1146"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="256.4479" x2="248.1146" y1="772.3646" y2="772.3646"/><ellipse cx="262.6979" cy="772.3646" fill="none" rx="4.1667" ry="4.1667" style="stroke:#2FA4E7;stroke-width:3.125;"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="260.1563" x2="268.4896" y1="170.3333" y2="170.3333"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="260.1563" x2="268.4896" y1="173.4583" y2="173.4583"/><line style="stroke:#2FA4E7;stroke-width:3.125;" x1="264.3229" x2="264.3229" y1="174.5" y2="166.1667"/></g><!--MD5=[8e02f6026c7055648207de71d3b86903]
+@startuml fuel-management
+!theme cerulean-outline
+
+' hide the spot
+hide circle
+
+' avoid problems with angled crows feet
+skinparam linetype ortho
+
+entity FuelRefill {
+    +ID: int64
+    CarID: int64
+    - -
+    RefillTime: time.Time
+    TotalMoney: decimal.Decimal
+    KilometerBeforeRefill: int64
+    KilometerAfterRefill: int64
+    FuelPriceCalculated: decimal.Decimal
+    IsPaid: bool
+    CreateBy: int64
+    CreateTime: time.Time
+    UpdateBy: int64
+    UpdateTime: time.Time
+}
+
+entity FuelUsageUser {
+    +ID: int64
+    FuelUsageID: int64
+    UserID: int64
+    - -
+    IsPaid: bool
+}
+
+entity FuelUsage {
+    +ID: int64
+    CarID: int64
+    - -
+    FuelUseTime: time.Time
+    FuelPrice: decimal.Decimal
+    KilometerBeforeUse: int64
+    KilometerAfterUse: int64
+    Description: string
+    TotalMoney: decimal.Decimal
+    CreateTime: time.Time
+    UpdateTime: time.Time
+}
+
+entity User {
+    +ID: int64
+    DefaultCarID: int64
+    - -
+    Nickname: string
+    ProfileImageURL: string
+    CreateTime: time.Time
+    UpdateTime: time.Time
+}
+
+entity Car {
+    +ID: int64
+    - -
+    Name: string
+    CreateTime: time.Time
+    UpdateTime: time.Time
+}
+
+FuelUsage ||- -|{ FuelUsageUser
+User ||..o{ FuelUsageUser
+FuelRefill }o..|| User
+Car ||..o{ FuelUsage
+Car ||..o{ FuelRefill
+Car ||..o{ User 
+
+@enduml
+
+@startuml fuel-management
+
+
+
+skinparam backgroundColor transparent
+skinparam useBetaStyle false
+
+
+
+
+
+
+<style>
+  root {
+    BackgroundColor transparent
+    FontColor #2FA4E7
+    HyperLinkColor #FD7E14
+    LineColor #2683B9
+    LineThickness 1
+    Margin 10
+    Padding 6
+    Shadowing 0.0
+  }
+  node {
+   Padding 15
+   roundcorner 20
+   BackgroundColor transparent
+  }
+  caption {
+    LineThickness 0
+  }
+  footer {
+    LineThickness 0
+  }
+  groupHeader {
+    BackgroundColor #E9ECEF
+    FontColor #033C73
+    FontStyle bold
+  }
+  header {
+    LineThickness 0
+  }
+  referenceHeader {
+    BackgroundColor transparent
+    FontColor #343A40
+    FontStyle bold
+  }
+  separator {
+    BackgroundColor #343A40
+    FontColor transparent
+    FontStyle bold
+  }
+  title {
+	FontSize 20
+	BorderRoundCorner            8
+	BorderThickness 	         1
+	BackgroundColor  transparent
+	FontColor #2FA4E7
+	BorderColor #E9ECEF
+  }
+  nwdiagDiagram {
+	network {
+			FontColor #2FA4E7
+	BorderColor #2FA4E7
+	BackgroundColor transparent    
+		LineColor #2FA4E7
+		LineThickness 1.0
+		FontColor #2683B9
+	}
+	server {
+			FontColor #2FA4E7
+	BorderColor #2FA4E7
+	BackgroundColor transparent
+	}
+	arrow {
+		FontColor #2683B9
+		LineColor #2683B9
+	}
+	group {
+		BackGroundColor #F8F9FA
+		LineColor $LIGHT_DARK
+		LineThickness 2.0
+		Margin 5
+		Padding 5
+	}
+  }
+  ganttDiagram {
+	task {
+			FontColor #2FA4E7
+	BorderColor #2FA4E7
+	BackgroundColor transparent
+		LineColor #2FA4E7
+		Margin 10
+		Padding 6
+	}
+	note {
+		FontColor #033C73
+		LineColor $INFO_DARK
+		BackGroundColor transparent
+	}
+	separator {
+		LineColor #BABDBF
+		BackGroundColor transparent
+		FontColor #BABDBF
+	}
+	milestone {
+		FontColor #033C73
+		FontSize 16
+		FontStyle italic
+		BackGroundColor #E9ECEF
+		LineColor #BABDBF
+	}
+	timeline {
+		BackgroundColor #E9ECEF
+		FontColor #BABDBF
+	}
+	closed {
+		BackgroundColor $WARNING_DARK
+		FontColor #DD5600
+	}
+  }
+</style>
+skinparam defaultFontName       "Verdana"
+skinparam defaultFontSize       12
+skinparam dpi                   100
+skinparam shadowing             false
+skinparam roundcorner           8
+skinparam ParticipantPadding    40
+skinparam BoxPadding            40
+skinparam Padding               5
+skinparam ArrowColor            #868E96
+skinparam stereotype {
+    CBackgroundColor #EDF0F2
+    CBorderColor #BABDBF
+    ABackgroundColor #8FB961
+    ABorderColor $SUCCESS_DARK
+    IBackgroundColor #D2494E
+    IBorderColor $DANGER_DARK
+    EBackgroundColor #E47833
+    EBorderColor $WARNING_DARK
+    NBackgroundColor #35638F
+    NBorderColor $INFO_DARK
+}
+skinparam title {
+	FontColor	                 #2FA4E7
+	BorderColor	                 #BABDBF
+	FontSize	    	         20
+	BorderRoundCorner            8
+	BorderThickness 	         1
+	BackgroundColor              transparent
+}
+
+skinparam legend {
+	BackgroundColor transparent
+	BorderColor #BABDBF
+	FontColor #343A40
+}
+
+skinparam swimlane {
+	BorderColor #033C73
+	BorderThickness 2
+	TitleBackgroundColor  #EDF0F2-#E9ECEF
+	TitleFontColor #2FA4E7
+}
+
+
+skinparam activity {
+		FontColor #2FA4E7
+	BorderColor #2FA4E7
+	BackgroundColor transparent
+	BarColor #73A839
+	StartColor #033C73
+	EndColor #033C73
+	DiamondBackgroundColor transparent
+  	DiamondBorderColor #BABDBF
+	DiamondFontColor #BABDBF
+}
+
+
+skinparam participant {
+		FontColor #2FA4E7
+	BorderColor #2FA4E7
+	BackgroundColor transparent
+	ParticipantBorderThickness 2
+}
+
+
+skinparam actor {
+		FontColor #2FA4E7
+	BorderColor #2FA4E7
+	BackgroundColor transparent
+}
+
+
+skinparam arrow {
+	Thickness 3
+	Color #2FA4E7
+	FontColor #343A40
+}
+
+
+skinparam sequence {
+	BorderColor #2FA4E7
+	TitleFontColor #2FA4E7
+	BackgroundColor transparent
+	StartColor #2FA4E7
+	EndColor #2FA4E7
+	BoxBackgroundColor transparent
+	BoxBorderColor #868E96
+	BoxFontColor #343A40
+	DelayFontColor #343A40
+	LifeLineBorderColor #BABDBF
+	LifeLineBorderThickness 2
+	LifeLineBackgroundColor transparent
+	GroupBorderColor #868E96
+	GroupFontColor #343A40
+	GroupHeaderFontColor #033C73
+	DividerBackgroundColor transparent
+    DividerBorderColor #868E96
+    DividerBorderThickness 2
+    DividerFontColor #343A40
+	ReferenceBackgroundColor transparent
+	ReferenceBorderColor #868E96
+	ReferenceFontColor #343A40
+	ReferenceHeaderFontColor #033C73
+	StereotypeFontColor #2FA4E7
+}
+
+
+skinparam partition {
+	BorderColor #2FA4E7
+	FontColor #2FA4E7
+	BackgroundColor transparent
+}
+
+
+skinparam collections {
+		FontColor #2FA4E7
+	BorderColor #2FA4E7
+	BackgroundColor transparent
+}
+
+
+skinparam control {
+		FontColor #2FA4E7
+	BorderColor #2FA4E7
+	BackgroundColor transparent
+}
+
+
+skinparam entity {
+		FontColor #2FA4E7
+	BorderColor #2FA4E7
+	BackgroundColor transparent
+}
+
+
+skinparam boundary {
+		FontColor #2FA4E7
+	BorderColor #2FA4E7
+	BackgroundColor transparent
+}
+
+
+skinparam agent {
+	BackgroundColor transparent
+	BorderColor #999999
+	FontColor #333333
+}
+
+
+skinparam note {
+	BorderThickness 1
+	BackgroundColor transparent
+	BorderColor #033C73
+	FontColor #033C73
+}
+
+
+skinparam artifact {
+	BackgroundColor transparent
+	BorderColor #868E96
+	FontColor #868E96
+}
+
+
+skinparam component {
+		FontColor #2FA4E7
+	BorderColor #2FA4E7
+	BackgroundColor transparent
+}
+
+
+skinparam interface {
+	BackgroundColor  transparent
+	BorderColor  #C71C22
+	FontColor #343A40
+}
+
+
+skinparam storage {
+	BackgroundColor transparent
+  	BorderColor #DD5600
+	FontColor #DD5600
+}
+
+
+skinparam node {
+	BackgroundColor transparent
+	BorderColor #343A40
+	FontColor #343A40
+}
+
+
+skinparam cloud {
+	BackgroundColor #F2FCFE-#eeeeee
+	BorderColor #F2FCFE
+	FontColor #343A40
+}
+
+
+skinparam database {
+		FontColor #2FA4E7
+	BorderColor #2FA4E7
+	BackgroundColor transparent
+}
+
+
+skinparam class {
+		FontColor #2FA4E7
+	BorderColor #2FA4E7
+	BackgroundColor transparent
+	FontColor #F8F9FA
+	HeaderBackgroundColor #2FA4E7-#2683B9
+	StereotypeFontColor #343A40
+	BorderThickness 1
+	AttributeFontColor #343A40
+	AttributeFontSize 11
+}
+
+
+skinparam object {
+		FontColor #2FA4E7
+	BorderColor #2FA4E7
+	BackgroundColor transparent
+	StereotypeFontColor #343A40
+	BorderThickness 1
+	AttributeFontColor #BABDBF
+	AttributeFontSize 11
+}
+
+
+skinparam usecase {
+		FontColor #2FA4E7
+	BorderColor #2FA4E7
+	BackgroundColor transparent
+	BorderThickness 2
+	StereotypeFontColor #2FA4E7
+}
+
+
+skinparam rectangle {
+		FontColor #2FA4E7
+	BorderColor #2FA4E7
+	BackgroundColor transparent
+	BorderThickness 2
+	StereotypeFontColor #2FA4E7
+}
+
+
+skinparam package {
+	BackgroundColor transparent
+  	BorderColor #2FA4E7
+	FontColor #2FA4E7
+	BorderThickness 2
+}
+
+
+skinparam folder {
+	BackgroundColor transparent
+  	BorderColor #DD5600
+	FontColor #DD5600
+	BorderThickness 2
+}
+
+
+skinparam frame {
+	BackgroundColor transparent
+  	BorderColor #033C73
+	FontColor #033C73
+	BorderThickness 2
+}
+
+
+skinparam state {
+		FontColor #2FA4E7
+	BorderColor #2FA4E7
+	BackgroundColor transparent
+	StartColor #033C73
+	EndColor #033C73
+	AttributeFontColor #BABDBF
+	AttributeFontSize 11
+}
+
+
+skinparam queue {
+		FontColor #2FA4E7
+	BorderColor #2FA4E7
+	BackgroundColor transparent
+}
+
+
+skinparam card {
+	BackgroundColor transparent
+	BorderColor #033C73
+	FontColor #033C73
+}
+
+
+skinparam file {
+	BackgroundColor transparent
+	BorderColor #868E96
+	FontColor #868E96
+}
+
+
+skinparam stack {
+		FontColor #2FA4E7
+	BorderColor #2FA4E7
+	BackgroundColor transparent
+}
+
+
+
+
+hide circle
+
+skinparam linetype ortho
+
+entity FuelRefill {
+    +ID: int64
+    CarID: int64
+    - -
+    RefillTime: time.Time
+    TotalMoney: decimal.Decimal
+    KilometerBeforeRefill: int64
+    KilometerAfterRefill: int64
+    FuelPriceCalculated: decimal.Decimal
+    IsPaid: bool
+    CreateBy: int64
+    CreateTime: time.Time
+    UpdateBy: int64
+    UpdateTime: time.Time
+}
+
+entity FuelUsageUser {
+    +ID: int64
+    FuelUsageID: int64
+    UserID: int64
+    - -
+    IsPaid: bool
+}
+
+entity FuelUsage {
+    +ID: int64
+    CarID: int64
+    - -
+    FuelUseTime: time.Time
+    FuelPrice: decimal.Decimal
+    KilometerBeforeUse: int64
+    KilometerAfterUse: int64
+    Description: string
+    TotalMoney: decimal.Decimal
+    CreateTime: time.Time
+    UpdateTime: time.Time
+}
+
+entity User {
+    +ID: int64
+    DefaultCarID: int64
+    - -
+    Nickname: string
+    ProfileImageURL: string
+    CreateTime: time.Time
+    UpdateTime: time.Time
+}
+
+entity Car {
+    +ID: int64
+    - -
+    Name: string
+    CreateTime: time.Time
+    UpdateTime: time.Time
+}
+
+FuelUsage ||- -|{ FuelUsageUser
+User ||..o{ FuelUsageUser
+FuelRefill }o..|| User
+Car ||..o{ FuelUsage
+Car ||..o{ FuelRefill
+Car ||..o{ User 
+
+@enduml
+
+PlantUML version 1.2022.7(Tue Aug 23 00:01:30 ICT 2022)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: TH
+--></g></svg>
