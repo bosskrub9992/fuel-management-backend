@@ -14,8 +14,9 @@ type GetFuelRefillRequest struct {
 }
 
 type GetFuelRefillResponse struct {
-	Data        []FuelRefillDatum `json:"data"`
-	TotalRecord int               `json:"totalRecord"`
+	FuelRefillData []FuelRefillDatum `json:"fuelRefillData"`
+	TotalRecord    int               `json:"totalRecord"`
+	TotalPage      int               `json:"totalPage"`
 }
 
 type FuelRefillDatum struct {

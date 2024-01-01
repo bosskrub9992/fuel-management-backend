@@ -352,12 +352,13 @@ func (s *Service) GetFuelRefills(ctx context.Context, req models.GetFuelRefillRe
 	}
 
 	response := models.GetFuelRefillResponse{
-		Data:        []models.FuelRefillDatum{},
-		TotalRecord: totalRecord,
+		FuelRefillData: []models.FuelRefillDatum{},
+		TotalRecord:    totalRecord,
+		TotalPage:     int(math.Ceil(float64(totalRecord) / float64(req.PageSize))),
 	}
 
 	for _, fr := range fuelRefills {
-		response.Data = append(response.Data, models.FuelRefillDatum{
+		response.FuelRefillData = append(response.FuelRefillData, models.FuelRefillDatum{
 			RefillTime:            fr.RefillTime,
 			KilometerBeforeRefill: fr.KilometerBeforeRefill,
 			KilometerAfterRefill:  fr.KilometerAfterRefill,
