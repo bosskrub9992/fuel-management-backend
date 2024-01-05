@@ -38,7 +38,7 @@ func (r Router) Init() *echo.Echo {
 	apiV1.PUT("/fuel/usages/:fuelUsageId", r.restHandler.PutFuelUsage)
 	apiV1.DELETE("/fuel/usages/:fuelUsageId", r.restHandler.DeleteFuelUsage)
 
-	apiV1.POST("/fuel/refills", r.restHandler.CreateFuelRefill)
+	apiV1.POST("/fuel/refills", r.restHandler.PostFuelRefill)
 	apiV1.GET("/fuel/refills", r.restHandler.GetFuelRefills)
 	apiV1.GET("/fuel/refills/:fuelRefillId", r.restHandler.GetFuelRefillByID)
 	apiV1.PUT("/fuel/refills/:fuelRefillId", r.restHandler.PutFuelRefillByID)

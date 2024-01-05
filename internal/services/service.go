@@ -354,7 +354,7 @@ func (s *Service) GetFuelRefills(ctx context.Context, req models.GetFuelRefillRe
 	response := models.GetFuelRefillResponse{
 		FuelRefillData: []models.FuelRefillDatum{},
 		TotalRecord:    totalRecord,
-		TotalPage:     int(math.Ceil(float64(totalRecord) / float64(req.PageSize))),
+		TotalPage:      int(math.Ceil(float64(totalRecord) / float64(req.PageSize))),
 	}
 
 	for _, fr := range fuelRefills {
@@ -521,6 +521,10 @@ func (s *Service) GetLatestFuelInfoResponse(ctx context.Context, req models.GetL
 	if err != nil {
 		slog.ErrorContext(ctx, err.Error())
 		return nil, err
+	}
+
+	if latestFuelRefill.CreateTime.After(latestFuelUsage.CreateTime) {
+		latestFuelUsage.KilometerAfterUse = latestFuelRefill.KilometerAfterRefill
 	}
 
 	return &models.GetLatestFuelInfoResponse{

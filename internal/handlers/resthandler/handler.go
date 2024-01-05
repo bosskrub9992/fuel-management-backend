@@ -191,10 +191,10 @@ func (h RESTHandler) GetFuelRefills(c echo.Context) error {
 	return c.JSON(http.StatusOK, data)
 }
 
-func (h RESTHandler) CreateFuelRefill(c echo.Context) error {
+func (h RESTHandler) PostFuelRefill(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	req := models.CreateFuelRefillRequest{}
+	var req models.CreateFuelRefillRequest
 	if err := c.Bind(&req); err != nil {
 		slog.ErrorContext(ctx, err.Error())
 		response := errs.ErrBadRequest
