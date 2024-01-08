@@ -12,6 +12,7 @@ type GetFuelRefillByIDRequest struct {
 }
 
 type GetFuelRefillByIDResponse struct {
+	ID                    int64           `json:"id"`
 	RefillTime            time.Time       `json:"refillTime"`
 	KilometerBeforeRefill int64           `json:"kilometerBeforeRefill"`
 	KilometerAfterRefill  int64           `json:"kilometerAfterRefill"`

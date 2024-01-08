@@ -359,6 +359,7 @@ func (s *Service) GetFuelRefills(ctx context.Context, req models.GetFuelRefillRe
 
 	for _, fr := range fuelRefills {
 		response.FuelRefillData = append(response.FuelRefillData, models.FuelRefillDatum{
+			ID:                    fr.ID,
 			RefillTime:            fr.RefillTime,
 			KilometerBeforeRefill: fr.KilometerBeforeRefill,
 			KilometerAfterRefill:  fr.KilometerAfterRefill,
