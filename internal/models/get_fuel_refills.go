@@ -1,8 +1,6 @@
 package models
 
 import (
-	"time"
-
 	"github.com/jinleejun-corp/corelib/validators"
 	"github.com/shopspring/decimal"
 )
@@ -21,7 +19,7 @@ type GetFuelRefillResponse struct {
 
 type FuelRefillDatum struct {
 	ID                    int64           `json:"id"`
-	RefillTime            time.Time       `json:"refillTime"`
+	RefillTime            string          `json:"refillTime"`
 	KilometerBeforeRefill int64           `json:"kilometerBeforeRefill"`
 	KilometerAfterRefill  int64           `json:"kilometerAfterRefill"`
 	TotalMoney            decimal.Decimal `json:"totalMoney"`
