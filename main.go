@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/bosskrub9992/fuel-management-backend/config"
-	"github.com/bosskrub9992/fuel-management-backend/internal/adaptors/gormadaptor"
+	"github.com/bosskrub9992/fuel-management-backend/internal/adaptors/pgadaptor"
 	"github.com/bosskrub9992/fuel-management-backend/internal/handlers/resthandler"
 	"github.com/bosskrub9992/fuel-management-backend/internal/routers"
 	"github.com/bosskrub9992/fuel-management-backend/internal/services"
@@ -21,12 +21,25 @@ import (
 func main() {
 	cfg := config.New()
 	logger := slogger.New(&cfg.Logger)
-	gormDB, err := databases.NewGormDBSqlite(cfg.Database.FilePath)
+	postgresConfig := databases.PostgresConfig{
+		Host:     cfg.Database.Host,
+		Port:     cfg.Database.Port,
+		DBName:   cfg.Database.DBName,
+		Username: cfg.Database.Username,
+		Password: cfg.Database.Password,
+		SSLmode:  cfg.Database.SSLmode,
+	}
+	sqlDB, err := databases.NewPostgres(&postgresConfig)
 	if err != nil {
 		logger.Error(err.Error())
 		return
 	}
-	db := gormadaptor.NewDatabase(gormDB)
+	gormDB, err := databases.NewGormDBPostgres(sqlDB)
+	if err != nil {
+		logger.Error(err.Error())
+		return
+	}
+	db := pgadaptor.NewPostgresAdaptor(gormDB)
 	service := services.New(cfg, db)
 	restHandler := resthandler.New(service)
 

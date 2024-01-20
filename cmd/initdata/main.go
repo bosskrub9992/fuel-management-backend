@@ -14,7 +14,20 @@ import (
 func main() {
 	cfg := config.New()
 	logger := slogger.New(&cfg.Logger)
-	db, err := databases.NewGormDBSqlite(cfg.Database.FilePath)
+	postgresConfig := databases.PostgresConfig{
+		Host:     cfg.Database.Host,
+		Port:     cfg.Database.Port,
+		DBName:   cfg.Database.DBName,
+		Username: cfg.Database.Username,
+		Password: cfg.Database.Password,
+		SSLmode:  cfg.Database.SSLmode,
+	}
+	sqlDB, err := databases.NewPostgres(&postgresConfig)
+	if err != nil {
+		logger.Error(err.Error())
+		return
+	}
+	db, err := databases.NewGormDBPostgres(sqlDB)
 	if err != nil {
 		logger.Error(err.Error())
 		return
@@ -29,16 +42,15 @@ func main() {
 
 	cars := []domains.Car{
 		{
-			ID: 1, Name: "Mazda 2", CreateTime: now, UpdateTime: now,
+			Name: "Mazda 2", CreateTime: now, UpdateTime: now,
 		},
 		{
-			ID: 2, Name: "Ford", CreateTime: now, UpdateTime: now,
+			Name: "Ford", CreateTime: now, UpdateTime: now,
 		},
 	}
 
 	users := []domains.User{
 		{
-			ID:              1,
 			DefaultCarID:    1,
 			Nickname:        "Boss",
 			ProfileImageURL: "http://localhost:8080/public/BOSS.PNG",
@@ -46,7 +58,6 @@ func main() {
 			UpdateTime:      now,
 		},
 		{
-			ID:              2,
 			DefaultCarID:    1,
 			Nickname:        "Best",
 			ProfileImageURL: "http://localhost:8080/public/BEST.PNG",
@@ -54,7 +65,6 @@ func main() {
 			UpdateTime:      now,
 		},
 		{
-			ID:              3,
 			DefaultCarID:    2,
 			Nickname:        "Nut",
 			ProfileImageURL: "http://localhost:8080/public/NUT.PNG",
@@ -62,7 +72,6 @@ func main() {
 			UpdateTime:      now,
 		},
 		{
-			ID:              4,
 			DefaultCarID:    1,
 			Nickname:        "Pat",
 			ProfileImageURL: "http://localhost:8080/public/PAT.PNG",
@@ -73,7 +82,6 @@ func main() {
 
 	fuelRefills := []domains.FuelRefill{
 		{
-			ID:                    1,
 			CarID:                 1,
 			RefillTime:            time.Date(2023, time.January, 1, 0, 0, 0, 0, loc),
 			TotalMoney:            decimal.NewFromFloat(500),
@@ -87,7 +95,6 @@ func main() {
 			UpdateTime:            now,
 		},
 		{
-			ID:                    2,
 			CarID:                 2,
 			RefillTime:            time.Date(2023, time.January, 1, 0, 0, 0, 0, loc),
 			TotalMoney:            decimal.NewFromFloat(500),
@@ -104,7 +111,6 @@ func main() {
 
 	fuelUsages := []domains.FuelUsage{
 		{
-			ID:                 1,
 			CarID:              1,
 			FuelUseTime:        now,
 			FuelPrice:          decimal.NewFromFloat(1),
@@ -116,7 +122,6 @@ func main() {
 			UpdateTime:         now,
 		},
 		{
-			ID:                 2,
 			CarID:              2,
 			FuelUseTime:        now,
 			FuelPrice:          decimal.NewFromFloat(1),
@@ -128,7 +133,6 @@ func main() {
 			UpdateTime:         now,
 		},
 		{
-			ID:                 3,
 			CarID:              1,
 			FuelUseTime:        now,
 			FuelPrice:          decimal.NewFromFloat(1),
@@ -140,7 +144,6 @@ func main() {
 			UpdateTime:         now,
 		},
 		{
-			ID:                 4,
 			CarID:              1,
 			FuelUseTime:        now,
 			FuelPrice:          decimal.NewFromFloat(1),
@@ -152,7 +155,6 @@ func main() {
 			UpdateTime:         now,
 		},
 		{
-			ID:                 5,
 			CarID:              1,
 			FuelUseTime:        now,
 			FuelPrice:          decimal.NewFromFloat(1),
@@ -164,7 +166,6 @@ func main() {
 			UpdateTime:         now,
 		},
 		{
-			ID:                 6,
 			CarID:              1,
 			FuelUseTime:        now,
 			FuelPrice:          decimal.NewFromFloat(1),
@@ -176,7 +177,6 @@ func main() {
 			UpdateTime:         now,
 		},
 		{
-			ID:                 7,
 			CarID:              1,
 			FuelUseTime:        now,
 			FuelPrice:          decimal.NewFromFloat(1),
@@ -188,7 +188,6 @@ func main() {
 			UpdateTime:         now,
 		},
 		{
-			ID:                 8,
 			CarID:              1,
 			FuelUseTime:        now,
 			FuelPrice:          decimal.NewFromFloat(1),
@@ -200,7 +199,6 @@ func main() {
 			UpdateTime:         now,
 		},
 		{
-			ID:                 9,
 			CarID:              1,
 			FuelUseTime:        now,
 			FuelPrice:          decimal.NewFromFloat(1),
@@ -212,7 +210,6 @@ func main() {
 			UpdateTime:         now,
 		},
 		{
-			ID:                 10,
 			CarID:              1,
 			FuelUseTime:        now,
 			FuelPrice:          decimal.NewFromFloat(1),
@@ -227,40 +224,40 @@ func main() {
 
 	fuelUsageUsers := []domains.FuelUsageUser{
 		{
-			ID: 1, FuelUsageID: 1, UserID: 1, IsPaid: false,
+			FuelUsageID: 1, UserID: 1, IsPaid: false,
 		},
 		{
-			ID: 2, FuelUsageID: 1, UserID: 2, IsPaid: true,
+			FuelUsageID: 1, UserID: 2, IsPaid: true,
 		},
 		{
-			ID: 3, FuelUsageID: 2, UserID: 3, IsPaid: false,
+			FuelUsageID: 2, UserID: 3, IsPaid: false,
 		},
 		{
-			ID: 4, FuelUsageID: 2, UserID: 4, IsPaid: true,
+			FuelUsageID: 2, UserID: 4, IsPaid: true,
 		},
 		{
-			ID: 5, FuelUsageID: 3, UserID: 1, IsPaid: true,
+			FuelUsageID: 3, UserID: 1, IsPaid: true,
 		},
 		{
-			ID: 6, FuelUsageID: 4, UserID: 1, IsPaid: true,
+			FuelUsageID: 4, UserID: 1, IsPaid: true,
 		},
 		{
-			ID: 7, FuelUsageID: 5, UserID: 1, IsPaid: true,
+			FuelUsageID: 5, UserID: 1, IsPaid: true,
 		},
 		{
-			ID: 8, FuelUsageID: 6, UserID: 1, IsPaid: true,
+			FuelUsageID: 6, UserID: 1, IsPaid: true,
 		},
 		{
-			ID: 9, FuelUsageID: 7, UserID: 1, IsPaid: true,
+			FuelUsageID: 7, UserID: 1, IsPaid: true,
 		},
 		{
-			ID: 10, FuelUsageID: 8, UserID: 1, IsPaid: true,
+			FuelUsageID: 8, UserID: 1, IsPaid: true,
 		},
 		{
-			ID: 11, FuelUsageID: 9, UserID: 1, IsPaid: true,
+			FuelUsageID: 9, UserID: 1, IsPaid: true,
 		},
 		{
-			ID: 12, FuelUsageID: 10, UserID: 1, IsPaid: true,
+			FuelUsageID: 10, UserID: 1, IsPaid: true,
 		},
 	}
 

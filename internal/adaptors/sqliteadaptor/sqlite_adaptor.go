@@ -1,4 +1,4 @@
-package gormadaptor
+package sqliteadaptor
 
 import (
 	"context"
@@ -10,24 +10,24 @@ import (
 	"gorm.io/gorm"
 )
 
-type Database struct {
+type SQLiteAdaptor struct {
 	db *gorm.DB
 }
 
-func NewDatabase(db *gorm.DB) *Database {
-	return &Database{
+func NewSQLiteAdaptor(db *gorm.DB) *SQLiteAdaptor {
+	return &SQLiteAdaptor{
 		db: db,
 	}
 }
 
-func (adt *Database) Transaction(ctx context.Context, fn func(ctxTx context.Context) error) error {
+func (adt *SQLiteAdaptor) Transaction(ctx context.Context, fn func(ctxTx context.Context) error) error {
 	return adt.db.Transaction(func(tx *gorm.DB) error {
 		ctxTx := context.WithValue(ctx, constants.WithTx, tx)
 		return fn(ctxTx)
 	})
 }
 
-func (adt *Database) dbOrTx(ctx context.Context) *gorm.DB {
+func (adt *SQLiteAdaptor) dbOrTx(ctx context.Context) *gorm.DB {
 	tx, ok := ctx.Value(constants.WithTx).(*gorm.DB)
 	if ok {
 		return tx
@@ -35,20 +35,20 @@ func (adt *Database) dbOrTx(ctx context.Context) *gorm.DB {
 	return adt.db.WithContext(ctx)
 }
 
-func (adt *Database) CreateFuelUsage(ctx context.Context, fuelUsage domains.FuelUsage) (int64, error) {
+func (adt *SQLiteAdaptor) CreateFuelUsage(ctx context.Context, fuelUsage domains.FuelUsage) (int64, error) {
 	if err := adt.dbOrTx(ctx).Create(&fuelUsage).Error; err != nil {
 		return 0, err
 	}
 	return fuelUsage.ID, nil
 }
 
-func (adt *Database) CreateFuelUsageUsers(ctx context.Context, fuelUsageUsers []domains.FuelUsageUser) error {
+func (adt *SQLiteAdaptor) CreateFuelUsageUsers(ctx context.Context, fuelUsageUsers []domains.FuelUsageUser) error {
 	return adt.dbOrTx(ctx).
 		Create(&fuelUsageUsers).
 		Error
 }
 
-func (adt *Database) GetFuelUsageInPagination(
+func (adt *SQLiteAdaptor) GetFuelUsageInPagination(
 	ctx context.Context,
 	params services.GetFuelUsageInPaginationParams,
 ) (
@@ -91,7 +91,7 @@ func (adt *Database) GetFuelUsageInPagination(
 	return fuelUsages, totalCount, nil
 }
 
-func (adt *Database) GetFuelUsageUsersByFuelUsageIDs(ctx context.Context, fuelUsageIDs []int64) ([]services.FuelUsageUser, error) {
+func (adt *SQLiteAdaptor) GetFuelUsageUsersByFuelUsageIDs(ctx context.Context, fuelUsageIDs []int64) ([]services.FuelUsageUser, error) {
 	var fuelUsageUsers []services.FuelUsageUser
 	err := adt.dbOrTx(ctx).
 		Table("fuel_usage_users").
@@ -105,7 +105,7 @@ func (adt *Database) GetFuelUsageUsersByFuelUsageIDs(ctx context.Context, fuelUs
 	return fuelUsageUsers, nil
 }
 
-func (adt *Database) GetAllUsers(ctx context.Context) ([]domains.User, error) {
+func (adt *SQLiteAdaptor) GetAllUsers(ctx context.Context) ([]domains.User, error) {
 	var users []domains.User
 	err := adt.dbOrTx(ctx).
 		Model(&domains.User{}).
@@ -117,7 +117,7 @@ func (adt *Database) GetAllUsers(ctx context.Context) ([]domains.User, error) {
 	return users, nil
 }
 
-func (adt *Database) GetLatestFuelRefillByCarID(ctx context.Context, carID int64) (*domains.FuelRefill, error) {
+func (adt *SQLiteAdaptor) GetLatestFuelRefillByCarID(ctx context.Context, carID int64) (*domains.FuelRefill, error) {
 	var fuelRefill domains.FuelRefill
 	err := adt.dbOrTx(ctx).
 		Model(&fuelRefill).
@@ -132,7 +132,7 @@ func (adt *Database) GetLatestFuelRefillByCarID(ctx context.Context, carID int64
 	return &fuelRefill, nil
 }
 
-func (adt *Database) GetAllCars(ctx context.Context) ([]domains.Car, error) {
+func (adt *SQLiteAdaptor) GetAllCars(ctx context.Context) ([]domains.Car, error) {
 	var cars []domains.Car
 	err := adt.dbOrTx(ctx).
 		Model(&domains.Car{}).
@@ -143,7 +143,7 @@ func (adt *Database) GetAllCars(ctx context.Context) ([]domains.Car, error) {
 	return cars, nil
 }
 
-func (adt *Database) GetFuelUsageByID(ctx context.Context, id int64) (*domains.FuelUsage, error) {
+func (adt *SQLiteAdaptor) GetFuelUsageByID(ctx context.Context, id int64) (*domains.FuelUsage, error) {
 	var fuelUsage domains.FuelUsage
 	err := adt.dbOrTx(ctx).
 		Model(&fuelUsage).
@@ -157,7 +157,7 @@ func (adt *Database) GetFuelUsageByID(ctx context.Context, id int64) (*domains.F
 	return &fuelUsage, nil
 }
 
-func (adt *Database) GetFuelUsageUsersByFuelUsageID(ctx context.Context, fuelUsageID int64) ([]services.FuelUsageUser, error) {
+func (adt *SQLiteAdaptor) GetFuelUsageUsersByFuelUsageID(ctx context.Context, fuelUsageID int64) ([]services.FuelUsageUser, error) {
 	var fuelUsageUsers []services.FuelUsageUser
 	err := adt.dbOrTx(ctx).
 		Table("fuel_usage_users").
@@ -171,26 +171,26 @@ func (adt *Database) GetFuelUsageUsersByFuelUsageID(ctx context.Context, fuelUsa
 	return fuelUsageUsers, nil
 }
 
-func (adt *Database) UpdateFuelUsage(ctx context.Context, fuelUsage domains.FuelUsage) error {
+func (adt *SQLiteAdaptor) UpdateFuelUsage(ctx context.Context, fuelUsage domains.FuelUsage) error {
 	return adt.dbOrTx(ctx).
 		Save(&fuelUsage).
 		Error
 }
 
-func (adt *Database) DeleteFuelUsageUsersByFuelUsageID(ctx context.Context, fuelUsageID int64) error {
+func (adt *SQLiteAdaptor) DeleteFuelUsageUsersByFuelUsageID(ctx context.Context, fuelUsageID int64) error {
 	return adt.dbOrTx(ctx).
 		Where("fuel_usage_id = ?", fuelUsageID).
 		Delete(&domains.FuelUsageUser{}).
 		Error
 }
 
-func (adt *Database) DeleteFuelUsageByID(ctx context.Context, id int64) error {
+func (adt *SQLiteAdaptor) DeleteFuelUsageByID(ctx context.Context, id int64) error {
 	return adt.dbOrTx(ctx).
 		Delete(&domains.FuelUsage{}, id).
 		Error
 }
 
-func (adt *Database) GetFuelRefillPagination(ctx context.Context, params services.GetFuelRefillPaginationParams) ([]domains.FuelRefill, int, error) {
+func (adt *SQLiteAdaptor) GetFuelRefillPagination(ctx context.Context, params services.GetFuelRefillPaginationParams) ([]domains.FuelRefill, int, error) {
 	stmt := adt.dbOrTx(ctx).
 		Model(&domains.FuelRefill{}).
 		Where("car_id = ?", params.CarID)
@@ -222,13 +222,13 @@ func (adt *Database) GetFuelRefillPagination(ctx context.Context, params service
 	return fuelRefills, int(totalCount), nil
 }
 
-func (adt *Database) CreateFuelRefill(ctx context.Context, fr domains.FuelRefill) error {
+func (adt *SQLiteAdaptor) CreateFuelRefill(ctx context.Context, fr domains.FuelRefill) error {
 	return adt.dbOrTx(ctx).
 		Create(&fr).
 		Error
 }
 
-func (adt *Database) GetFuelRefillByID(ctx context.Context, fuelRefillID int64) (*domains.FuelRefill, error) {
+func (adt *SQLiteAdaptor) GetFuelRefillByID(ctx context.Context, fuelRefillID int64) (*domains.FuelRefill, error) {
 	var fr domains.FuelRefill
 	err := adt.dbOrTx(ctx).
 		Model(&domains.FuelRefill{}).
@@ -242,19 +242,19 @@ func (adt *Database) GetFuelRefillByID(ctx context.Context, fuelRefillID int64) 
 	return &fr, nil
 }
 
-func (adt *Database) DeleteFuelRefillByID(ctx context.Context, fuelRefillID int64) error {
+func (adt *SQLiteAdaptor) DeleteFuelRefillByID(ctx context.Context, fuelRefillID int64) error {
 	return adt.dbOrTx(ctx).
 		Delete(&domains.FuelRefill{}, fuelRefillID).
 		Error
 }
 
-func (adt *Database) UpdateFuelRefill(ctx context.Context, fr domains.FuelRefill) error {
+func (adt *SQLiteAdaptor) UpdateFuelRefill(ctx context.Context, fr domains.FuelRefill) error {
 	return adt.dbOrTx(ctx).
 		Save(&fr).
 		Error
 }
 
-func (adt *Database) GetLatestFuelUsageByCarID(ctx context.Context, carID int64) (*domains.FuelUsage, error) {
+func (adt *SQLiteAdaptor) GetLatestFuelUsageByCarID(ctx context.Context, carID int64) (*domains.FuelUsage, error) {
 	var fuelUsage domains.FuelUsage
 	err := adt.dbOrTx(ctx).
 		Model(&fuelUsage).

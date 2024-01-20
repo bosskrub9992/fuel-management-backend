@@ -524,12 +524,13 @@ func (s *Service) GetLatestFuelInfoResponse(ctx context.Context, req models.GetL
 		return nil, err
 	}
 
-	if latestFuelRefill.CreateTime.After(latestFuelUsage.CreateTime) {
-		latestFuelUsage.KilometerAfterUse = latestFuelRefill.KilometerAfterRefill
+	var latestKmAfterUse = latestFuelUsage.KilometerAfterUse
+	if latestFuelRefill.RefillTime.After(latestFuelUsage.FuelUseTime) {
+		latestKmAfterUse = latestFuelRefill.KilometerAfterRefill
 	}
 
 	return &models.GetLatestFuelInfoResponse{
 		LatestFuelPrice:         latestFuelRefill.FuelPriceCalculated,
-		LatestKilometerAfterUse: latestFuelUsage.KilometerAfterUse,
+		LatestKilometerAfterUse: latestKmAfterUse,
 	}, nil
 }

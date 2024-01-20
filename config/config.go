@@ -12,6 +12,12 @@ type Config struct {
 		Port string
 	}
 	Database struct {
+		Host     string
+		Port     string
+		DBName   string
+		Username string
+		Password string
+		SSLmode  string
 		FilePath string
 	}
 	Logger slogger.Config

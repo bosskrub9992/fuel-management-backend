@@ -23,7 +23,20 @@ func (d Test) TableName() string {
 func main() {
 	cfg := config.New()
 	logger := slogger.New(&cfg.Logger)
-	db, err := databases.NewGormDBSqlite(cfg.Database.FilePath)
+	postgresConfig := databases.PostgresConfig{
+		Host:     cfg.Database.Host,
+		Port:     cfg.Database.Port,
+		DBName:   cfg.Database.DBName,
+		Username: cfg.Database.Username,
+		Password: cfg.Database.Password,
+		SSLmode:  cfg.Database.SSLmode,
+	}
+	sqlDB, err := databases.NewPostgres(&postgresConfig)
+	if err != nil {
+		logger.Error(err.Error())
+		return
+	}
+	db, err := databases.NewGormDBPostgres(sqlDB)
 	if err != nil {
 		logger.Error(err.Error())
 		return
