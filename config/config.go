@@ -30,12 +30,11 @@ func init() {
 	viper.AddConfigPath("../../config") // unit test
 	viper.AddConfigPath("/app/config")  // docker
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-
 	if err := viper.ReadInConfig(); err != nil {
 		panic(err)
 	}
 
-	viper.AutomaticEnv()
+	viper.AutomaticEnv() // to overwrite with env var, use capital letter and underscore
 }
 
 func New() *Config {
@@ -43,6 +42,5 @@ func New() *Config {
 	if err := viper.Unmarshal(&cfg); err != nil {
 		panic(err)
 	}
-	// TODO add overwrite from prod server env
 	return &cfg
 }
