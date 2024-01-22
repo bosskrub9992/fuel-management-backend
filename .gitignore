@@ -7,3 +7,4 @@ go.work.sum
 vendor
 internal/templates/node_modules
 internal/templates/dist
+config/config_supabase.yaml

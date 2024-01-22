@@ -8,6 +8,7 @@ import (
 	"github.com/jinleejun-corp/corelib/databases"
 	"github.com/jinleejun-corp/corelib/slogger"
 	"gopkg.in/guregu/null.v4"
+	"gorm.io/gorm"
 )
 
 type Test struct {
@@ -34,7 +35,7 @@ func main() {
 			slog.Error(err.Error())
 		}
 	}()
-	db, err := databases.NewGormDBPostgres(sqlDB)
+	db, err := databases.NewGormDBPostgres(sqlDB, gorm.Config{})
 	if err != nil {
 		slog.Error(err.Error())
 		return

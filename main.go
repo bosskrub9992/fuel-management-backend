@@ -17,6 +17,7 @@ import (
 	"github.com/jinleejun-corp/corelib/databases"
 	"github.com/jinleejun-corp/corelib/slogger"
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -32,7 +33,7 @@ func main() {
 			slog.Error(err.Error())
 		}
 	}()
-	gormDB, err := databases.NewGormDBPostgres(sqlDB)
+	gormDB, err := databases.NewGormDBPostgres(sqlDB, gorm.Config{})
 	if err != nil {
 		slog.Error(err.Error())
 		return

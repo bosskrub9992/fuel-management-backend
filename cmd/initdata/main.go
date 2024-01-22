@@ -9,6 +9,7 @@ import (
 	"github.com/jinleejun-corp/corelib/databases"
 	"github.com/jinleejun-corp/corelib/slogger"
 	"github.com/shopspring/decimal"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -24,7 +25,7 @@ func main() {
 			slog.Error(err.Error())
 		}
 	}()
-	db, err := databases.NewGormDBPostgres(sqlDB)
+	db, err := databases.NewGormDBPostgres(sqlDB, gorm.Config{})
 	if err != nil {
 		slog.Error(err.Error())
 		return
