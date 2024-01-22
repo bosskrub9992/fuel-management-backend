@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -20,23 +21,20 @@ import (
 
 func main() {
 	cfg := config.New()
-	logger := slogger.New(&cfg.Logger)
-	postgresConfig := databases.PostgresConfig{
-		Host:     cfg.Database.Host,
-		Port:     cfg.Database.Port,
-		DBName:   cfg.Database.DBName,
-		Username: cfg.Database.Username,
-		Password: cfg.Database.Password,
-		SSLmode:  cfg.Database.SSLmode,
-	}
-	sqlDB, err := databases.NewPostgres(&postgresConfig)
+	slog.SetDefault(slogger.New(&cfg.Logger))
+	sqlDB, err := databases.NewPostgres(&cfg.Database.Postgres)
 	if err != nil {
-		logger.Error(err.Error())
+		slog.Error(err.Error())
 		return
 	}
+	defer func() {
+		if err := sqlDB.Close(); err != nil {
+			slog.Error(err.Error())
+		}
+	}()
 	gormDB, err := databases.NewGormDBPostgres(sqlDB)
 	if err != nil {
-		logger.Error(err.Error())
+		slog.Error(err.Error())
 		return
 	}
 	db := pgadaptor.NewPostgresAdaptor(gormDB)
@@ -51,7 +49,7 @@ func main() {
 	go func() {
 		address := fmt.Sprintf(":%s", cfg.Server.Port)
 		if err := e.Start(address); err != nil && err != http.ErrServerClosed {
-			logger.Error(err.Error())
+			slog.Error(err.Error())
 			return
 		}
 	}()
@@ -63,7 +61,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err := e.Shutdown(ctx); err != nil {
-		logger.Error(err.Error())
+		slog.Error(err.Error())
 		return
 	}
 }

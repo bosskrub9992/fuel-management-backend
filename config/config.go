@@ -3,6 +3,7 @@ package config
 import (
 	"strings"
 
+	"github.com/jinleejun-corp/corelib/databases"
 	"github.com/jinleejun-corp/corelib/slogger"
 	"github.com/spf13/viper"
 )
@@ -12,13 +13,10 @@ type Config struct {
 		Port string
 	}
 	Database struct {
-		Host     string
-		Port     string
-		DBName   string
-		Username string
-		Password string
-		SSLmode  string
-		FilePath string
+		Postgres databases.PostgresConfig
+		SQLite   struct {
+			FilePath string
+		}
 	}
 	Logger slogger.Config
 }
@@ -34,7 +32,7 @@ func init() {
 		panic(err)
 	}
 
-	viper.AutomaticEnv() // to overwrite with env var, use capital letter and underscore
+	viper.AutomaticEnv() // to overwrite with env var, use upper+snake case
 }
 
 func New() *Config {

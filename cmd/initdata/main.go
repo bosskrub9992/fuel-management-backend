@@ -13,30 +13,27 @@ import (
 
 func main() {
 	cfg := config.New()
-	logger := slogger.New(&cfg.Logger)
-	postgresConfig := databases.PostgresConfig{
-		Host:     cfg.Database.Host,
-		Port:     cfg.Database.Port,
-		DBName:   cfg.Database.DBName,
-		Username: cfg.Database.Username,
-		Password: cfg.Database.Password,
-		SSLmode:  cfg.Database.SSLmode,
-	}
-	sqlDB, err := databases.NewPostgres(&postgresConfig)
+	slog.SetDefault(slogger.New(&cfg.Logger))
+	sqlDB, err := databases.NewPostgres(&cfg.Database.Postgres)
 	if err != nil {
-		logger.Error(err.Error())
+		slog.Error(err.Error())
 		return
 	}
+	defer func() {
+		if err := sqlDB.Close(); err != nil {
+			slog.Error(err.Error())
+		}
+	}()
 	db, err := databases.NewGormDBPostgres(sqlDB)
 	if err != nil {
-		logger.Error(err.Error())
+		slog.Error(err.Error())
 		return
 	}
 
 	now := time.Now()
 	loc, err := time.LoadLocation("Asia/Bangkok")
 	if err != nil {
-		logger.Error(err.Error())
+		slog.Error(err.Error())
 		return
 	}
 
@@ -262,27 +259,27 @@ func main() {
 	}
 
 	if err := db.Create(&cars).Error; err != nil {
-		logger.Error(err.Error())
+		slog.Error(err.Error())
 		return
 	}
 
 	if err := db.Create(&users).Error; err != nil {
-		logger.Error(err.Error())
+		slog.Error(err.Error())
 		return
 	}
 
 	if err := db.Create(&fuelRefills).Error; err != nil {
-		logger.Error(err.Error())
+		slog.Error(err.Error())
 		return
 	}
 
 	if err := db.Create(&fuelUsages).Error; err != nil {
-		logger.Error(err.Error())
+		slog.Error(err.Error())
 		return
 	}
 
 	if err := db.Create(&fuelUsageUsers).Error; err != nil {
-		logger.Error(err.Error())
+		slog.Error(err.Error())
 		return
 	}
 

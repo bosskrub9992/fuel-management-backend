@@ -2,13 +2,15 @@ server:
   port: "8080"
 
 database:
-  host: "localhost"
-  port: "5432"
-  username: "postgres"
-  password: "postgres"
-  dbname: "fuel"
-  sslmode: "disable"
-  filePath: "./test.db"
+  postgres:
+    host: "localhost"
+    port: "5432"
+    username: "postgres"
+    password: "postgres"
+    dbname: "fuel"
+    sslmode: "disable"
+  sqlite:
+    filePath: "./test.db"
 
 logger:
   isProductionEnv: false
