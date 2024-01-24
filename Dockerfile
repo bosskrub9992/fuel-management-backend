@@ -19,7 +19,9 @@ RUN go build -o main
 
 FROM alpine:3.18
 
-COPY --from=builder /app ./app
+COPY --from=builder /app/main ./app/main
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/config/config.yml ./app/config/config.yml
 
 # set default timezone
 RUN apk add --no-cache tzdata
