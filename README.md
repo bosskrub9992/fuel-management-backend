@@ -48,4 +48,4 @@ check vulnability
 ```sh
 go install golang.org/x/vuln/cmd/govulncheck@latest
 ~/go/bin/govulncheck ./...
-```
+``` 
