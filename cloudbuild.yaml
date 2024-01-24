@@ -21,3 +21,6 @@
 
   images:
   - 'gcr.io/$PROJECT_ID/fuel-management-backend-2:$COMMIT_SHA'
+
+  options:
+    logging: CLOUD_LOGGING_ONLY
