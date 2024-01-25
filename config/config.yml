@@ -3,12 +3,12 @@ server:
 
 database:
   postgres:
-    host: "db.kuzouiwlxsjbmzvloggy.supabase.co"
+    host: "localhost"
     port: "5432"
     username: "postgres"
-    password: "Csp_postgresql_3695"
-    dbname: "postgres"
-    sslmode: ""
+    password: "postgres"
+    dbname: "fuel"
+    sslmode: "disable"
   sqlite:
     file_path: "./test.db"
 
