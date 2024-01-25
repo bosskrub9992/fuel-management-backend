@@ -22,7 +22,11 @@ import (
 
 func main() {
 	cfg := config.New()
-	slog.SetDefault(slogger.New(&cfg.Logger))
+	slog.SetDefault(slogger.New(&slogger.Config{
+		IsProductionEnv: cfg.Logger.IsProductionEnv,
+		MaskingFields:   cfg.Logger.MaskingFields,
+		RemovingFields:  cfg.Logger.RemovingFields,
+	}))
 	sqlDB, err := databases.NewPostgres(&cfg.Database.Postgres)
 	if err != nil {
 		slog.Error(err.Error())

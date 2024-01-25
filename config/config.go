@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/bosskrub9992/fuel-management-backend/library/databases"
-	"github.com/bosskrub9992/fuel-management-backend/library/slogger"
 	"github.com/spf13/viper"
 )
 
@@ -15,10 +14,14 @@ type Config struct {
 	Database struct {
 		Postgres databases.PostgresConfig
 		SQLite   struct {
-			FilePath string
+			FilePath string `mapstructure:"file_path"`
 		}
 	}
-	Logger slogger.Config
+	Logger struct {
+		IsProductionEnv bool     `mapstructure:"is_production_env"`
+		MaskingFields   []string `mapstructure:"masking_fields"`
+		RemovingFields  []string `mapstructure:"removing_fields"`
+	}
 }
 
 func init() {

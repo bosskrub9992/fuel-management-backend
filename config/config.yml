@@ -3,20 +3,20 @@ server:
 
 database:
   postgres:
-    host: "localhost"
+    host: "db.kuzouiwlxsjbmzvloggy.supabase.co"
     port: "5432"
     username: "postgres"
-    password: "postgres"
-    dbname: "fuel"
-    sslmode: "disable"
+    password: "Csp_postgresql_3695"
+    dbname: "postgres"
+    sslmode: ""
   sqlite:
-    filePath: "./test.db"
+    file_path: "./test.db"
 
 logger:
-  isProductionEnv: false
-  maskingFields:
+  is_production_env: false
+  masking_fields:
     - firstName
     - lastName
-  removingFields:
+  removing_fields:
     - firstName
     - lastName
