@@ -8,7 +8,7 @@ import (
 
 	"github.com/bosskrub9992/fuel-management-backend/internal/models"
 	"github.com/bosskrub9992/fuel-management-backend/internal/services"
-	"github.com/jinleejun-corp/corelib/errs"
+	"github.com/bosskrub9992/fuel-management-backend/library/errs"
 	"github.com/labstack/echo/v4"
 )
 

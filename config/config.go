@@ -3,8 +3,8 @@ package config
 import (
 	"strings"
 
-	"github.com/jinleejun-corp/corelib/databases"
-	"github.com/jinleejun-corp/corelib/slogger"
+	"github.com/bosskrub9992/fuel-management-backend/library/databases"
+	"github.com/bosskrub9992/fuel-management-backend/library/slogger"
 	"github.com/spf13/viper"
 )
 

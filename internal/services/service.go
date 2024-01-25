@@ -12,7 +12,7 @@ import (
 	"github.com/bosskrub9992/fuel-management-backend/config"
 	"github.com/bosskrub9992/fuel-management-backend/internal/domains"
 	"github.com/bosskrub9992/fuel-management-backend/internal/models"
-	"github.com/jinleejun-corp/corelib/errs"
+	"github.com/bosskrub9992/fuel-management-backend/library/errs"
 	"github.com/shopspring/decimal"
 )
 

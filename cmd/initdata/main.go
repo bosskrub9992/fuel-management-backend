@@ -6,8 +6,8 @@ import (
 
 	"github.com/bosskrub9992/fuel-management-backend/config"
 	"github.com/bosskrub9992/fuel-management-backend/internal/domains"
-	"github.com/jinleejun-corp/corelib/databases"
-	"github.com/jinleejun-corp/corelib/slogger"
+	"github.com/bosskrub9992/fuel-management-backend/library/databases"
+	"github.com/bosskrub9992/fuel-management-backend/library/slogger"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )

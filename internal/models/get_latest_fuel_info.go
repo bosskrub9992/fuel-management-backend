@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/jinleejun-corp/corelib/validators"
+	"github.com/bosskrub9992/fuel-management-backend/library/validators"
 	"github.com/shopspring/decimal"
 )
 

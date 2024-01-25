@@ -4,7 +4,7 @@ import (
 	"log/slog"
 
 	"github.com/bosskrub9992/fuel-management-backend/config"
-	"github.com/jinleejun-corp/corelib/slogger"
+	"github.com/bosskrub9992/fuel-management-backend/library/slogger"
 )
 
 func main() {

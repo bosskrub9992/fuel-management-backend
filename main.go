@@ -14,8 +14,8 @@ import (
 	"github.com/bosskrub9992/fuel-management-backend/internal/handlers/resthandler"
 	"github.com/bosskrub9992/fuel-management-backend/internal/routers"
 	"github.com/bosskrub9992/fuel-management-backend/internal/services"
-	"github.com/jinleejun-corp/corelib/databases"
-	"github.com/jinleejun-corp/corelib/slogger"
+	"github.com/bosskrub9992/fuel-management-backend/library/databases"
+	"github.com/bosskrub9992/fuel-management-backend/library/slogger"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )

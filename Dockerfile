@@ -1,11 +1,11 @@
 FROM golang:1.21-alpine as builder
 
 # configuration for dependency from private repository
-RUN apk update && apk add --no-cache git
-ARG GITHUB_TOKEN
-ENV CGO_ENABLED=0 GO111MODULE=on GOOS=linux
-ENV GOPRIVATE="github.com/jinleejun-corp"
-RUN git config --global url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+# RUN apk update && apk add --no-cache git
+# ARG GITHUB_TOKEN
+# ENV CGO_ENABLED=0 GO111MODULE=on GOOS=linux
+# ENV GOPRIVATE="github.com/jinleejun-corp"
+# RUN git config --global url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
 
 WORKDIR /app
 
