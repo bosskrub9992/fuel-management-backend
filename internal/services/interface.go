@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 
-	"github.com/bosskrub9992/fuel-management-backend/internal/domains"
+	"github.com/bosskrub9992/fuel-management-backend/internal/entities/domains"
 )
 
 type DatabaseAdaptor interface {

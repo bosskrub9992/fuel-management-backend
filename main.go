@@ -44,7 +44,8 @@ func main() {
 	}
 	db := pgadaptor.NewPostgresAdaptor(gormDB)
 	service := services.New(cfg, db)
-	restHandler := resthandler.New(service)
+	serverStartTime := time.Now()
+	restHandler := resthandler.New(service, serverStartTime)
 
 	e := echo.New()
 	router := routers.New(e, restHandler)

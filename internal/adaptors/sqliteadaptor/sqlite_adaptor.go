@@ -5,7 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/bosskrub9992/fuel-management-backend/internal/constants"
-	"github.com/bosskrub9992/fuel-management-backend/internal/domains"
+	"github.com/bosskrub9992/fuel-management-backend/internal/entities/domains"
 	"github.com/bosskrub9992/fuel-management-backend/internal/services"
 	"gorm.io/gorm"
 )

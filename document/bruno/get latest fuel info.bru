@@ -5,7 +5,11 @@ meta {
 }
 
 get {
-  url: {{local}}/latest-fuel-info
+  url: {{local}}/latest-fuel-info?carId=2
   body: none
   auth: none
+}
+
+query {
+  carId: 2
 }

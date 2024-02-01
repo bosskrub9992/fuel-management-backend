@@ -6,21 +6,21 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/bosskrub9992/fuel-management-backend/internal/models"
+	"github.com/bosskrub9992/fuel-management-backend/internal/entities/models"
 	"github.com/bosskrub9992/fuel-management-backend/internal/services"
 	"github.com/bosskrub9992/fuel-management-backend/library/errs"
 	"github.com/labstack/echo/v4"
 )
 
 type RESTHandler struct {
-	serverStartTime time.Time
 	service         *services.Service
+	serverStartTime time.Time
 }
 
-func New(service *services.Service) *RESTHandler {
+func New(service *services.Service, serverStartTime time.Time) *RESTHandler {
 	return &RESTHandler{
-		serverStartTime: time.Now(),
 		service:         service,
+		serverStartTime: serverStartTime,
 	}
 }
 
