@@ -512,7 +512,7 @@ func (s *Service) GetLatestFuelInfoResponse(ctx context.Context, req models.GetL
 		return nil, errs.ErrValidateFailed
 	}
 
-	slog.DebugContext(ctx, "check timezone", slog.Time("now", time.Now()))
+	slog.InfoContext(ctx, "check timezone", slog.Time("now", time.Now()))
 
 	latestFuelUsage, err := s.db.GetLatestFuelUsageByCarID(ctx, req.CarID)
 	if err != nil {
