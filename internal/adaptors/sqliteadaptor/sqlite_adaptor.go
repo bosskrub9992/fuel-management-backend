@@ -7,6 +7,7 @@ import (
 	"github.com/bosskrub9992/fuel-management-backend/internal/constants"
 	"github.com/bosskrub9992/fuel-management-backend/internal/entities/domains"
 	"github.com/bosskrub9992/fuel-management-backend/internal/services"
+	"github.com/bosskrub9992/fuel-management-backend/library/errs"
 	"gorm.io/gorm"
 )
 
@@ -14,10 +15,13 @@ type SQLiteAdaptor struct {
 	db *gorm.DB
 }
 
-func NewSQLiteAdaptor(db *gorm.DB) *SQLiteAdaptor {
+func NewSQLiteAdaptor(db *gorm.DB) (*SQLiteAdaptor, error) {
+	if db == nil {
+		return nil, errs.ErrNotEnoughArgForDependencyInjection
+	}
 	return &SQLiteAdaptor{
 		db: db,
-	}
+	}, nil
 }
 
 func (adt *SQLiteAdaptor) Transaction(ctx context.Context, fn func(ctxTx context.Context) error) error {

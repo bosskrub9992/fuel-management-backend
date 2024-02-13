@@ -42,13 +42,28 @@ func main() {
 		slog.Error(err.Error())
 		return
 	}
-	db := pgadaptor.NewPostgresAdaptor(gormDB)
-	service := services.New(cfg, db)
-	serverStartTime := time.Now()
-	restHandler := resthandler.New(service, serverStartTime)
+	db, err := pgadaptor.NewPostgresAdaptor(gormDB)
+	if err != nil {
+		slog.Error(err.Error())
+		return
+	}
+	service, err := services.New(cfg, db)
+	if err != nil {
+		slog.Error(err.Error())
+		return
+	}
+	restHandler, err := resthandler.New(service, time.Now())
+	if err != nil {
+		slog.Error(err.Error())
+		return
+	}
 
 	e := echo.New()
-	router := routers.New(e, restHandler)
+	router, err := routers.New(e, restHandler)
+	if err != nil {
+		slog.Error(err.Error())
+		return
+	}
 	e = router.Init()
 
 	// run server

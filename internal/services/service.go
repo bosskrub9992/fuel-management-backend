@@ -21,11 +21,14 @@ type Service struct {
 	db  DatabaseAdaptor
 }
 
-func New(cfg *config.Config, db DatabaseAdaptor) *Service {
+func New(cfg *config.Config, db DatabaseAdaptor) (*Service, error) {
+	if cfg == nil || db == nil {
+		return nil, errs.ErrNotEnoughArgForDependencyInjection
+	}
 	return &Service{
 		cfg: cfg,
 		db:  db,
-	}
+	}, nil
 }
 
 func (s *Service) DeleteFuelUsageByID(ctx context.Context, req models.DeleteFuelUsageByIDRequest) error {

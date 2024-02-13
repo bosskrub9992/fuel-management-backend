@@ -17,11 +17,14 @@ type RESTHandler struct {
 	serverStartTime time.Time
 }
 
-func New(service *services.Service, serverStartTime time.Time) *RESTHandler {
+func New(service *services.Service, serverStartTime time.Time) (*RESTHandler, error) {
+	if service == nil {
+		return nil, errs.ErrNotEnoughArgForDependencyInjection
+	}
 	return &RESTHandler{
 		service:         service,
 		serverStartTime: serverStartTime,
-	}
+	}, nil
 }
 
 func (h RESTHandler) GetUsers(c echo.Context) error {

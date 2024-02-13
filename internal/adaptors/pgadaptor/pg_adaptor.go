@@ -7,6 +7,7 @@ import (
 	"github.com/bosskrub9992/fuel-management-backend/internal/constants"
 	"github.com/bosskrub9992/fuel-management-backend/internal/entities/domains"
 	"github.com/bosskrub9992/fuel-management-backend/internal/services"
+	"github.com/bosskrub9992/fuel-management-backend/library/errs"
 	"gorm.io/gorm"
 )
 
@@ -14,10 +15,13 @@ type PostgresAdaptor struct {
 	db *gorm.DB
 }
 
-func NewPostgresAdaptor(db *gorm.DB) *PostgresAdaptor {
+func NewPostgresAdaptor(db *gorm.DB) (*PostgresAdaptor, error) {
+	if db == nil {
+		return nil, errs.ErrNotEnoughArgForDependencyInjection
+	}
 	return &PostgresAdaptor{
 		db: db,
-	}
+	}, nil
 }
 
 func (adt *PostgresAdaptor) Transaction(ctx context.Context, fn func(ctxTx context.Context) error) error {
