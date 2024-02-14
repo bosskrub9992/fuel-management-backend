@@ -101,9 +101,11 @@ func (h HTTPHandler) GetFuelUsages(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if response, ok := err.(errs.Err); ok {
 			sendJSON(w, r, response.Status, response)
+			return
 		}
 		response := errs.ErrAPIFailed
 		sendJSON(w, r, response.Status, response)
+		return
 	}
 
 	sendJSON(w, r, http.StatusOK, data)
