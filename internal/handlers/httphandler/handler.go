@@ -33,11 +33,10 @@ func (h HTTPHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	users, err := h.service.GetUsers(ctx)
 	if err != nil {
 		if response, ok := err.(errs.Err); ok {
-			sendJSON(w, r, response.Status, response)
+			sendErrorResponse(w, r, response)
 			return
 		}
-		response := errs.ErrAPIFailed
-		sendJSON(w, r, response.Status, response)
+		sendAPIFailed(w, r)
 		return
 	}
 
@@ -50,11 +49,10 @@ func (h HTTPHandler) GetCars(w http.ResponseWriter, r *http.Request) {
 	carData, err := h.service.GetCars(ctx)
 	if err != nil {
 		if response, ok := err.(errs.Err); ok {
-			sendJSON(w, r, response.Status, response)
+			sendErrorResponse(w, r, response)
 			return
 		}
-		response := errs.ErrAPIFailed
-		sendJSON(w, r, response.Status, response)
+		sendAPIFailed(w, r)
 		return
 	}
 
@@ -100,11 +98,10 @@ func (h HTTPHandler) GetFuelUsages(w http.ResponseWriter, r *http.Request) {
 	data, err := h.service.GetFuelUsages(ctx, req)
 	if err != nil {
 		if response, ok := err.(errs.Err); ok {
-			sendJSON(w, r, response.Status, response)
+			sendErrorResponse(w, r, response)
 			return
 		}
-		response := errs.ErrAPIFailed
-		sendJSON(w, r, response.Status, response)
+		sendAPIFailed(w, r)
 		return
 	}
 
@@ -125,11 +122,10 @@ func (h HTTPHandler) PostFuelUsage(w http.ResponseWriter, r *http.Request) {
 
 	if err := h.service.CreateFuelUsage(ctx, req); err != nil {
 		if response, ok := err.(errs.Err); ok {
-			sendJSON(w, r, response.Status, response)
+			sendErrorResponse(w, r, response)
 			return
 		}
-		response := errs.ErrAPIFailed
-		sendJSON(w, r, response.Status, response)
+		sendAPIFailed(w, r)
 		return
 	}
 
@@ -159,11 +155,10 @@ func (h HTTPHandler) PutFuelUsage(w http.ResponseWriter, r *http.Request) {
 
 	if err := h.service.UpdateFuelUsage(ctx, req); err != nil {
 		if response, ok := err.(errs.Err); ok {
-			sendJSON(w, r, response.Status, response)
+			sendErrorResponse(w, r, response)
 			return
 		}
-		response := errs.ErrAPIFailed
-		sendJSON(w, r, response.Status, response)
+		sendAPIFailed(w, r)
 		return
 	}
 
@@ -186,11 +181,10 @@ func (h HTTPHandler) DeleteFuelUsage(w http.ResponseWriter, r *http.Request) {
 
 	if err := h.service.DeleteFuelUsageByID(ctx, req); err != nil {
 		if response, ok := err.(errs.Err); ok {
-			sendJSON(w, r, response.Status, response)
+			sendErrorResponse(w, r, response)
 			return
 		}
-		response := errs.ErrAPIFailed
-		sendJSON(w, r, response.Status, response)
+		sendAPIFailed(w, r)
 		return
 	}
 
@@ -214,11 +208,10 @@ func (h HTTPHandler) GetFuelUsageByID(w http.ResponseWriter, r *http.Request) {
 	data, err := h.service.GetFuelUsageByID(ctx, req)
 	if err != nil {
 		if response, ok := err.(errs.Err); ok {
-			sendJSON(w, r, response.Status, response)
+			sendErrorResponse(w, r, response)
 			return
 		}
-		response := errs.ErrAPIFailed
-		sendJSON(w, r, response.Status, response)
+		sendAPIFailed(w, r)
 		return
 	}
 
@@ -240,11 +233,10 @@ func (h HTTPHandler) GetFuelRefills(w http.ResponseWriter, r *http.Request) {
 	data, err := h.service.GetFuelRefills(ctx, req)
 	if err != nil {
 		if response, ok := err.(errs.Err); ok {
-			sendJSON(w, r, response.Status, response)
+			sendErrorResponse(w, r, response)
 			return
 		}
-		response := errs.ErrAPIFailed
-		sendJSON(w, r, response.Status, response)
+		sendAPIFailed(w, r)
 		return
 	}
 
@@ -265,11 +257,10 @@ func (h HTTPHandler) PostFuelRefill(w http.ResponseWriter, r *http.Request) {
 
 	if err := h.service.CreateFuelRefill(ctx, req); err != nil {
 		if response, ok := err.(errs.Err); ok {
-			sendJSON(w, r, response.Status, response)
+			sendErrorResponse(w, r, response)
 			return
 		}
-		response := errs.ErrAPIFailed
-		sendJSON(w, r, response.Status, response)
+		sendAPIFailed(w, r)
 		return
 	}
 
@@ -293,11 +284,10 @@ func (h HTTPHandler) GetFuelRefillByID(w http.ResponseWriter, r *http.Request) {
 	response, err := h.service.GetFuelRefillByID(ctx, req)
 	if err != nil {
 		if response, ok := err.(errs.Err); ok {
-			sendJSON(w, r, response.Status, response)
+			sendErrorResponse(w, r, response)
 			return
 		}
-		response := errs.ErrAPIFailed
-		sendJSON(w, r, response.Status, response)
+		sendAPIFailed(w, r)
 		return
 	}
 
@@ -327,11 +317,10 @@ func (h HTTPHandler) PutFuelRefillByID(w http.ResponseWriter, r *http.Request) {
 
 	if err := h.service.UpdateFuelRefillByID(ctx, req); err != nil {
 		if response, ok := err.(errs.Err); ok {
-			sendJSON(w, r, response.Status, response)
+			sendErrorResponse(w, r, response)
 			return
 		}
-		response := errs.ErrAPIFailed
-		sendJSON(w, r, response.Status, response)
+		sendAPIFailed(w, r)
 		return
 	}
 
@@ -354,11 +343,10 @@ func (h HTTPHandler) DeleteFuelRefillByID(w http.ResponseWriter, r *http.Request
 
 	if err := h.service.DeleteFuelRefillByID(ctx, req); err != nil {
 		if response, ok := err.(errs.Err); ok {
-			sendJSON(w, r, response.Status, response)
+			sendErrorResponse(w, r, response)
 			return
 		}
-		response := errs.ErrAPIFailed
-		sendJSON(w, r, response.Status, response)
+		sendAPIFailed(w, r)
 		return
 	}
 
@@ -382,11 +370,10 @@ func (h HTTPHandler) GetLatestFuelInfoResponse(w http.ResponseWriter, r *http.Re
 	response, err := h.service.GetLatestFuelInfoResponse(ctx, req)
 	if err != nil {
 		if response, ok := err.(errs.Err); ok {
-			sendJSON(w, r, response.Status, response)
+			sendErrorResponse(w, r, response)
 			return
 		}
-		response := errs.ErrAPIFailed
-		sendJSON(w, r, response.Status, response)
+		sendAPIFailed(w, r)
 		return
 	}
 

@@ -13,6 +13,7 @@ func sendJSON(w http.ResponseWriter, r *http.Request, code int, data any) {
 	body, err := json.Marshal(data)
 	if err != nil {
 		slog.ErrorContext(ctx, err.Error())
+		sendAPIFailed(w, r)
 		return
 	}
 	w.WriteHeader(code)
@@ -21,8 +22,15 @@ func sendJSON(w http.ResponseWriter, r *http.Request, code int, data any) {
 }
 
 func sendBadRequest(w http.ResponseWriter, r *http.Request) {
+	sendErrorResponse(w, r, errs.ErrBadRequest)
+}
+
+func sendAPIFailed(w http.ResponseWriter, r *http.Request) {
+	sendErrorResponse(w, r, errs.ErrAPIFailed)
+}
+
+func sendErrorResponse(w http.ResponseWriter, r *http.Request, response errs.Err) {
 	ctx := r.Context()
-	response := errs.ErrBadRequest
 	body, err := json.Marshal(response)
 	if err != nil {
 		slog.ErrorContext(ctx, err.Error())
