@@ -23,6 +23,9 @@ func NewHTTPRouter(mux *http.ServeMux, httpHandler *httphandler.HTTPHandler) (*H
 }
 
 func (r HTTPRouter) Init() *http.ServeMux {
+	fs := http.FileServer(http.Dir("public"))
+	r.mux.Handle("/static/*", http.StripPrefix("/static/", fs))
+
 	r.mux.HandleFunc("GET /api/v1/cars", r.httpHandler.GetCars)
 	r.mux.HandleFunc("GET /api/v1/users", r.httpHandler.GetUsers)
 

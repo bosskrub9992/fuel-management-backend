@@ -3,6 +3,8 @@ module github.com/bosskrub9992/fuel-management-backend
 go 1.22.0
 
 require (
+	github.com/go-chi/chi/v5 v5.0.11
+	github.com/go-chi/cors v1.2.1
 	github.com/labstack/echo/v4 v4.11.4
 	github.com/shopspring/decimal v1.3.1
 	github.com/spf13/viper v1.18.2
