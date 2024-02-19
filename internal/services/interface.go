@@ -2,13 +2,16 @@ package services
 
 import (
 	"context"
+	"time"
 
 	"github.com/bosskrub9992/fuel-management-backend/internal/entities/domains"
+	"github.com/shopspring/decimal"
 )
 
 type DatabaseAdaptor interface {
 	Transaction(ctx context.Context, fn func(ctxTx context.Context) error) error
 	GetFuelUsageInPagination(ctx context.Context, params GetFuelUsageInPaginationParams) ([]domains.FuelUsage, int64, error)
+	GetUserFuelUsagesByPaidStatus(ctx context.Context, userID int64, isPaid bool) ([]FuelUsageUserWithPayEach, error)
 	GetFuelUsageUsersByFuelUsageIDs(ctx context.Context, fuelUsageIDs []int64) ([]FuelUsageUser, error)
 	GetAllUsers(context.Context) ([]domains.User, error)
 	GetAllCars(context.Context) ([]domains.Car, error)
@@ -19,6 +22,8 @@ type DatabaseAdaptor interface {
 	GetFuelUsageUsersByFuelUsageID(ctx context.Context, fuelUsageID int64) ([]FuelUsageUser, error)
 	GetLatestFuelUsageByCarID(ctx context.Context, carID int64) (*domains.FuelUsage, error)
 	UpdateFuelUsage(context.Context, domains.FuelUsage) error
+	UpdateUserFuelUsagePaymentStatus(ctx context.Context, userFuelUsage domains.FuelUsageUser) error
+	GetUserFuelUsageByUserID(ctx context.Context, userID int64) ([]domains.FuelUsageUser, error)
 	DeleteFuelUsageUsersByFuelUsageID(ctx context.Context, fuelUsageID int64) error
 	DeleteFuelUsageByID(ctx context.Context, id int64) error
 	GetFuelRefillPagination(ctx context.Context, params GetFuelRefillPaginationParams) ([]domains.FuelRefill, int, error)
@@ -53,4 +58,13 @@ type GetFuelRefillPaginationParams struct {
 	CarID     int64
 	PageIndex int
 	PageSize  int
+}
+
+type FuelUsageUserWithPayEach struct {
+	domains.FuelUsageUser
+	PayEach     decimal.Decimal `gorm:"column:pay_each"`
+	FuelUseTime time.Time       `gorm:"column:fuel_use_time"`
+	Description string          `gorm:"column:description"`
+	CarID       int64           `gorm:"column:car_id"`
+	CarName     string          `gorm:"column:car_name"`
 }

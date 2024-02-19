@@ -320,3 +320,67 @@ func (h RESTHandler) GetHealth(c echo.Context) error {
 		ServerStartTime: h.serverStartTime,
 	})
 }
+
+func (h RESTHandler) GetUserFuelUsages(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	userID, err := strconv.Atoi(c.Param("userId"))
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		response := errs.ErrBadRequest
+		return c.JSON(response.Status, response)
+	}
+
+	isPaid, err := strconv.ParseBool(c.QueryParam("isPaid"))
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		response := errs.ErrBadRequest
+		return c.JSON(response.Status, response)
+	}
+
+	req := models.GetUserFuelUsagesRequest{
+		UserID: int64(userID),
+		IsPaid: isPaid,
+	}
+
+	data, err := h.service.GetUserFuelUsages(ctx, req)
+	if err != nil {
+		if response, ok := err.(errs.Err); ok {
+			return c.JSON(response.Status, response)
+		}
+		response := errs.ErrAPIFailed
+		return c.JSON(response.Status, response)
+	}
+
+	return c.JSON(http.StatusOK, data)
+}
+
+func (h RESTHandler) BulkUpdateUserFuelUsagePaymentStatus(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	var req models.BulkUpdateUserFuelUsagePaymentStatusRequest
+	if err := c.Bind(&req); err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		response := errs.ErrBadRequest
+		return c.JSON(response.Status, response)
+	}
+
+	userID, err := strconv.Atoi(c.Param("userId"))
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		response := errs.ErrBadRequest
+		return c.JSON(response.Status, response)
+	}
+
+	req.UserID = int64(userID)
+
+	if err := h.service.BulkUpdateUserFuelUsagePaymentStatus(ctx, req); err != nil {
+		if response, ok := err.(errs.Err); ok {
+			return c.JSON(response.Status, response)
+		}
+		response := errs.ErrAPIFailed
+		return c.JSON(response.Status, response)
+	}
+
+	return c.JSON(http.StatusOK, nil)
+}

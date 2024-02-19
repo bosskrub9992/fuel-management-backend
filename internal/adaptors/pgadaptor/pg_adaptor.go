@@ -272,3 +272,58 @@ func (adt *PostgresAdaptor) GetLatestFuelUsageByCarID(ctx context.Context, carID
 	}
 	return &fuelUsage, nil
 }
+
+func (adt *PostgresAdaptor) GetUserFuelUsagesByPaidStatus(
+	ctx context.Context,
+	userID int64,
+	isPaid bool,
+) (
+	[]services.FuelUsageUserWithPayEach,
+	error,
+) {
+	var data []services.FuelUsageUserWithPayEach
+	err := adt.dbOrTx(ctx).
+		Select(`fuel_usage_users.*, 
+			fuel_usages.fuel_use_time, 
+			fuel_usages.pay_each, 
+			fuel_usages.description,
+			cars.id AS car_id, 
+			cars.name AS car_name`).
+		Table("fuel_usages").
+		Joins("INNER JOIN fuel_usage_users ON fuel_usages.id = fuel_usage_users.fuel_usage_id").
+		Joins("INNER JOIN cars ON cars.id = fuel_usages.car_id").
+		Where("user_id = ? AND is_paid = ?",
+			userID,
+			isPaid,
+		).
+		Find(&data).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
+func (adt *PostgresAdaptor) UpdateUserFuelUsagePaymentStatus(ctx context.Context, userFuelUsage domains.FuelUsageUser) error {
+	return adt.dbOrTx(ctx).
+		Model(&domains.FuelUsageUser{}).
+		Where(domains.FuelUsageUser{
+			ID: userFuelUsage.ID,
+		}).
+		Update("is_paid", userFuelUsage.IsPaid).
+		Error
+}
+
+func (adt *PostgresAdaptor) GetUserFuelUsageByUserID(ctx context.Context, userID int64) ([]domains.FuelUsageUser, error) {
+	var userFuelUsages []domains.FuelUsageUser
+	err := adt.dbOrTx(ctx).
+		Model(&domains.FuelUsageUser{}).
+		Where(domains.FuelUsageUser{
+			UserID: userID,
+		}).
+		Find(&userFuelUsages).Error
+	if err != nil {
+		return nil, err
+	}
+	return userFuelUsages, nil
+}

@@ -1,0 +1,22 @@
+meta {
+  name: patch user fuel usages payment status
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{local}}/users/{{userId}}/fuel-usages/payment-status
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "userFuelUsages": [
+      {
+        "id": 1,
+        "isPaid": true
+      }
+    ]
+  }
+}

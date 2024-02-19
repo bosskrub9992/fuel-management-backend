@@ -74,6 +74,8 @@ func (s *Service) UpdateFuelUsage(ctx context.Context, req models.PutFuelUsageRe
 		return err
 	}
 
+	payEach := calculatePayEach(totalMoney, len(req.FuelUsers))
+
 	return s.db.Transaction(ctx, func(ctxTx context.Context) error {
 		fuelUsage := domains.FuelUsage{
 			ID:                 req.FuelUsageID,
@@ -84,6 +86,7 @@ func (s *Service) UpdateFuelUsage(ctx context.Context, req models.PutFuelUsageRe
 			KilometerAfterUse:  req.KilometerAfterUse,
 			Description:        req.Description,
 			TotalMoney:         totalMoney,
+			PayEach:            payEach,
 			CreateTime:         oldfuelUsage.CreateTime,
 			UpdateTime:         time.Now(),
 		}
@@ -248,6 +251,8 @@ func (s *Service) CreateFuelUsage(ctx context.Context, req models.CreateFuelUsag
 		return err
 	}
 
+	payEach := calculatePayEach(totalMoney, len(req.FuelUsers))
+
 	fuelUsage := domains.FuelUsage{
 		CarID:              req.CurrentCarID,
 		FuelUseTime:        req.FuelUseTime,
@@ -256,6 +261,7 @@ func (s *Service) CreateFuelUsage(ctx context.Context, req models.CreateFuelUsag
 		KilometerAfterUse:  req.KilometerAfterUse,
 		Description:        req.Description,
 		TotalMoney:         totalMoney,
+		PayEach:            payEach,
 		CreateTime:         time.Now(),
 		UpdateTime:         time.Now(),
 	}
@@ -336,6 +342,10 @@ func calculateTotalMoney(kmBeforeUse, kmAfterUse int64, fuelPrice decimal.Decima
 	}
 	kmUsed := decimal.NewFromInt(kmBeforeUse - kmAfterUse)
 	return kmUsed.Mul(fuelPrice), nil
+}
+
+func calculatePayEach(totalMoney decimal.Decimal, numberOfUser int) decimal.Decimal {
+	return totalMoney.DivRound(decimal.NewFromInt(int64(numberOfUser)), 2)
 }
 
 func (s *Service) GetFuelRefills(ctx context.Context, req models.GetFuelRefillRequest) (*models.GetFuelRefillResponse, error) {
@@ -538,4 +548,94 @@ func (s *Service) GetLatestFuelInfoResponse(ctx context.Context, req models.GetL
 		LatestFuelPrice:         latestFuelRefill.FuelPriceCalculated,
 		LatestKilometerAfterUse: latestKmAfterUse,
 	}, nil
+}
+
+func (s *Service) GetUserFuelUsages(ctx context.Context, req models.GetUserFuelUsagesRequest) (*models.GetUserFuelUsagesResponse, error) {
+	if err := req.Validate(); err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return nil, errs.ErrValidateFailed
+	}
+
+	userFuelUsages, err := s.db.GetUserFuelUsagesByPaidStatus(ctx, req.UserID, req.IsPaid)
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return nil, err
+	}
+
+	response := models.GetUserFuelUsagesResponse{
+		UserFuelUsages: []models.UserFuelUsage{},
+	}
+
+	carInfoToUserFuelUsages := make(map[models.CarInfo][]models.FuelUsage)
+	for _, u := range userFuelUsages {
+		carInfo := models.CarInfo{
+			ID:   u.CarID,
+			Name: u.CarName,
+		}
+		_, found := carInfoToUserFuelUsages[carInfo]
+		if !found {
+			carInfoToUserFuelUsages[carInfo] = []models.FuelUsage{}
+		}
+		carInfoToUserFuelUsages[carInfo] = append(carInfoToUserFuelUsages[carInfo], models.FuelUsage{
+			ID:              u.FuelUsageID,
+			FuelUsageUserID: u.ID,
+			FuelUseTime:     u.FuelUseTime,
+			PayEach:         u.PayEach,
+		})
+	}
+
+	for carInfo, unpaidFuelUsages := range carInfoToUserFuelUsages {
+		response.UserFuelUsages = append(response.UserFuelUsages, models.UserFuelUsage{
+			Car:        carInfo,
+			FuelUsages: unpaidFuelUsages,
+		})
+	}
+
+	return &response, nil
+}
+
+func (s *Service) BulkUpdateUserFuelUsagePaymentStatus(ctx context.Context, req models.BulkUpdateUserFuelUsagePaymentStatusRequest) error {
+	if err := req.Validate(); err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return errs.ErrValidateFailed
+	}
+
+	actualUserFuelUsages, err := s.db.GetUserFuelUsageByUserID(ctx, req.UserID)
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return err
+	}
+
+	actualUserFuelUsageIDs := make(map[int64]bool)
+	for _, a := range actualUserFuelUsages {
+		actualUserFuelUsageIDs[a.ID] = true
+	}
+
+	for _, userFuelUsage := range req.UserFuelUsages {
+		if _, found := actualUserFuelUsageIDs[userFuelUsage.ID]; !found {
+			err := fmt.Errorf("this userId:'%d' doesn't have this fuelUsageUser id:'%d'",
+				req.UserID,
+				userFuelUsage.ID,
+			)
+			slog.ErrorContext(ctx, err.Error())
+			return errs.ErrValidateFailed
+		}
+	}
+
+	var userFuelUsages []domains.FuelUsageUser
+	for _, userFuelUsage := range req.UserFuelUsages {
+		userFuelUsages = append(userFuelUsages, domains.FuelUsageUser{
+			ID:     userFuelUsage.ID,
+			IsPaid: userFuelUsage.IsPaid,
+		})
+	}
+
+	for _, userFuelUsage := range userFuelUsages {
+		if err := s.db.UpdateUserFuelUsagePaymentStatus(ctx, userFuelUsage); err != nil {
+			slog.ErrorContext(ctx, err.Error())
+			return err
+		}
+	}
+
+	return nil
 }

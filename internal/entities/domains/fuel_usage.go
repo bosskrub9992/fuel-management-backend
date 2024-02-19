@@ -15,6 +15,7 @@ type FuelUsage struct {
 	KilometerAfterUse  int64           `gorm:"column:kilometer_after_use"`
 	Description        string          `gorm:"column:description"`
 	TotalMoney         decimal.Decimal `gorm:"column:total_money"`
+	PayEach            decimal.Decimal `gorm:"column:pay_each"`
 	CreateTime         time.Time       `gorm:"column:create_time"`
 	UpdateTime         time.Time       `gorm:"column:update_time"`
 }
