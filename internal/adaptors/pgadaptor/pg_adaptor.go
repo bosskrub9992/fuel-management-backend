@@ -283,16 +283,16 @@ func (adt *PostgresAdaptor) GetUserFuelUsagesByPaidStatus(
 ) {
 	var data []services.FuelUsageUserWithPayEach
 	err := adt.dbOrTx(ctx).
-		Select(`fuel_usage_users.*, 
-			fuel_usages.fuel_use_time, 
-			fuel_usages.pay_each, 
-			fuel_usages.description,
+		Select(`fuu.*, 
+			fu.fuel_use_time, 
+			fu.description,
+			fu.pay_each, 
 			cars.id AS car_id, 
 			cars.name AS car_name`).
-		Table("fuel_usages").
-		Joins("INNER JOIN fuel_usage_users ON fuel_usages.id = fuel_usage_users.fuel_usage_id").
-		Joins("INNER JOIN cars ON cars.id = fuel_usages.car_id").
-		Where("user_id = ? AND is_paid = ?",
+		Table("fuel_usages AS fu").
+		Joins("INNER JOIN fuel_usage_users AS fuu ON fu.id = fuu.fuel_usage_id").
+		Joins("INNER JOIN cars ON cars.id = fu.car_id").
+		Where("fuu.user_id = ? AND fuu.is_paid = ?",
 			userID,
 			isPaid,
 		).

@@ -1,8 +1,6 @@
 package models
 
 import (
-	"time"
-
 	"github.com/bosskrub9992/fuel-management-backend/library/validators"
 	"github.com/shopspring/decimal"
 )
@@ -31,8 +29,10 @@ type CarInfo struct {
 }
 
 type FuelUsage struct {
-	ID              int64           `json:"id"`
+	FuelUsageID     int64           `json:"fuelUsageId"`
 	FuelUsageUserID int64           `json:"fuelUsageUserId"`
-	FuelUseTime     time.Time       `json:"fuelUseTime"`
+	FuelUseTime     string          `json:"fuelUseTime"`
+	Description     string          `json:"description"`
+	FuelUsers       string          `json:"fuelUsers"`
 	PayEach         decimal.Decimal `json:"payEach"`
 }
