@@ -1,11 +1,13 @@
 package services
 
 import (
+	"cmp"
 	"context"
 	"errors"
 	"fmt"
 	"log/slog"
 	"math"
+	"slices"
 	"time"
 
 	"github.com/bosskrub9992/fuel-management-backend/config"
@@ -609,6 +611,10 @@ func (s *Service) GetUserFuelUsages(ctx context.Context, req models.GetUserFuelU
 			FuelUsages: fuelUsages,
 		})
 	}
+
+	slices.SortFunc(response.UserFuelUsages, func(a, b models.UserFuelUsage) int {
+		return cmp.Compare(a.Car.Name, b.Car.Name)
+	})
 
 	return &response, nil
 }

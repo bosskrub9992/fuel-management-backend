@@ -296,6 +296,7 @@ func (adt *PostgresAdaptor) GetUserFuelUsagesByPaidStatus(
 			userID,
 			isPaid,
 		).
+		Order("fu.fuel_use_time, fu.id ASC").
 		Find(&data).Error
 	if err != nil {
 		return nil, err
