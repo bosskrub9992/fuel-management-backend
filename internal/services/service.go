@@ -655,12 +655,13 @@ func (s *Service) BulkUpdateUserFuelUsagePaymentStatus(ctx context.Context, req 
 		})
 	}
 
-	for _, userFuelUsage := range userFuelUsages {
-		if err := s.db.UpdateUserFuelUsagePaymentStatus(ctx, userFuelUsage); err != nil {
-			slog.ErrorContext(ctx, err.Error())
-			return err
+	return s.db.Transaction(ctx, func(ctxTx context.Context) error {
+		for _, userFuelUsage := range userFuelUsages {
+			if err := s.db.UpdateUserFuelUsagePaymentStatus(ctxTx, userFuelUsage); err != nil {
+				slog.ErrorContext(ctx, err.Error())
+				return err
+			}
 		}
-	}
-
-	return nil
+		return nil
+	})
 }
