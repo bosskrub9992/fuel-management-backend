@@ -24,17 +24,21 @@ func New(e *echo.Echo, restHandler *resthandler.RESTHandler) (*Router, error) {
 }
 
 func (r Router) Init() *echo.Echo {
-	r.e.Static("/public", "./public")
 	r.e.Use(
 		middleware.Recover(),
+		middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(20)),
 		middleware.CORS(),
 		middlewares.RequestID(),
 		middlewares.Logger(),
 	)
+	r.e.Static("/public", "./public")
 	r.e.GET("/health", r.restHandler.GetHealth)
+
 	apiV1 := r.e.Group("/api/v1")
 	apiV1.GET("/cars", r.restHandler.GetCars)
 	apiV1.GET("/users", r.restHandler.GetUsers)
+	apiV1.GET("/users/:userId/fuel-usages", r.restHandler.GetUserFuelUsages)
+	apiV1.PATCH("/users/:userId/fuel-usages/payment-status", r.restHandler.BulkUpdateUserFuelUsagePaymentStatus)
 
 	apiV1.POST("/fuel/usages", r.restHandler.PostFuelUsage)
 	apiV1.GET("/fuel/usages", r.restHandler.GetFuelUsages)
