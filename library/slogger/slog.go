@@ -8,6 +8,8 @@ import (
 	"github.com/bosskrub9992/fuel-management-backend/library/masks"
 )
 
+const LevelCritical = slog.Level(12)
+
 type Config struct {
 	IsProductionEnv bool
 	MaskingFields   []string
@@ -45,6 +47,17 @@ func New(cfg *Config) *slog.Logger {
 				source := a.Value.Any().(*slog.Source)
 				a.Value = slog.StringValue(fmt.Sprintf("%s:%d", source.File, source.Line))
 				return a
+			}
+		}
+		if a.Key == slog.MessageKey {
+			a.Key = "message"
+		} else if a.Key == slog.SourceKey {
+			a.Key = "logging.googleapis.com/sourceLocation"
+		} else if a.Key == slog.LevelKey {
+			a.Key = "severity"
+			level := a.Value.Any().(slog.Level)
+			if level == LevelCritical {
+				a.Value = slog.StringValue("CRITICAL")
 			}
 		}
 		return a
