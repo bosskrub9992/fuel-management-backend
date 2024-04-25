@@ -2,7 +2,6 @@ package routers
 
 import (
 	"github.com/bosskrub9992/fuel-management-backend/internal/handlers/resthandler"
-	"github.com/bosskrub9992/fuel-management-backend/library/errs"
 	"github.com/bosskrub9992/fuel-management-backend/library/middlewares"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -13,14 +12,11 @@ type Router struct {
 	restHandler *resthandler.RESTHandler
 }
 
-func New(e *echo.Echo, restHandler *resthandler.RESTHandler) (*Router, error) {
-	if e == nil || restHandler == nil {
-		return nil, errs.ErrNotEnoughArgForDependencyInjection
-	}
+func New(e *echo.Echo, restHandler *resthandler.RESTHandler) (*Router) {
 	return &Router{
 		e:           e,
 		restHandler: restHandler,
-	}, nil
+	}
 }
 
 func (r Router) Init() *echo.Echo {
