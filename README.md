@@ -49,3 +49,6 @@ check vulnability
 go install golang.org/x/vuln/cmd/govulncheck@latest
 ~/go/bin/govulncheck ./...
 ```
+
+todo
+- feature request: pay page, can add subtraction between fuel refill monay and the outstanding fuel pay amount

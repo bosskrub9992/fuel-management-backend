@@ -15,6 +15,7 @@ type PutFuelRefillByIDRequest struct {
 	KilometerAfterRefill  int64           `json:"kilometerAfterRefill" validate:"required"`
 	TotalMoney            decimal.Decimal `json:"totalMoney" validate:"required"`
 	IsPaid                bool            `json:"isPaid"`
+	RefillBy              int64           `json:"refillBy" validate:"required"`
 	CurrentUserID         int64           `json:"currentUserId" validate:"required"`
 }
 

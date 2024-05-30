@@ -15,6 +15,7 @@ type FuelRefill struct {
 	KilometerAfterRefill  int64           `gorm:"column:kilometer_after_refill"`
 	FuelPriceCalculated   decimal.Decimal `gorm:"column:fuel_price_calculated"`
 	IsPaid                bool            `gorm:"column:is_paid"`
+	RefillBy              int64           `gorm:"column:refill_by"`
 	CreateBy              int64           `gorm:"column:create_by"`
 	CreateTime            time.Time       `gorm:"column:create_time"`
 	UpdateBy              int64           `gorm:"column:update_by"`

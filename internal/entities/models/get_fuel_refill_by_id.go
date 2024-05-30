@@ -19,6 +19,7 @@ type GetFuelRefillByIDResponse struct {
 	TotalMoney            decimal.Decimal `json:"totalMoney"`
 	FuelPriceCalculated   decimal.Decimal `json:"fuelPriceCalculated"`
 	IsPaid                bool            `json:"isPaid"`
+	RefillBy              int64           `json:"refillBy"`
 }
 
 func (req GetFuelRefillByIDRequest) Validate() error {

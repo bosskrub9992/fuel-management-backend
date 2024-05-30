@@ -357,6 +357,7 @@ func (s *Service) GetFuelRefills(ctx context.Context, req models.GetFuelRefillRe
 			TotalMoney:            fr.TotalMoney,
 			FuelPriceCalculated:   fr.FuelPriceCalculated,
 			IsPaid:                fr.IsPaid,
+			RefillBy:              fr.RefillBy,
 		})
 	}
 
@@ -389,6 +390,7 @@ func (s *Service) CreateFuelRefill(ctx context.Context, req models.CreateFuelRef
 		KilometerAfterRefill:  req.KilometerAfterRefill,
 		FuelPriceCalculated:   fuelPrice,
 		IsPaid:                req.IsPaid,
+		RefillBy:              req.RefillBy,
 		UpdateBy:              req.CurrentUserID,
 		CreateBy:              req.CurrentUserID,
 		CreateTime:            now,
@@ -422,6 +424,7 @@ func (s *Service) GetFuelRefillByID(ctx context.Context, req models.GetFuelRefil
 		TotalMoney:            fuelRefill.TotalMoney,
 		FuelPriceCalculated:   fuelRefill.FuelPriceCalculated,
 		IsPaid:                fuelRefill.IsPaid,
+		RefillBy:              fuelRefill.RefillBy,
 	}, nil
 }
 
@@ -456,6 +459,7 @@ func (s *Service) UpdateFuelRefillByID(ctx context.Context, req models.PutFuelRe
 		KilometerAfterRefill:  req.KilometerAfterRefill,
 		FuelPriceCalculated:   newFuelPrice,
 		IsPaid:                req.IsPaid,
+		RefillBy:              req.RefillBy,
 		CreateBy:              oldFuelRefill.CreateBy,
 		CreateTime:            oldFuelRefill.CreateTime,
 		UpdateBy:              req.CurrentUserID,
