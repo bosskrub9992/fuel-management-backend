@@ -1,4 +1,4 @@
-### Getting Started (Manual approach)
+## Getting Started (Manual approach)
 
 1. start postgres using docker compose, run (recommend)
 ```sh
@@ -17,7 +17,7 @@ docker exec -i fuel-management-postgres psql -U postgres -c "create database fue
 
 3. migrate database
 ```sh
-go run ./cmd/up all
+go run ./cmd/migrate/up all
 ```
 
 4. start service
@@ -25,9 +25,9 @@ go run ./cmd/up all
 go run main.go
 ```
 
-### useful command
+## useful command
 
-go environment for development
+#### go environment for development
 ```sh
 go env -w GONOPROXY="github.com/jinleejun-corp/*"
 go env -w GONOSUMDB="github.com/jinleejun-corp/*"
@@ -36,7 +36,7 @@ go env -w GOPROXY="https://proxy.golang.org,direct"
 git config --global url."ssh://git@github.com".insteadOf "https://github.com"
 ```
 
-to reset environment to default
+#### to reset environment to default
 ```sh
 go env -u GONOPROXY
 go env -u GONOSUMDB
@@ -44,11 +44,35 @@ go env -u GOPRIVATE
 go env -u GOPROXY
 ```
 
-check vulnability
+#### check vulnability
 ```sh
 go install golang.org/x/vuln/cmd/govulncheck@latest
 ~/go/bin/govulncheck ./...
 ```
 
-todo
-- feature request: pay page, can add subtraction between fuel refill monay and the outstanding fuel pay amount
+#### migration up commands
+
+1. migrate up by one
+```sh
+go run ./cmd/migrate/up
+```
+
+2. migrate up all pending migrations
+```sh
+go run ./cmd/migrate/up all
+```
+
+#### migration down commands
+
+1. migrate down by one
+```sh
+go run ./cmd/migrate/down
+```
+
+2. migrate down all pending migrations
+```sh
+go run ./cmd/migrate/down all
+```
+
+#### todo
+- feature request: pay page, can add subtraction between fuel refill money and the outstanding fuel pay amount

@@ -12,6 +12,7 @@ type Config struct {
 		Port string
 	}
 	Database struct {
+		Use      string
 		Postgres databases.PostgresConfig
 		SQLite   struct {
 			FilePath string `mapstructure:"file_path"`

@@ -66,7 +66,7 @@ func Logger() echo.MiddlewareFunc {
 			resContentType := res.Header().Get(echo.HeaderContentType)
 
 			var resBody = make(map[string]any)
-			if strings.Contains(resContentType, echo.MIMEApplicationJSON) && rawResBody != nil {
+			if strings.Contains(resContentType, echo.MIMEApplicationJSON) {
 				if err := json.Unmarshal(rawResBody.Bytes(), &resBody); err != nil {
 					slog.LogAttrs(ctx, slog.LevelError, err.Error())
 					resp := errs.ErrAPIFailed
