@@ -11,7 +11,7 @@ import (
 type DatabaseAdaptor interface {
 	Transaction(ctx context.Context, fn func(ctxTx context.Context) error) error
 	GetFuelUsageInPagination(ctx context.Context, params GetFuelUsageInPaginationParams) ([]domains.FuelUsage, int64, error)
-	GetUserFuelUsagesByPaidStatus(ctx context.Context, userID int64, isPaid bool) ([]FuelUsageUserWithPayEach, error)
+	GetUserFuelUsagesByPaidStatus(ctx context.Context, userID int64, isPaid bool, carID int64) ([]FuelUsageUserWithPayEach, error)
 	GetFuelUsageUsersByFuelUsageIDs(ctx context.Context, fuelUsageIDs []int64) ([]FuelUsageUser, error)
 	GetAllUsers(context.Context) ([]domains.User, error)
 	GetAllCars(context.Context) ([]domains.Car, error)
@@ -29,6 +29,7 @@ type DatabaseAdaptor interface {
 	GetFuelRefillPagination(ctx context.Context, params GetFuelRefillPaginationParams) ([]domains.FuelRefill, int, error)
 	CreateFuelRefill(context.Context, domains.FuelRefill) error
 	GetFuelRefillByID(ctx context.Context, fuelRefillID int64) (*domains.FuelRefill, error)
+	GetUserUnpaidFuelRefills(ctx context.Context, userID int64, carID int64) ([]domains.FuelRefill, error)
 	UpdateFuelRefill(ctx context.Context, fr domains.FuelRefill) error
 	DeleteFuelRefillByID(ctx context.Context, fuelRefillID int64) error
 }

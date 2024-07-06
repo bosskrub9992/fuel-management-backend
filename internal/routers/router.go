@@ -12,7 +12,7 @@ type Router struct {
 	restHandler *resthandler.RESTHandler
 }
 
-func New(e *echo.Echo, restHandler *resthandler.RESTHandler) (*Router) {
+func New(e *echo.Echo, restHandler *resthandler.RESTHandler) *Router {
 	return &Router{
 		e:           e,
 		restHandler: restHandler,
@@ -35,6 +35,7 @@ func (r Router) Init() *echo.Echo {
 	apiV1.GET("/users", r.restHandler.GetUsers)
 	apiV1.GET("/users/:userId/fuel-usages", r.restHandler.GetUserFuelUsages)
 	apiV1.PATCH("/users/:userId/fuel-usages/payment-status", r.restHandler.BulkUpdateUserFuelUsagePaymentStatus)
+	apiV1.GET("/users/:userId/cars/:carId/costs", r.restHandler.GetUserCarExpenses)
 
 	apiV1.POST("/fuel/usages", r.restHandler.PostFuelUsage)
 	apiV1.GET("/fuel/usages", r.restHandler.GetFuelUsages)

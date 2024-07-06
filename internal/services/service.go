@@ -561,7 +561,7 @@ func (s *Service) GetUserFuelUsages(ctx context.Context, req models.GetUserFuelU
 		return nil, errs.ErrValidateFailed
 	}
 
-	userFuelUsages, err := s.db.GetUserFuelUsagesByPaidStatus(ctx, req.UserID, req.IsPaid)
+	userFuelUsages, err := s.db.GetUserFuelUsagesByPaidStatus(ctx, req.UserID, req.IsPaid, 0)
 	if err != nil {
 		slog.ErrorContext(ctx, err.Error())
 		return nil, err
@@ -618,6 +618,78 @@ func (s *Service) GetUserFuelUsages(ctx context.Context, req models.GetUserFuelU
 	})
 
 	return &response, nil
+}
+
+func (s *Service) GetUserCarExpenses(ctx context.Context, req models.GetUserCarExpensesRequest) (*models.GetUserCarExpensesResponse, error) {
+	if err := req.Validate(); err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return nil, errs.ErrValidateFailed
+	}
+
+	var (
+		carName          string
+		unpaidFuelUsages []models.FuelUsage
+	)
+
+	userFuelUsages, err := s.db.GetUserFuelUsagesByPaidStatus(ctx, req.UserID, false, req.CarID)
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return nil, err
+	}
+
+	fuelUsageIDs := []int64{}
+	for _, userFuelUsage := range userFuelUsages {
+		fuelUsageIDs = append(fuelUsageIDs, userFuelUsage.FuelUsageID)
+	}
+
+	fuelUsageUsers, err := s.db.GetFuelUsageUsersByFuelUsageIDs(ctx, fuelUsageIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	fuelUsageIDToFuelUsers := getMapFuelUsageIDToFuelUsers(fuelUsageUsers)
+
+	for _, u := range userFuelUsages {
+		if carName == "" {
+			carName = u.CarName
+		}
+		fuelUsers, foundFuelUsageID := fuelUsageIDToFuelUsers[u.FuelUsageID]
+		if !foundFuelUsageID {
+			return nil, fmt.Errorf("not found fuelUsageId: '%d'", u.FuelUsageID)
+		}
+		unpaidFuelUsages = append(unpaidFuelUsages, models.FuelUsage{
+			FuelUsageID:     u.FuelUsageID,
+			FuelUsageUserID: u.ID,
+			FuelUseTime:     u.FuelUseTime.Format("_2 Jan 15:04"),
+			PayEach:         u.PayEach,
+			Description:     u.Description,
+			FuelUsers:       fuelUsers,
+		})
+	}
+
+	var unpaidFuelRefills []models.FuelRefill
+
+	userUnpaidFuelRefills, err := s.db.GetUserUnpaidFuelRefills(ctx, req.UserID, req.CarID)
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return nil, err
+	}
+
+	for _, fr := range userUnpaidFuelRefills {
+		unpaidFuelRefills = append(unpaidFuelRefills, models.FuelRefill{
+			FuelRefillID: fr.ID,
+			RefillTime:   fr.RefillTime,
+			IsPaid:       fr.IsPaid,
+			TotalMoney:   fr.TotalMoney,
+		})
+	}
+
+	return &models.GetUserCarExpensesResponse{
+		CarID:       req.CarID,
+		CarName:     carName,
+		FuelUsages:  unpaidFuelUsages,
+		FuelRefills: unpaidFuelRefills,
+	}, nil
 }
 
 func (s *Service) BulkUpdateUserFuelUsagePaymentStatus(ctx context.Context, req models.BulkUpdateUserFuelUsagePaymentStatusRequest) error {

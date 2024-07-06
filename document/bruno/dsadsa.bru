@@ -1,0 +1,36 @@
+meta {
+  name: dsadsa
+  type: http
+  seq: 2
+}
+
+get {
+  url: dsadsa
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "carId": 1,
+    "carName": "Mazda 2",
+    "unpaidRecords": [
+      {
+        "type": "usage",
+        "fuelUsageId": 0,
+        "fuelUsageUserId": 0,
+        "fuelUseTime": "mock",
+        "description": "mock",
+        "fuelUsers": "mock",
+        "payEach": 10.1
+      },
+      {
+        "type": "refill",
+        "fuelRefillId": 0,
+        "refillTime": "mock",
+        "refillBy":"mock",
+        "totalMoney": -10.1
+      }
+    ]
+  }
+}

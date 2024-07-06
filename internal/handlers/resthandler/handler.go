@@ -352,6 +352,40 @@ func (h RESTHandler) GetUserFuelUsages(c echo.Context) error {
 	return c.JSON(http.StatusOK, data)
 }
 
+func (h RESTHandler) GetUserCarExpenses(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	userID, err := strconv.Atoi(c.Param("userId"))
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		response := errs.ErrBadRequest
+		return c.JSON(response.Status, response)
+	}
+
+	carID, err := strconv.Atoi(c.Param("carId"))
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		response := errs.ErrBadRequest
+		return c.JSON(response.Status, response)
+	}
+
+	req := models.GetUserCarExpensesRequest{
+		UserID: int64(userID),
+		CarID:  int64(carID),
+	}
+
+	data, err := h.service.GetUserCarExpenses(ctx, req)
+	if err != nil {
+		if response, ok := err.(errs.Err); ok {
+			return c.JSON(response.Status, response)
+		}
+		response := errs.ErrAPIFailed
+		return c.JSON(response.Status, response)
+	}
+
+	return c.JSON(http.StatusOK, data)
+}
+
 func (h RESTHandler) BulkUpdateUserFuelUsagePaymentStatus(c echo.Context) error {
 	ctx := c.Request().Context()
 

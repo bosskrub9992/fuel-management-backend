@@ -1,0 +1,16 @@
+meta {
+  name: get user costs
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{local}}/users/{{userId}}/cars/{{carId}}/costs?userId={{userId}}&carId={{carId}}
+  body: none
+  auth: none
+}
+
+query {
+  userId: {{userId}}
+  carId: {{carId}}
+}
