@@ -17,8 +17,6 @@ func (req GetUserCarUnpaidActivitiesRequest) Validate() error {
 }
 
 type GetUserCarUnpaidActivitiesResponse struct {
-	CarID       int64        `json:"carId"`
-	CarName     string       `json:"carName"`
 	FuelUsages  []FuelUsage  `json:"fuelUsages"`
 	FuelRefills []FuelRefill `json:"fuelRefills"`
 }
@@ -27,5 +25,5 @@ type FuelRefill struct {
 	FuelRefillID int64           `json:"fuelRefillId"`
 	RefillTime   time.Time       `json:"refillTime"`
 	IsPaid       bool            `json:"isPaid"`
-	TotalMoney   decimal.Decimal `json:"total_money"`
+	TotalMoney   decimal.Decimal `json:"totalMoney"`
 }

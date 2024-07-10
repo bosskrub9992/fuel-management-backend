@@ -626,10 +626,7 @@ func (s *Service) GetUserCarUnpaidActivities(ctx context.Context, req models.Get
 		return nil, errs.ErrValidateFailed
 	}
 
-	var (
-		carName          string
-		unpaidFuelUsages []models.FuelUsage
-	)
+	var unpaidFuelUsages []models.FuelUsage
 
 	userFuelUsages, err := s.db.GetUserFuelUsagesByPaidStatus(ctx, req.UserID, false, req.CarID)
 	if err != nil {
@@ -650,9 +647,6 @@ func (s *Service) GetUserCarUnpaidActivities(ctx context.Context, req models.Get
 	fuelUsageIDToFuelUsers := getMapFuelUsageIDToFuelUsers(fuelUsageUsers)
 
 	for _, u := range userFuelUsages {
-		if carName == "" {
-			carName = u.CarName
-		}
 		fuelUsers, foundFuelUsageID := fuelUsageIDToFuelUsers[u.FuelUsageID]
 		if !foundFuelUsageID {
 			return nil, fmt.Errorf("not found fuelUsageId: '%d'", u.FuelUsageID)
@@ -685,8 +679,6 @@ func (s *Service) GetUserCarUnpaidActivities(ctx context.Context, req models.Get
 	}
 
 	return &models.GetUserCarUnpaidActivitiesResponse{
-		CarID:       req.CarID,
-		CarName:     carName,
 		FuelUsages:  unpaidFuelUsages,
 		FuelRefills: unpaidFuelRefills,
 	}, nil
