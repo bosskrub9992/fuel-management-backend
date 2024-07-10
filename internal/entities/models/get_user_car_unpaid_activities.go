@@ -7,16 +7,16 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-type GetUserCarExpensesRequest struct {
+type GetUserCarUnpaidActivitiesRequest struct {
 	UserID int64 `validate:"required"`
 	CarID  int64 `validate:"required"`
 }
 
-func (req GetUserCarExpensesRequest) Validate() error {
+func (req GetUserCarUnpaidActivitiesRequest) Validate() error {
 	return validators.Validate(req)
 }
 
-type GetUserCarExpensesResponse struct {
+type GetUserCarUnpaidActivitiesResponse struct {
 	CarID       int64        `json:"carId"`
 	CarName     string       `json:"carName"`
 	FuelUsages  []FuelUsage  `json:"fuelUsages"`

@@ -352,7 +352,7 @@ func (h RESTHandler) GetUserFuelUsages(c echo.Context) error {
 	return c.JSON(http.StatusOK, data)
 }
 
-func (h RESTHandler) GetUserCarExpenses(c echo.Context) error {
+func (h RESTHandler) GetUserCarUnpaidActivities(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	userID, err := strconv.Atoi(c.Param("userId"))
@@ -369,12 +369,12 @@ func (h RESTHandler) GetUserCarExpenses(c echo.Context) error {
 		return c.JSON(response.Status, response)
 	}
 
-	req := models.GetUserCarExpensesRequest{
+	req := models.GetUserCarUnpaidActivitiesRequest{
 		UserID: int64(userID),
 		CarID:  int64(carID),
 	}
 
-	data, err := h.service.GetUserCarExpenses(ctx, req)
+	data, err := h.service.GetUserCarUnpaidActivities(ctx, req)
 	if err != nil {
 		if response, ok := err.(errs.Err); ok {
 			return c.JSON(response.Status, response)
@@ -406,6 +406,27 @@ func (h RESTHandler) BulkUpdateUserFuelUsagePaymentStatus(c echo.Context) error 
 	req.UserID = int64(userID)
 
 	if err := h.service.BulkUpdateUserFuelUsagePaymentStatus(ctx, req); err != nil {
+		if response, ok := err.(errs.Err); ok {
+			return c.JSON(response.Status, response)
+		}
+		response := errs.ErrAPIFailed
+		return c.JSON(response.Status, response)
+	}
+
+	return c.JSON(http.StatusOK, nil)
+}
+
+func (h RESTHandler) PayUserCarUnpaidActivities(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	var req models.PayUserCarUnpaidActivitiesRequest
+	if err := c.Bind(&req); err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		res := errs.ErrBadRequest
+		return c.JSON(res.Status, res)
+	}
+
+	if err := h.service.PayUserCarUnpaidActivities(ctx, req); err != nil {
 		if response, ok := err.(errs.Err); ok {
 			return c.JSON(response.Status, response)
 		}

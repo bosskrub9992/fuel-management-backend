@@ -24,14 +24,18 @@ type DatabaseAdaptor interface {
 	UpdateFuelUsage(context.Context, domains.FuelUsage) error
 	UpdateUserFuelUsagePaymentStatus(ctx context.Context, userFuelUsage domains.FuelUsageUser) error
 	GetUserFuelUsageByUserID(ctx context.Context, userID int64) ([]domains.FuelUsageUser, error)
+	IsUserOwnAllFuelUsageUser(ctx context.Context, userID int64, fuelUsageUserIds []int64) (bool, error)
 	DeleteFuelUsageUsersByFuelUsageID(ctx context.Context, fuelUsageID int64) error
 	DeleteFuelUsageByID(ctx context.Context, id int64) error
 	GetFuelRefillPagination(ctx context.Context, params GetFuelRefillPaginationParams) ([]domains.FuelRefill, int, error)
 	CreateFuelRefill(context.Context, domains.FuelRefill) error
 	GetFuelRefillByID(ctx context.Context, fuelRefillID int64) (*domains.FuelRefill, error)
+	IsUserOwnAllFuelRefills(ctx context.Context, userID int64, fuelRefillIDs []int64) (bool, error)
 	GetUserUnpaidFuelRefills(ctx context.Context, userID int64, carID int64) ([]domains.FuelRefill, error)
 	UpdateFuelRefill(ctx context.Context, fr domains.FuelRefill) error
 	DeleteFuelRefillByID(ctx context.Context, fuelRefillID int64) error
+	PayFuelRefills(ctx context.Context, fuelRefillIDs []int64) error
+	PayFuelUsageUsers(ctx context.Context, fuelUsageUserIds []int64) error
 }
 
 type FuelUsageWithUser struct {

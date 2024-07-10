@@ -343,3 +343,57 @@ func (adt *PostgresAdaptor) GetUserUnpaidFuelRefills(ctx context.Context, userID
 	}
 	return unpaidFuelRefills, nil
 }
+
+func (adt *PostgresAdaptor) PayFuelRefills(ctx context.Context, fuelRefillIDs []int64) error {
+	err := adt.dbOrTx(ctx).
+		Model(&domains.FuelRefill{}).
+		Where("id IN ?", fuelRefillIDs).
+		Update("is_paid", true).
+		Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (adt *PostgresAdaptor) PayFuelUsageUsers(ctx context.Context, fuelUsageUserIds []int64) error {
+	err := adt.dbOrTx(ctx).
+		Model(&domains.FuelUsageUser{}).
+		Where("id IN ?", fuelUsageUserIds).
+		Update("is_paid", true).
+		Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (adt *PostgresAdaptor) IsUserOwnAllFuelRefills(ctx context.Context, userID int64, fuelRefillIDs []int64) (bool, error) {
+	var count int64
+	err := adt.dbOrTx(ctx).
+		Model(&domains.FuelRefill{}).
+		Where("id IN ?", fuelRefillIDs).
+		Count(&count).Error
+	if err != nil {
+		return false, err
+	}
+	if int(count) == len(fuelRefillIDs) {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (adt *PostgresAdaptor) IsUserOwnAllFuelUsageUser(ctx context.Context, userID int64, fuelUsageUserIds []int64) (bool, error) {
+	var count int64
+	err := adt.dbOrTx(ctx).
+		Model(&domains.FuelUsageUser{}).
+		Where("id IN ?", fuelUsageUserIds).
+		Count(&count).Error
+	if err != nil {
+		return false, err
+	}
+	if int(count) == len(fuelUsageUserIds) {
+		return true, nil
+	}
+	return false, nil
+}
