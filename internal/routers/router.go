@@ -35,7 +35,8 @@ func (r Router) Init() *echo.Echo {
 	apiV1.GET("/users", r.restHandler.GetUsers)
 	apiV1.GET("/users/:userId/fuel-usages", r.restHandler.GetUserFuelUsages)
 	apiV1.PATCH("/users/:userId/fuel-usages/payment-status", r.restHandler.BulkUpdateUserFuelUsagePaymentStatus)
-	apiV1.GET("/users/:userId/cars/:carId/costs", r.restHandler.GetUserCarExpenses)
+	apiV1.PATCH("/users/:userId/cars/:carId/unpaid-activities", r.restHandler.PayUserCarUnpaidActivities)
+	apiV1.GET("/users/:userId/cars/:carId/unpaid-activities", r.restHandler.GetUserCarUnpaidActivities)
 
 	apiV1.POST("/fuel/usages", r.restHandler.PostFuelUsage)
 	apiV1.GET("/fuel/usages", r.restHandler.GetFuelUsages)

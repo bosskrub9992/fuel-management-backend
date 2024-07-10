@@ -620,7 +620,7 @@ func (s *Service) GetUserFuelUsages(ctx context.Context, req models.GetUserFuelU
 	return &response, nil
 }
 
-func (s *Service) GetUserCarExpenses(ctx context.Context, req models.GetUserCarExpensesRequest) (*models.GetUserCarExpensesResponse, error) {
+func (s *Service) GetUserCarUnpaidActivities(ctx context.Context, req models.GetUserCarUnpaidActivitiesRequest) (*models.GetUserCarUnpaidActivitiesResponse, error) {
 	if err := req.Validate(); err != nil {
 		slog.ErrorContext(ctx, err.Error())
 		return nil, errs.ErrValidateFailed
@@ -684,7 +684,7 @@ func (s *Service) GetUserCarExpenses(ctx context.Context, req models.GetUserCarE
 		})
 	}
 
-	return &models.GetUserCarExpensesResponse{
+	return &models.GetUserCarUnpaidActivitiesResponse{
 		CarID:       req.CarID,
 		CarName:     carName,
 		FuelUsages:  unpaidFuelUsages,
@@ -735,6 +735,55 @@ func (s *Service) BulkUpdateUserFuelUsagePaymentStatus(ctx context.Context, req 
 				return err
 			}
 		}
+		return nil
+	})
+}
+
+func (s *Service) PayUserCarUnpaidActivities(ctx context.Context, req models.PayUserCarUnpaidActivitiesRequest) error {
+	if err := req.Validate(); err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return errs.ErrValidateFailed
+	}
+
+	IsUserOwnAllFuelUsageUser, err := s.db.IsUserOwnAllFuelUsageUser(ctx, req.UserID, req.FuelUsageUserIDs)
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return err
+	}
+
+	if !IsUserOwnAllFuelUsageUser {
+		slog.ErrorContext(ctx, errors.New("there is fuel usage user that user not own").Error(),
+			"userId", req.UserID,
+			"fuelUsageUserIds", req.FuelUsageUserIDs,
+		)
+		return errs.ErrValidateFailed
+	}
+
+	IsUserOwnAllFuelRefills, err := s.db.IsUserOwnAllFuelRefills(ctx, req.UserID, req.FuelRefillIDs)
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		return err
+	}
+
+	if !IsUserOwnAllFuelRefills {
+		slog.ErrorContext(ctx, errors.New("there is fuel refill that user not own").Error(),
+			"userId", req.UserID,
+			"fuelRefills", req.FuelRefillIDs,
+		)
+		return errs.ErrValidateFailed
+	}
+
+	return s.db.Transaction(ctx, func(ctxTx context.Context) error {
+		if err := s.db.PayFuelUsageUsers(ctxTx, req.FuelUsageUserIDs); err != nil {
+			slog.ErrorContext(ctx, err.Error())
+			return err
+		}
+
+		if err := s.db.PayFuelRefills(ctxTx, req.FuelRefillIDs); err != nil {
+			slog.ErrorContext(ctx, err.Error())
+			return err
+		}
+
 		return nil
 	})
 }
