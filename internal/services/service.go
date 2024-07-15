@@ -626,7 +626,7 @@ func (s *Service) GetUserCarUnpaidActivities(ctx context.Context, req models.Get
 		return nil, errs.ErrValidateFailed
 	}
 
-	var unpaidFuelUsages []models.FuelUsage
+	var unpaidFuelUsages = []models.FuelUsage{}
 
 	userFuelUsages, err := s.db.GetUserFuelUsagesByPaidStatus(ctx, req.UserID, false, req.CarID)
 	if err != nil {
@@ -661,7 +661,7 @@ func (s *Service) GetUserCarUnpaidActivities(ctx context.Context, req models.Get
 		})
 	}
 
-	var unpaidFuelRefills []models.FuelRefill
+	var unpaidFuelRefills = []models.FuelRefill{}
 
 	userUnpaidFuelRefills, err := s.db.GetUserUnpaidFuelRefills(ctx, req.UserID, req.CarID)
 	if err != nil {
