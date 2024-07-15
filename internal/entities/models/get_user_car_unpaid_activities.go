@@ -1,8 +1,6 @@
 package models
 
 import (
-	"time"
-
 	"github.com/bosskrub9992/fuel-management-backend/library/validators"
 	"github.com/shopspring/decimal"
 )
@@ -23,7 +21,7 @@ type GetUserCarUnpaidActivitiesResponse struct {
 
 type FuelRefill struct {
 	FuelRefillID int64           `json:"fuelRefillId"`
-	RefillTime   time.Time       `json:"refillTime"`
+	RefillTime   string          `json:"refillTime"`
 	IsPaid       bool            `json:"isPaid"`
 	TotalMoney   decimal.Decimal `json:"totalMoney"`
 }

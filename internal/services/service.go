@@ -672,7 +672,7 @@ func (s *Service) GetUserCarUnpaidActivities(ctx context.Context, req models.Get
 	for _, fr := range userUnpaidFuelRefills {
 		unpaidFuelRefills = append(unpaidFuelRefills, models.FuelRefill{
 			FuelRefillID: fr.ID,
-			RefillTime:   fr.RefillTime,
+			RefillTime:   fr.RefillTime.Format("_2 Jan 15:04"),
 			IsPaid:       fr.IsPaid,
 			TotalMoney:   fr.TotalMoney,
 		})
