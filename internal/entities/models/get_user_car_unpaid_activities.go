@@ -22,6 +22,6 @@ type GetUserCarUnpaidActivitiesResponse struct {
 type FuelRefill struct {
 	FuelRefillID int64           `json:"fuelRefillId"`
 	RefillTime   string          `json:"refillTime"`
-	IsPaid       bool            `json:"isPaid"`
+	IsPaid       string          `json:"isPaid"`
 	TotalMoney   decimal.Decimal `json:"totalMoney"`
 }
