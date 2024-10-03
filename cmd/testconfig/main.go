@@ -1,17 +1,14 @@
 package main
 
 import (
-	"log/slog"
-
 	"github.com/bosskrub9992/fuel-management-backend/config"
-	"github.com/bosskrub9992/fuel-management-backend/library/slogger"
+	"github.com/bosskrub9992/fuel-management-backend/library/zerologger"
+	"github.com/rs/zerolog/log"
 )
 
 func main() {
 	cfg := config.New()
-	slog.SetDefault(slogger.New(&slogger.Config{
-		IsProductionEnv: false,
-	}))
+	zerologger.InitZerologExtension(cfg.Logger)
 
-	slog.Info("test config", slog.Any("cfg", cfg))
+	log.Info().Any("cfg", cfg).Msg("test config")
 }

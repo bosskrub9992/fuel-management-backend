@@ -2,11 +2,11 @@ package pgadaptor
 
 import (
 	"context"
-	"log/slog"
 
 	"github.com/bosskrub9992/fuel-management-backend/internal/constants"
 	"github.com/bosskrub9992/fuel-management-backend/internal/entities/domains"
 	"github.com/bosskrub9992/fuel-management-backend/internal/services"
+	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 )
 
@@ -64,7 +64,7 @@ func (adt *PostgresAdaptor) GetFuelUsageInPagination(
 		})
 
 	if err := stmt.Count(&totalCount).Error; err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Ctx(ctx).Err(err).Send()
 		return nil, 0, err
 	}
 
@@ -84,7 +84,7 @@ func (adt *PostgresAdaptor) GetFuelUsageInPagination(
 		Offset(offset).
 		Find(&fuelUsages).Error
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Ctx(ctx).Err(err).Send()
 		return nil, 0, err
 	}
 

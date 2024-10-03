@@ -29,7 +29,7 @@ func New(cfg *Config) *slog.Logger {
 
 	var removingField = make(map[string]bool)
 	for _, f := range cfg.RemovingFields {
-		maskingField[f] = true
+		removingField[f] = true
 	}
 
 	replaceAttr := func(groups []string, a slog.Attr) slog.Attr {

@@ -5,7 +5,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log/slog"
 	"math"
 	"slices"
 	"time"
@@ -14,6 +13,7 @@ import (
 	"github.com/bosskrub9992/fuel-management-backend/internal/entities/domains"
 	"github.com/bosskrub9992/fuel-management-backend/internal/entities/models"
 	"github.com/bosskrub9992/fuel-management-backend/library/errs"
+	"github.com/rs/zerolog/log"
 	"github.com/shopspring/decimal"
 )
 
@@ -31,18 +31,18 @@ func New(cfg *config.Config, db DatabaseAdaptor) *Service {
 
 func (s *Service) DeleteFuelUsageByID(ctx context.Context, req models.DeleteFuelUsageByIDRequest) error {
 	if err := req.Validate(); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return errs.ErrValidateFailed
 	}
 
 	return s.db.Transaction(ctx, func(ctxTx context.Context) error {
 		if err := s.db.DeleteFuelUsageByID(ctxTx, req.FuelUsageID); err != nil {
-			slog.ErrorContext(ctxTx, err.Error())
+			log.Err(err).Ctx(ctxTx).Send()
 			return err
 		}
 
 		if err := s.db.DeleteFuelUsageUsersByFuelUsageID(ctxTx, req.FuelUsageID); err != nil {
-			slog.ErrorContext(ctxTx, err.Error())
+			log.Err(err).Ctx(ctxTx).Send()
 			return err
 		}
 
@@ -52,13 +52,13 @@ func (s *Service) DeleteFuelUsageByID(ctx context.Context, req models.DeleteFuel
 
 func (s *Service) UpdateFuelUsage(ctx context.Context, req models.PutFuelUsageRequest) error {
 	if err := req.Validate(); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return errs.ErrValidateFailed
 	}
 
 	oldfuelUsage, err := s.db.GetFuelUsageByID(ctx, req.FuelUsageID)
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return err
 	}
 
@@ -68,7 +68,7 @@ func (s *Service) UpdateFuelUsage(ctx context.Context, req models.PutFuelUsageRe
 		req.FuelPrice,
 	)
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return err
 	}
 
@@ -90,12 +90,12 @@ func (s *Service) UpdateFuelUsage(ctx context.Context, req models.PutFuelUsageRe
 		}
 
 		if err := s.db.UpdateFuelUsage(ctxTx, fuelUsage); err != nil {
-			slog.ErrorContext(ctxTx, err.Error())
+			log.Err(err).Ctx(ctxTx).Send()
 			return err
 		}
 
 		if err := s.db.DeleteFuelUsageUsersByFuelUsageID(ctxTx, req.FuelUsageID); err != nil {
-			slog.ErrorContext(ctxTx, err.Error())
+			log.Err(err).Ctx(ctxTx).Send()
 			return err
 		}
 
@@ -109,7 +109,7 @@ func (s *Service) UpdateFuelUsage(ctx context.Context, req models.PutFuelUsageRe
 		}
 
 		if err := s.db.CreateFuelUsageUsers(ctxTx, newFuelUsageUsers); err != nil {
-			slog.ErrorContext(ctxTx, err.Error())
+			log.Err(err).Ctx(ctxTx).Send()
 			return err
 		}
 
@@ -120,7 +120,7 @@ func (s *Service) UpdateFuelUsage(ctx context.Context, req models.PutFuelUsageRe
 func (s *Service) GetUsers(ctx context.Context) (*models.GetUserData, error) {
 	users, err := s.db.GetAllUsers(ctx)
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return nil, err
 	}
 
@@ -142,7 +142,7 @@ func (s *Service) GetUsers(ctx context.Context) (*models.GetUserData, error) {
 func (s *Service) GetCars(ctx context.Context) (*models.GetCarData, error) {
 	cars, err := s.db.GetAllCars(ctx)
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return nil, err
 	}
 
@@ -161,7 +161,7 @@ func (s *Service) GetCars(ctx context.Context) (*models.GetCarData, error) {
 
 func (s *Service) GetFuelUsages(ctx context.Context, req models.GetFuelUsagesRequest) (*models.GetFuelUsagesResponse, error) {
 	if err := req.Validate(); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return nil, errs.ErrValidateFailed
 	}
 
@@ -171,7 +171,7 @@ func (s *Service) GetFuelUsages(ctx context.Context, req models.GetFuelUsagesReq
 		PageSize:  req.PageSize,
 	})
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return nil, err
 	}
 
@@ -182,7 +182,7 @@ func (s *Service) GetFuelUsages(ctx context.Context, req models.GetFuelUsagesReq
 
 	fuelUsageUsers, err := s.db.GetFuelUsageUsersByFuelUsageIDs(ctx, fuelUsageIDs)
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return nil, err
 	}
 
@@ -215,7 +215,7 @@ func (s *Service) GetFuelUsages(ctx context.Context, req models.GetFuelUsagesReq
 
 func (s *Service) CreateFuelUsage(ctx context.Context, req models.CreateFuelUsageRequest) error {
 	if err := req.Validate(); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return errs.ErrValidateFailed
 	}
 
@@ -225,7 +225,7 @@ func (s *Service) CreateFuelUsage(ctx context.Context, req models.CreateFuelUsag
 		req.FuelPrice,
 	)
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return err
 	}
 
@@ -247,7 +247,7 @@ func (s *Service) CreateFuelUsage(ctx context.Context, req models.CreateFuelUsag
 	return s.db.Transaction(ctx, func(ctxTx context.Context) error {
 		fuelUsageID, err := s.db.CreateFuelUsage(ctxTx, fuelUsage)
 		if err != nil {
-			slog.ErrorContext(ctxTx, err.Error())
+			log.Err(err).Ctx(ctxTx).Send()
 			return err
 		}
 
@@ -261,7 +261,7 @@ func (s *Service) CreateFuelUsage(ctx context.Context, req models.CreateFuelUsag
 		}
 
 		if err := s.db.CreateFuelUsageUsers(ctxTx, fuelUsageUsers); err != nil {
-			slog.ErrorContext(ctxTx, err.Error())
+			log.Err(err).Ctx(ctxTx).Send()
 			return err
 		}
 
@@ -271,19 +271,19 @@ func (s *Service) CreateFuelUsage(ctx context.Context, req models.CreateFuelUsag
 
 func (s *Service) GetFuelUsageByID(ctx context.Context, req models.GetFuelUsageByIDRequest) (*models.GetFuelUsageByIDResponse, error) {
 	if err := req.Validate(); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return nil, errs.ErrValidateFailed
 	}
 
 	fuelUsage, err := s.db.GetFuelUsageByID(ctx, req.FuelUsageID)
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return nil, err
 	}
 
 	fuelUsageUsers, err := s.db.GetFuelUsageUsersByFuelUsageID(ctx, fuelUsage.ID)
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return nil, err
 	}
 
@@ -328,7 +328,7 @@ func calculatePayEach(totalMoney decimal.Decimal, numberOfUser int) decimal.Deci
 
 func (s *Service) GetFuelRefills(ctx context.Context, req models.GetFuelRefillRequest) (*models.GetFuelRefillResponse, error) {
 	if err := req.Validate(); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return nil, errs.ErrValidateFailed
 	}
 
@@ -338,7 +338,7 @@ func (s *Service) GetFuelRefills(ctx context.Context, req models.GetFuelRefillRe
 		PageSize:  req.PageSize,
 	})
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return nil, err
 	}
 
@@ -366,7 +366,7 @@ func (s *Service) GetFuelRefills(ctx context.Context, req models.GetFuelRefillRe
 
 func (s *Service) CreateFuelRefill(ctx context.Context, req models.CreateFuelRefillRequest) error {
 	if err := req.Validate(); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return errs.ErrValidateFailed
 	}
 
@@ -376,7 +376,7 @@ func (s *Service) CreateFuelRefill(ctx context.Context, req models.CreateFuelRef
 		req.KilometerAfterRefill,
 	)
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return err
 	}
 
@@ -398,7 +398,7 @@ func (s *Service) CreateFuelRefill(ctx context.Context, req models.CreateFuelRef
 	}
 
 	if err := s.db.CreateFuelRefill(ctx, fuelRefill); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return err
 	}
 
@@ -407,13 +407,13 @@ func (s *Service) CreateFuelRefill(ctx context.Context, req models.CreateFuelRef
 
 func (s *Service) GetFuelRefillByID(ctx context.Context, req models.GetFuelRefillByIDRequest) (*models.GetFuelRefillByIDResponse, error) {
 	if err := req.Validate(); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return nil, errs.ErrValidateFailed
 	}
 
 	fuelRefill, err := s.db.GetFuelRefillByID(ctx, req.FuelRefillID)
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return nil, err
 	}
 
@@ -430,13 +430,13 @@ func (s *Service) GetFuelRefillByID(ctx context.Context, req models.GetFuelRefil
 
 func (s *Service) UpdateFuelRefillByID(ctx context.Context, req models.PutFuelRefillByIDRequest) error {
 	if err := req.Validate(); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return errs.ErrValidateFailed
 	}
 
 	oldFuelRefill, err := s.db.GetFuelRefillByID(ctx, req.FuelRefillID)
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return err
 	}
 
@@ -446,7 +446,7 @@ func (s *Service) UpdateFuelRefillByID(ctx context.Context, req models.PutFuelRe
 		req.KilometerAfterRefill,
 	)
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return err
 	}
 
@@ -467,7 +467,7 @@ func (s *Service) UpdateFuelRefillByID(ctx context.Context, req models.PutFuelRe
 	}
 
 	if err := s.db.UpdateFuelRefill(ctx, newFuelRefill); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return err
 	}
 
@@ -489,12 +489,12 @@ func calculateFuelPrice(
 
 func (s *Service) DeleteFuelRefillByID(ctx context.Context, req models.DeleteFuelRefillByIDRequest) error {
 	if err := req.Validate(); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return errs.ErrValidateFailed
 	}
 
 	if err := s.db.DeleteFuelRefillByID(ctx, req.FuelRefillID); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return err
 	}
 
@@ -503,19 +503,19 @@ func (s *Service) DeleteFuelRefillByID(ctx context.Context, req models.DeleteFue
 
 func (s *Service) GetLatestFuelInfoResponse(ctx context.Context, req models.GetLatestFuelInfoRequest) (*models.GetLatestFuelInfoResponse, error) {
 	if err := req.Validate(); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return nil, errs.ErrValidateFailed
 	}
 
 	latestFuelUsage, err := s.db.GetLatestFuelUsageByCarID(ctx, req.CarID)
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return nil, err
 	}
 
 	latestFuelRefill, err := s.db.GetLatestFuelRefillByCarID(ctx, req.CarID)
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return nil, err
 	}
 
@@ -557,13 +557,13 @@ func getMapFuelUsageIDToFuelUsers(fuelUsageUsers []FuelUsageUser) map[int64]stri
 
 func (s *Service) GetUserFuelUsages(ctx context.Context, req models.GetUserFuelUsagesRequest) (*models.GetUserFuelUsagesResponse, error) {
 	if err := req.Validate(); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return nil, errs.ErrValidateFailed
 	}
 
 	userFuelUsages, err := s.db.GetUserFuelUsagesByPaidStatus(ctx, req.UserID, req.IsPaid, 0)
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return nil, err
 	}
 
@@ -622,7 +622,7 @@ func (s *Service) GetUserFuelUsages(ctx context.Context, req models.GetUserFuelU
 
 func (s *Service) GetUserCarUnpaidActivities(ctx context.Context, req models.GetUserCarUnpaidActivitiesRequest) (*models.GetUserCarUnpaidActivitiesResponse, error) {
 	if err := req.Validate(); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return nil, errs.ErrValidateFailed
 	}
 
@@ -630,7 +630,7 @@ func (s *Service) GetUserCarUnpaidActivities(ctx context.Context, req models.Get
 
 	userFuelUsages, err := s.db.GetUserFuelUsagesByPaidStatus(ctx, req.UserID, false, req.CarID)
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return nil, err
 	}
 
@@ -665,7 +665,7 @@ func (s *Service) GetUserCarUnpaidActivities(ctx context.Context, req models.Get
 
 	userUnpaidFuelRefills, err := s.db.GetUserUnpaidFuelRefills(ctx, req.UserID, req.CarID)
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return nil, err
 	}
 
@@ -690,13 +690,13 @@ func (s *Service) GetUserCarUnpaidActivities(ctx context.Context, req models.Get
 
 func (s *Service) BulkUpdateUserFuelUsagePaymentStatus(ctx context.Context, req models.BulkUpdateUserFuelUsagePaymentStatusRequest) error {
 	if err := req.Validate(); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return errs.ErrValidateFailed
 	}
 
 	actualUserFuelUsages, err := s.db.GetUserFuelUsageByUserID(ctx, req.UserID)
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return err
 	}
 
@@ -711,7 +711,7 @@ func (s *Service) BulkUpdateUserFuelUsagePaymentStatus(ctx context.Context, req 
 				req.UserID,
 				userFuelUsage.ID,
 			)
-			slog.ErrorContext(ctx, err.Error())
+			log.Err(err).Ctx(ctx).Send()
 			return errs.ErrValidateFailed
 		}
 	}
@@ -727,7 +727,7 @@ func (s *Service) BulkUpdateUserFuelUsagePaymentStatus(ctx context.Context, req 
 	return s.db.Transaction(ctx, func(ctxTx context.Context) error {
 		for _, userFuelUsage := range userFuelUsages {
 			if err := s.db.UpdateUserFuelUsagePaymentStatus(ctxTx, userFuelUsage); err != nil {
-				slog.ErrorContext(ctx, err.Error())
+				log.Err(err).Ctx(ctx).Send()
 				return err
 			}
 		}
@@ -737,46 +737,47 @@ func (s *Service) BulkUpdateUserFuelUsagePaymentStatus(ctx context.Context, req 
 
 func (s *Service) PayUserCarUnpaidActivities(ctx context.Context, req models.PayUserCarUnpaidActivitiesRequest) error {
 	if err := req.Validate(); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return errs.ErrValidateFailed
 	}
 
 	IsUserOwnAllFuelUsageUser, err := s.db.IsUserOwnAllFuelUsageUser(ctx, req.UserID, req.FuelUsageUserIDs)
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return err
 	}
 
 	if !IsUserOwnAllFuelUsageUser {
-		slog.ErrorContext(ctx, errors.New("there is fuel usage user that user not own").Error(),
-			"userId", req.UserID,
-			"fuelUsageUserIds", req.FuelUsageUserIDs,
-		)
+		log.Error().Ctx(ctx).
+			Int64("userId", req.UserID).
+			Any("fuelUsageUserIds", req.FuelUsageUserIDs).
+			Msg("there is fuel usage user that user not own")
 		return errs.ErrValidateFailed
 	}
 
 	IsUserOwnAllFuelRefills, err := s.db.IsUserOwnAllFuelRefills(ctx, req.UserID, req.FuelRefillIDs)
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Err(err).Ctx(ctx).Send()
 		return err
 	}
 
 	if !IsUserOwnAllFuelRefills {
-		slog.ErrorContext(ctx, errors.New("there is fuel refill that user not own").Error(),
-			"userId", req.UserID,
-			"fuelRefills", req.FuelRefillIDs,
-		)
+		log.Error().Ctx(ctx).
+			Int64("userId", req.UserID).
+			Any("fuelRefills", req.FuelRefillIDs).
+			Msg("there is fuel refill that user not own")
+
 		return errs.ErrValidateFailed
 	}
 
 	return s.db.Transaction(ctx, func(ctxTx context.Context) error {
 		if err := s.db.PayFuelUsageUsers(ctxTx, req.FuelUsageUserIDs); err != nil {
-			slog.ErrorContext(ctx, err.Error())
+			log.Err(err).Ctx(ctx).Send()
 			return err
 		}
 
 		if err := s.db.PayFuelRefills(ctxTx, req.FuelRefillIDs); err != nil {
-			slog.ErrorContext(ctx, err.Error())
+			log.Err(err).Ctx(ctx).Send()
 			return err
 		}
 

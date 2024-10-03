@@ -1,7 +1,6 @@
 package resthandler
 
 import (
-	"log/slog"
 	"net/http"
 	"strconv"
 	"time"
@@ -10,6 +9,7 @@ import (
 	"github.com/bosskrub9992/fuel-management-backend/internal/services"
 	"github.com/bosskrub9992/fuel-management-backend/library/errs"
 	"github.com/labstack/echo/v4"
+	"github.com/rs/zerolog/log"
 )
 
 type RESTHandler struct {
@@ -59,7 +59,7 @@ func (h RESTHandler) GetFuelUsages(c echo.Context) error {
 
 	var req models.GetFuelUsagesRequest
 	if err := c.Bind(&req); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Ctx(ctx).Err(err).Send()
 		response := errs.ErrBadRequest
 		return c.JSON(response.Status, response)
 	}
@@ -81,7 +81,7 @@ func (h RESTHandler) PostFuelUsage(c echo.Context) error {
 
 	var req models.CreateFuelUsageRequest
 	if err := c.Bind(&req); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Ctx(ctx).Err(err).Send()
 		response := errs.ErrBadRequest
 		return c.JSON(response.Status, response)
 	}
@@ -102,7 +102,7 @@ func (h RESTHandler) PutFuelUsage(c echo.Context) error {
 
 	var req models.PutFuelUsageRequest
 	if err := c.Bind(&req); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Ctx(ctx).Err(err).Send()
 		response := errs.ErrBadRequest
 		return c.JSON(response.Status, response)
 	}
@@ -123,7 +123,7 @@ func (h RESTHandler) DeleteFuelUsage(c echo.Context) error {
 
 	fuelUsageID, err := strconv.Atoi(c.Param("fuelUsageId"))
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Ctx(ctx).Err(err).Send()
 		response := errs.ErrBadRequest
 		return c.JSON(response.Status, response)
 	}
@@ -148,7 +148,7 @@ func (h RESTHandler) GetFuelUsageByID(c echo.Context) error {
 
 	fuelUsageID, err := strconv.Atoi(c.Param("fuelUsageId"))
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Ctx(ctx).Err(err).Send()
 		response := errs.ErrBadRequest
 		return c.JSON(response.Status, response)
 	}
@@ -174,7 +174,7 @@ func (h RESTHandler) GetFuelRefills(c echo.Context) error {
 
 	req := models.GetFuelRefillRequest{}
 	if err := c.Bind(&req); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Ctx(ctx).Err(err).Send()
 		response := errs.ErrBadRequest
 		return c.JSON(response.Status, response)
 	}
@@ -196,7 +196,7 @@ func (h RESTHandler) PostFuelRefill(c echo.Context) error {
 
 	var req models.CreateFuelRefillRequest
 	if err := c.Bind(&req); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Ctx(ctx).Err(err).Send()
 		response := errs.ErrBadRequest
 		return c.JSON(response.Status, response)
 	}
@@ -217,7 +217,7 @@ func (h RESTHandler) GetFuelRefillByID(c echo.Context) error {
 
 	fuelRefillID, err := strconv.Atoi(c.Param("fuelRefillId"))
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Ctx(ctx).Err(err).Send()
 		response := errs.ErrBadRequest
 		return c.JSON(response.Status, response)
 	}
@@ -243,7 +243,7 @@ func (h RESTHandler) PutFuelRefillByID(c echo.Context) error {
 
 	req := models.PutFuelRefillByIDRequest{}
 	if err := c.Bind(&req); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Ctx(ctx).Err(err).Send()
 		response := errs.ErrBadRequest
 		return c.JSON(response.Status, response)
 	}
@@ -264,7 +264,7 @@ func (h RESTHandler) DeleteFuelRefillByID(c echo.Context) error {
 
 	fuelRefillID, err := strconv.Atoi(c.Param("fuelRefillId"))
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Ctx(ctx).Err(err).Send()
 		response := errs.ErrBadRequest
 		return c.JSON(response.Status, response)
 	}
@@ -289,7 +289,7 @@ func (h RESTHandler) GetLatestFuelInfoResponse(c echo.Context) error {
 
 	carID, err := strconv.Atoi(c.QueryParam("carId"))
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Ctx(ctx).Err(err).Send()
 		response := errs.ErrBadRequest
 		return c.JSON(response.Status, response)
 	}
@@ -323,14 +323,14 @@ func (h RESTHandler) GetUserFuelUsages(c echo.Context) error {
 
 	userID, err := strconv.Atoi(c.Param("userId"))
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Ctx(ctx).Err(err).Send()
 		response := errs.ErrBadRequest
 		return c.JSON(response.Status, response)
 	}
 
 	isPaid, err := strconv.ParseBool(c.QueryParam("isPaid"))
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Ctx(ctx).Err(err).Send()
 		response := errs.ErrBadRequest
 		return c.JSON(response.Status, response)
 	}
@@ -357,14 +357,14 @@ func (h RESTHandler) GetUserCarUnpaidActivities(c echo.Context) error {
 
 	userID, err := strconv.Atoi(c.Param("userId"))
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Ctx(ctx).Err(err).Send()
 		response := errs.ErrBadRequest
 		return c.JSON(response.Status, response)
 	}
 
 	carID, err := strconv.Atoi(c.Param("carId"))
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Ctx(ctx).Err(err).Send()
 		response := errs.ErrBadRequest
 		return c.JSON(response.Status, response)
 	}
@@ -391,14 +391,14 @@ func (h RESTHandler) BulkUpdateUserFuelUsagePaymentStatus(c echo.Context) error 
 
 	var req models.BulkUpdateUserFuelUsagePaymentStatusRequest
 	if err := c.Bind(&req); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Ctx(ctx).Err(err).Send()
 		response := errs.ErrBadRequest
 		return c.JSON(response.Status, response)
 	}
 
 	userID, err := strconv.Atoi(c.Param("userId"))
 	if err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Ctx(ctx).Err(err).Send()
 		response := errs.ErrBadRequest
 		return c.JSON(response.Status, response)
 	}
@@ -421,7 +421,7 @@ func (h RESTHandler) PayUserCarUnpaidActivities(c echo.Context) error {
 
 	var req models.PayUserCarUnpaidActivitiesRequest
 	if err := c.Bind(&req); err != nil {
-		slog.ErrorContext(ctx, err.Error())
+		log.Ctx(ctx).Err(err).Send()
 		res := errs.ErrBadRequest
 		return c.JSON(res.Status, res)
 	}

@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -15,31 +14,28 @@ import (
 	"github.com/bosskrub9992/fuel-management-backend/internal/routers"
 	"github.com/bosskrub9992/fuel-management-backend/internal/services"
 	"github.com/bosskrub9992/fuel-management-backend/library/databases"
-	"github.com/bosskrub9992/fuel-management-backend/library/slogger"
+	"github.com/bosskrub9992/fuel-management-backend/library/zerologger"
 	"github.com/labstack/echo/v4"
+	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 )
 
 func main() {
 	cfg := config.New()
-	slog.SetDefault(slogger.New(&slogger.Config{
-		IsProductionEnv: cfg.Logger.IsProductionEnv,
-		MaskingFields:   cfg.Logger.MaskingFields,
-		RemovingFields:  cfg.Logger.RemovingFields,
-	}))
+	zerologger.InitZerologExtension(cfg.Logger)
 	sqlDB, err := databases.NewPostgres(&cfg.Database.Postgres)
 	if err != nil {
-		slog.Error(err.Error())
+		log.Info().Err(err).Send()
 		return
 	}
 	defer func() {
 		if err := sqlDB.Close(); err != nil {
-			slog.Error(err.Error())
+			log.Info().Err(err).Send()
 		}
 	}()
 	gormDB, err := databases.NewGormDBPostgres(sqlDB, gorm.Config{})
 	if err != nil {
-		slog.Error(err.Error())
+		log.Info().Err(err).Send()
 		return
 	}
 	db := pgadaptor.NewPostgresAdaptor(gormDB)
@@ -54,7 +50,7 @@ func main() {
 	go func() {
 		address := fmt.Sprintf(":%s", cfg.Server.Port)
 		if err := e.Start(address); err != nil && err != http.ErrServerClosed {
-			slog.Error(err.Error())
+			log.Info().Err(err).Send()
 			return
 		}
 	}()
@@ -64,12 +60,12 @@ func main() {
 	signal.Notify(quit, os.Interrupt)
 	<-quit
 
-	slog.Info("server is shuting down ...")
+	log.Info().Msg("server is shuting down ...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err := e.Shutdown(ctx); err != nil {
-		slog.Error(err.Error())
+		log.Info().Err(err).Send()
 		return
 	}
 }

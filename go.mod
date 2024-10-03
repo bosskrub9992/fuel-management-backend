@@ -9,6 +9,8 @@ require (
 	gorm.io/gorm v1.25.7
 )
 
+require github.com/rs/zerolog v1.33.0
+
 require (
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect

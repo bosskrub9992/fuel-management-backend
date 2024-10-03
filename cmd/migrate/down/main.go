@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"log/slog"
 	"os"
 	"sort"
 	"strings"
@@ -12,7 +10,8 @@ import (
 	"github.com/bosskrub9992/fuel-management-backend/internal/entities/domains"
 	"github.com/bosskrub9992/fuel-management-backend/internal/migrations/mgpostgres"
 	"github.com/bosskrub9992/fuel-management-backend/library/databases"
-	"github.com/bosskrub9992/fuel-management-backend/library/slogger"
+	"github.com/bosskrub9992/fuel-management-backend/library/zerologger"
+	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 )
 
@@ -26,11 +25,7 @@ func main() {
 
 	cfg := config.New()
 	ctx := context.Background()
-	slog.SetDefault(slogger.New(&slogger.Config{
-		IsProductionEnv: cfg.Logger.IsProductionEnv,
-		MaskingFields:   cfg.Logger.MaskingFields,
-		RemovingFields:  cfg.Logger.RemovingFields,
-	}))
+	zerologger.InitZerologExtension(cfg.Logger)
 
 	// sort descending
 	sort.SliceStable(mgpostgres.Migrations, func(i, j int) bool {
@@ -40,9 +35,7 @@ func main() {
 	idToMigration := make(map[uint]mgpostgres.Migration)
 	for _, migration := range mgpostgres.Migrations {
 		if _, found := idToMigration[migration.ID]; found {
-			slog.Error(fmt.Sprintf("duplicate migration id: [%d]",
-				migration.ID,
-			))
+			log.Error().Msgf("duplicate migration id: [%d]", migration.ID)
 			return
 		}
 		idToMigration[migration.ID] = migration
@@ -55,48 +48,44 @@ func main() {
 	case "postgres":
 		sqlDB, err := databases.NewPostgres(&cfg.Database.Postgres)
 		if err != nil {
-			slog.Error(err.Error())
+			log.Err(err).Send()
 			return
 		}
 		defer func() {
 			if err := sqlDB.Close(); err != nil {
-				slog.Error(err.Error())
+				log.Err(err).Send()
 			}
 		}()
 		db, err = databases.NewGormDBPostgres(sqlDB, gorm.Config{})
 		if err != nil {
-			slog.Error(err.Error())
+			log.Err(err).Send()
 			return
 		}
 	case "sqlite":
 		db, err = databases.NewGormDBSqlite(cfg.Database.SQLite.FilePath, gorm.Config{})
 		if err != nil {
-			slog.Error(err.Error())
+			log.Err(err).Send()
 			return
 		}
 	default:
-		slog.Error("invalid database type")
+		log.Error().Msg("invalid database type")
 		return
 	}
 
 	dbMigrator := db.Migrator()
 	tableMigration := domains.Migration{}.TableName()
 	if !dbMigrator.HasTable(tableMigration) {
-		slog.Info(fmt.Sprintf("not found table [%s]",
-			tableMigration,
-		))
+		log.Info().Msgf("not found table [%s]", tableMigration)
 		if err := dbMigrator.CreateTable(&domains.Migration{}); err != nil {
-			slog.Error(err.Error())
+			log.Err(err).Send()
 			return
 		}
-		slog.Info(fmt.Sprintf("created table [%s]",
-			tableMigration,
-		))
+		log.Info().Msgf("created table [%s]", tableMigration)
 	}
 
 	var inDBMigrations []domains.Migration
 	if err := db.Model(&domains.Migration{}).Find(&inDBMigrations).Error; err != nil {
-		slog.Error(err.Error())
+		log.Err(err).Send()
 		return
 	}
 
@@ -116,15 +105,15 @@ func main() {
 		}
 		err = db.Transaction(func(tx *gorm.DB) error {
 			if err := migration.Down(ctx, tx); err != nil {
-				slog.Error(err.Error())
+				log.Err(err).Send()
 				return err
 			}
 			if err := migration.VerifyDown(ctx, tx); err != nil {
-				slog.Error(err.Error())
+				log.Err(err).Send()
 				return err
 			}
 			if err := tx.Where("id = ?", migration.ID).Delete(&domains.Migration{}).Error; err != nil {
-				slog.Error(err.Error())
+				log.Err(err).Send()
 				return err
 			}
 			return nil
@@ -132,17 +121,15 @@ func main() {
 		if err != nil {
 			return
 		}
-		slog.Info(fmt.Sprintf("successfully migrated id: [%d] down",
-			migration.ID,
-		))
+		log.Info().Msgf("successfully migrated id: [%d] down", migration.ID)
 		migratedCount++
 	}
 
 	if migratedCount == 0 {
-		slog.Info("no down migrations to migrate")
+		log.Info().Msg("no down migrations to migrate")
 	} else {
 		if all {
-			slog.Info("successfully migrated down all migrations")
+			log.Info().Msg("successfully migrated down all migrations")
 		}
 	}
 }

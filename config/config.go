@@ -19,9 +19,7 @@ type Config struct {
 		}
 	}
 	Logger struct {
-		IsProductionEnv bool     `mapstructure:"is_production_env"`
-		MaskingFields   []string `mapstructure:"masking_fields"`
-		RemovingFields  []string `mapstructure:"removing_fields"`
+		IsProductionEnv bool `mapstructure:"is_production_env"`
 	}
 }
 

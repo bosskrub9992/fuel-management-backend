@@ -1,12 +1,10 @@
 package main
 
 import (
-	"fmt"
-	"log/slog"
-
 	"github.com/bosskrub9992/fuel-management-backend/config"
 	"github.com/bosskrub9992/fuel-management-backend/library/databases"
-	"github.com/bosskrub9992/fuel-management-backend/library/slogger"
+	"github.com/bosskrub9992/fuel-management-backend/library/zerologger"
+	"github.com/rs/zerolog/log"
 	"gopkg.in/guregu/null.v4"
 	"gorm.io/gorm"
 )
@@ -24,32 +22,28 @@ func (d Test) TableName() string {
 
 func main() {
 	cfg := config.New()
-	slog.SetDefault(slogger.New(&slogger.Config{
-		IsProductionEnv: cfg.Logger.IsProductionEnv,
-		MaskingFields:   cfg.Logger.MaskingFields,
-		RemovingFields:  cfg.Logger.RemovingFields,
-	}))
+	zerologger.InitZerologExtension(cfg.Logger)
 	sqlDB, err := databases.NewPostgres(&cfg.Database.Postgres)
 	if err != nil {
-		slog.Error(err.Error())
+		log.Err(err).Send()
 		return
 	}
 	defer func() {
 		if err := sqlDB.Close(); err != nil {
-			slog.Error(err.Error())
+			log.Err(err).Send()
 		}
 	}()
 	db, err := databases.NewGormDBPostgres(sqlDB, gorm.Config{})
 	if err != nil {
-		slog.Error(err.Error())
+		log.Err(err).Send()
 		return
 	}
 
 	var cars []Test
 	if err := db.Model(&Test{}).Find(&cars).Error; err != nil {
-		slog.Error(err.Error())
+		log.Err(err).Send()
 		return
 	}
 
-	slog.Debug(fmt.Sprintf("cars: %+v", cars))
+	log.Debug().Msgf("cars: %+v", cars)
 }

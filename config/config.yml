@@ -15,9 +15,3 @@ database:
 
 logger:
   is_production_env: false
-  masking_fields:
-    - firstName
-    - lastName
-  removing_fields:
-    - firstName
-    - lastName
