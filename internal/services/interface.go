@@ -9,7 +9,7 @@ import (
 )
 
 type DatabaseAdaptor interface {
-	Transaction(ctx context.Context, fn func(ctxTx context.Context) error) error
+	Transaction(fn func(DatabaseAdaptor) error) error
 	GetFuelUsageInPagination(ctx context.Context, params GetFuelUsageInPaginationParams) ([]domains.FuelUsage, int64, error)
 	GetUserFuelUsagesByPaidStatus(ctx context.Context, userID int64, isPaid bool, carID int64) ([]FuelUsageUserWithPayEach, error)
 	GetFuelUsageUsersByFuelUsageIDs(ctx context.Context, fuelUsageIDs []int64) ([]FuelUsageUser, error)

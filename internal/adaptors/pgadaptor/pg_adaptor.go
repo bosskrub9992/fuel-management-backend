@@ -4,7 +4,6 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/bosskrub9992/fuel-management-backend/internal/constants"
 	"github.com/bosskrub9992/fuel-management-backend/internal/entities/domains"
 	"github.com/bosskrub9992/fuel-management-backend/internal/services"
 	"gorm.io/gorm"
@@ -20,30 +19,22 @@ func NewPostgresAdaptor(db *gorm.DB) *PostgresAdaptor {
 	}
 }
 
-func (adt *PostgresAdaptor) Transaction(ctx context.Context, fn func(ctxTx context.Context) error) error {
+func (adt *PostgresAdaptor) Transaction(fn func(repo services.DatabaseAdaptor) error) error {
 	return adt.db.Transaction(func(tx *gorm.DB) error {
-		ctxTx := context.WithValue(ctx, constants.WithTx, tx)
-		return fn(ctxTx)
+		repoWithTx := NewPostgresAdaptor(tx)
+		return fn(repoWithTx)
 	})
 }
 
-func (adt *PostgresAdaptor) dbOrTx(ctx context.Context) *gorm.DB {
-	tx, ok := ctx.Value(constants.WithTx).(*gorm.DB)
-	if ok {
-		return tx
-	}
-	return adt.db.WithContext(ctx)
-}
-
 func (adt *PostgresAdaptor) CreateFuelUsage(ctx context.Context, fuelUsage domains.FuelUsage) (int64, error) {
-	if err := adt.dbOrTx(ctx).Create(&fuelUsage).Error; err != nil {
+	if err := adt.db.WithContext(ctx).Create(&fuelUsage).Error; err != nil {
 		return 0, err
 	}
 	return fuelUsage.ID, nil
 }
 
 func (adt *PostgresAdaptor) CreateFuelUsageUsers(ctx context.Context, fuelUsageUsers []domains.FuelUsageUser) error {
-	return adt.dbOrTx(ctx).
+	return adt.db.WithContext(ctx).
 		Create(&fuelUsageUsers).
 		Error
 }
@@ -57,7 +48,7 @@ func (adt *PostgresAdaptor) GetFuelUsageInPagination(
 	error,
 ) {
 	var totalCount int64
-	stmt := adt.dbOrTx(ctx).
+	stmt := adt.db.WithContext(ctx).
 		Model(&domains.FuelUsage{}).
 		Where(domains.FuelUsage{
 			CarID: params.CarID,
@@ -93,7 +84,7 @@ func (adt *PostgresAdaptor) GetFuelUsageInPagination(
 
 func (adt *PostgresAdaptor) GetFuelUsageUsersByFuelUsageIDs(ctx context.Context, fuelUsageIDs []int64) ([]services.FuelUsageUser, error) {
 	var fuelUsageUsers []services.FuelUsageUser
-	err := adt.dbOrTx(ctx).
+	err := adt.db.WithContext(ctx).
 		Table("fuel_usage_users").
 		Select("fuel_usage_users.*, users.nickname").
 		Joins("INNER JOIN users ON users.id = fuel_usage_users.user_id").
@@ -107,7 +98,7 @@ func (adt *PostgresAdaptor) GetFuelUsageUsersByFuelUsageIDs(ctx context.Context,
 
 func (adt *PostgresAdaptor) GetAllUsers(ctx context.Context) ([]domains.User, error) {
 	var users []domains.User
-	err := adt.dbOrTx(ctx).
+	err := adt.db.WithContext(ctx).
 		Model(&domains.User{}).
 		Order("nickname ASC").
 		Find(&users).Error
@@ -119,7 +110,7 @@ func (adt *PostgresAdaptor) GetAllUsers(ctx context.Context) ([]domains.User, er
 
 func (adt *PostgresAdaptor) GetLatestFuelRefillByCarID(ctx context.Context, carID int64) (*domains.FuelRefill, error) {
 	var fuelRefill domains.FuelRefill
-	err := adt.dbOrTx(ctx).
+	err := adt.db.WithContext(ctx).
 		Model(&fuelRefill).
 		Where(domains.FuelRefill{
 			CarID: carID,
@@ -134,7 +125,7 @@ func (adt *PostgresAdaptor) GetLatestFuelRefillByCarID(ctx context.Context, carI
 
 func (adt *PostgresAdaptor) GetAllCars(ctx context.Context) ([]domains.Car, error) {
 	var cars []domains.Car
-	err := adt.dbOrTx(ctx).
+	err := adt.db.WithContext(ctx).
 		Model(&domains.Car{}).
 		Find(&cars).Error
 	if err != nil {
@@ -145,7 +136,7 @@ func (adt *PostgresAdaptor) GetAllCars(ctx context.Context) ([]domains.Car, erro
 
 func (adt *PostgresAdaptor) GetFuelUsageByID(ctx context.Context, id int64) (*domains.FuelUsage, error) {
 	var fuelUsage domains.FuelUsage
-	err := adt.dbOrTx(ctx).
+	err := adt.db.WithContext(ctx).
 		Model(&fuelUsage).
 		Where(domains.FuelUsage{
 			ID: id,
@@ -159,7 +150,7 @@ func (adt *PostgresAdaptor) GetFuelUsageByID(ctx context.Context, id int64) (*do
 
 func (adt *PostgresAdaptor) GetFuelUsageUsersByFuelUsageID(ctx context.Context, fuelUsageID int64) ([]services.FuelUsageUser, error) {
 	var fuelUsageUsers []services.FuelUsageUser
-	err := adt.dbOrTx(ctx).
+	err := adt.db.WithContext(ctx).
 		Table("fuel_usage_users").
 		Select("fuel_usage_users.*, users.nickname").
 		Joins("INNER JOIN users ON users.id = fuel_usage_users.user_id").
@@ -172,26 +163,26 @@ func (adt *PostgresAdaptor) GetFuelUsageUsersByFuelUsageID(ctx context.Context, 
 }
 
 func (adt *PostgresAdaptor) UpdateFuelUsage(ctx context.Context, fuelUsage domains.FuelUsage) error {
-	return adt.dbOrTx(ctx).
+	return adt.db.WithContext(ctx).
 		Save(&fuelUsage).
 		Error
 }
 
 func (adt *PostgresAdaptor) DeleteFuelUsageUsersByFuelUsageID(ctx context.Context, fuelUsageID int64) error {
-	return adt.dbOrTx(ctx).
+	return adt.db.WithContext(ctx).
 		Where("fuel_usage_id = ?", fuelUsageID).
 		Delete(&domains.FuelUsageUser{}).
 		Error
 }
 
 func (adt *PostgresAdaptor) DeleteFuelUsageByID(ctx context.Context, id int64) error {
-	return adt.dbOrTx(ctx).
+	return adt.db.WithContext(ctx).
 		Delete(&domains.FuelUsage{}, id).
 		Error
 }
 
 func (adt *PostgresAdaptor) GetFuelRefillPagination(ctx context.Context, params services.GetFuelRefillPaginationParams) ([]domains.FuelRefill, int, error) {
-	stmt := adt.dbOrTx(ctx).
+	stmt := adt.db.WithContext(ctx).
 		Model(&domains.FuelRefill{}).
 		Where("car_id = ?", params.CarID)
 
@@ -223,14 +214,14 @@ func (adt *PostgresAdaptor) GetFuelRefillPagination(ctx context.Context, params 
 }
 
 func (adt *PostgresAdaptor) CreateFuelRefill(ctx context.Context, fr domains.FuelRefill) error {
-	return adt.dbOrTx(ctx).
+	return adt.db.WithContext(ctx).
 		Create(&fr).
 		Error
 }
 
 func (adt *PostgresAdaptor) GetFuelRefillByID(ctx context.Context, fuelRefillID int64) (*domains.FuelRefill, error) {
 	var fr domains.FuelRefill
-	err := adt.dbOrTx(ctx).
+	err := adt.db.WithContext(ctx).
 		Model(&domains.FuelRefill{}).
 		Where(domains.FuelRefill{
 			ID: fuelRefillID,
@@ -243,20 +234,20 @@ func (adt *PostgresAdaptor) GetFuelRefillByID(ctx context.Context, fuelRefillID 
 }
 
 func (adt *PostgresAdaptor) DeleteFuelRefillByID(ctx context.Context, fuelRefillID int64) error {
-	return adt.dbOrTx(ctx).
+	return adt.db.WithContext(ctx).
 		Delete(&domains.FuelRefill{}, fuelRefillID).
 		Error
 }
 
 func (adt *PostgresAdaptor) UpdateFuelRefill(ctx context.Context, fr domains.FuelRefill) error {
-	return adt.dbOrTx(ctx).
+	return adt.db.WithContext(ctx).
 		Save(&fr).
 		Error
 }
 
 func (adt *PostgresAdaptor) GetLatestFuelUsageByCarID(ctx context.Context, carID int64) (*domains.FuelUsage, error) {
 	var fuelUsage domains.FuelUsage
-	err := adt.dbOrTx(ctx).
+	err := adt.db.WithContext(ctx).
 		Model(&fuelUsage).
 		Where(domains.FuelUsage{
 			CarID: carID,
@@ -279,7 +270,7 @@ func (adt *PostgresAdaptor) GetUserFuelUsagesByPaidStatus(
 	error,
 ) {
 	var data []services.FuelUsageUserWithPayEach
-	q := adt.dbOrTx(ctx).
+	q := adt.db.WithContext(ctx).
 		Select(`fuu.*,
 			fu.fuel_use_time,
 			fu.description,
@@ -306,7 +297,7 @@ func (adt *PostgresAdaptor) GetUserFuelUsagesByPaidStatus(
 }
 
 func (adt *PostgresAdaptor) UpdateUserFuelUsagePaymentStatus(ctx context.Context, userFuelUsage domains.FuelUsageUser) error {
-	return adt.dbOrTx(ctx).
+	return adt.db.WithContext(ctx).
 		Model(&domains.FuelUsageUser{}).
 		Where(domains.FuelUsageUser{
 			ID: userFuelUsage.ID,
@@ -317,7 +308,7 @@ func (adt *PostgresAdaptor) UpdateUserFuelUsagePaymentStatus(ctx context.Context
 
 func (adt *PostgresAdaptor) GetUserFuelUsageByUserID(ctx context.Context, userID int64) ([]domains.FuelUsageUser, error) {
 	var userFuelUsages []domains.FuelUsageUser
-	err := adt.dbOrTx(ctx).
+	err := adt.db.WithContext(ctx).
 		Model(&domains.FuelUsageUser{}).
 		Where(domains.FuelUsageUser{
 			UserID: userID,
@@ -331,7 +322,7 @@ func (adt *PostgresAdaptor) GetUserFuelUsageByUserID(ctx context.Context, userID
 
 func (adt *PostgresAdaptor) GetUserUnpaidFuelRefills(ctx context.Context, userID int64, carID int64) ([]domains.FuelRefill, error) {
 	var unpaidFuelRefills []domains.FuelRefill
-	err := adt.dbOrTx(ctx).
+	err := adt.db.WithContext(ctx).
 		Model(&domains.FuelRefill{}).
 		Where("fuel_refills.is_paid = false").
 		Where("fuel_refills.refill_by = ?", userID).
@@ -345,7 +336,7 @@ func (adt *PostgresAdaptor) GetUserUnpaidFuelRefills(ctx context.Context, userID
 }
 
 func (adt *PostgresAdaptor) PayFuelRefills(ctx context.Context, fuelRefillIDs []int64) error {
-	err := adt.dbOrTx(ctx).
+	err := adt.db.WithContext(ctx).
 		Model(&domains.FuelRefill{}).
 		Where("id IN ?", fuelRefillIDs).
 		Update("is_paid", true).
@@ -357,7 +348,7 @@ func (adt *PostgresAdaptor) PayFuelRefills(ctx context.Context, fuelRefillIDs []
 }
 
 func (adt *PostgresAdaptor) PayFuelUsageUsers(ctx context.Context, fuelUsageUserIds []int64) error {
-	err := adt.dbOrTx(ctx).
+	err := adt.db.WithContext(ctx).
 		Model(&domains.FuelUsageUser{}).
 		Where("id IN ?", fuelUsageUserIds).
 		Update("is_paid", true).
@@ -370,7 +361,7 @@ func (adt *PostgresAdaptor) PayFuelUsageUsers(ctx context.Context, fuelUsageUser
 
 func (adt *PostgresAdaptor) IsUserOwnAllFuelRefills(ctx context.Context, userID int64, fuelRefillIDs []int64) (bool, error) {
 	var count int64
-	err := adt.dbOrTx(ctx).
+	err := adt.db.WithContext(ctx).
 		Model(&domains.FuelRefill{}).
 		Where("id IN ?", fuelRefillIDs).
 		Count(&count).Error
@@ -385,7 +376,7 @@ func (adt *PostgresAdaptor) IsUserOwnAllFuelRefills(ctx context.Context, userID 
 
 func (adt *PostgresAdaptor) IsUserOwnAllFuelUsageUser(ctx context.Context, userID int64, fuelUsageUserIds []int64) (bool, error) {
 	var count int64
-	err := adt.dbOrTx(ctx).
+	err := adt.db.WithContext(ctx).
 		Model(&domains.FuelUsageUser{}).
 		Where("id IN ?", fuelUsageUserIds).
 		Count(&count).Error

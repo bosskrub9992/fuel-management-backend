@@ -35,14 +35,14 @@ func (s *Service) DeleteFuelUsageByID(ctx context.Context, req models.DeleteFuel
 		return errs.ErrValidateFailed
 	}
 
-	return s.db.Transaction(ctx, func(ctxTx context.Context) error {
-		if err := s.db.DeleteFuelUsageByID(ctxTx, req.FuelUsageID); err != nil {
-			slog.ErrorContext(ctxTx, err.Error())
+	return s.db.Transaction(func(repo DatabaseAdaptor) error {
+		if err := repo.DeleteFuelUsageByID(ctx, req.FuelUsageID); err != nil {
+			slog.ErrorContext(ctx, err.Error())
 			return err
 		}
 
-		if err := s.db.DeleteFuelUsageUsersByFuelUsageID(ctxTx, req.FuelUsageID); err != nil {
-			slog.ErrorContext(ctxTx, err.Error())
+		if err := repo.DeleteFuelUsageUsersByFuelUsageID(ctx, req.FuelUsageID); err != nil {
+			slog.ErrorContext(ctx, err.Error())
 			return err
 		}
 
@@ -74,7 +74,7 @@ func (s *Service) UpdateFuelUsage(ctx context.Context, req models.PutFuelUsageRe
 
 	payEach := calculatePayEach(totalMoney, len(req.FuelUsers))
 
-	return s.db.Transaction(ctx, func(ctxTx context.Context) error {
+	return s.db.Transaction(func(repo DatabaseAdaptor) error {
 		fuelUsage := domains.FuelUsage{
 			ID:                 req.FuelUsageID,
 			CarID:              req.CurrentCarID,
@@ -89,13 +89,13 @@ func (s *Service) UpdateFuelUsage(ctx context.Context, req models.PutFuelUsageRe
 			UpdateTime:         time.Now(),
 		}
 
-		if err := s.db.UpdateFuelUsage(ctxTx, fuelUsage); err != nil {
-			slog.ErrorContext(ctxTx, err.Error())
+		if err := repo.UpdateFuelUsage(ctx, fuelUsage); err != nil {
+			slog.ErrorContext(ctx, err.Error())
 			return err
 		}
 
-		if err := s.db.DeleteFuelUsageUsersByFuelUsageID(ctxTx, req.FuelUsageID); err != nil {
-			slog.ErrorContext(ctxTx, err.Error())
+		if err := repo.DeleteFuelUsageUsersByFuelUsageID(ctx, req.FuelUsageID); err != nil {
+			slog.ErrorContext(ctx, err.Error())
 			return err
 		}
 
@@ -108,8 +108,8 @@ func (s *Service) UpdateFuelUsage(ctx context.Context, req models.PutFuelUsageRe
 			})
 		}
 
-		if err := s.db.CreateFuelUsageUsers(ctxTx, newFuelUsageUsers); err != nil {
-			slog.ErrorContext(ctxTx, err.Error())
+		if err := repo.CreateFuelUsageUsers(ctx, newFuelUsageUsers); err != nil {
+			slog.ErrorContext(ctx, err.Error())
 			return err
 		}
 
@@ -244,10 +244,10 @@ func (s *Service) CreateFuelUsage(ctx context.Context, req models.CreateFuelUsag
 		UpdateTime:         time.Now(),
 	}
 
-	return s.db.Transaction(ctx, func(ctxTx context.Context) error {
-		fuelUsageID, err := s.db.CreateFuelUsage(ctxTx, fuelUsage)
+	return s.db.Transaction(func(repo DatabaseAdaptor) error {
+		fuelUsageID, err := repo.CreateFuelUsage(ctx, fuelUsage)
 		if err != nil {
-			slog.ErrorContext(ctxTx, err.Error())
+			slog.ErrorContext(ctx, err.Error())
 			return err
 		}
 
@@ -260,8 +260,8 @@ func (s *Service) CreateFuelUsage(ctx context.Context, req models.CreateFuelUsag
 			})
 		}
 
-		if err := s.db.CreateFuelUsageUsers(ctxTx, fuelUsageUsers); err != nil {
-			slog.ErrorContext(ctxTx, err.Error())
+		if err := repo.CreateFuelUsageUsers(ctx, fuelUsageUsers); err != nil {
+			slog.ErrorContext(ctx, err.Error())
 			return err
 		}
 
@@ -724,9 +724,9 @@ func (s *Service) BulkUpdateUserFuelUsagePaymentStatus(ctx context.Context, req 
 		})
 	}
 
-	return s.db.Transaction(ctx, func(ctxTx context.Context) error {
+	return s.db.Transaction(func(repo DatabaseAdaptor) error {
 		for _, userFuelUsage := range userFuelUsages {
-			if err := s.db.UpdateUserFuelUsagePaymentStatus(ctxTx, userFuelUsage); err != nil {
+			if err := repo.UpdateUserFuelUsagePaymentStatus(ctx, userFuelUsage); err != nil {
 				slog.ErrorContext(ctx, err.Error())
 				return err
 			}
@@ -769,13 +769,13 @@ func (s *Service) PayUserCarUnpaidActivities(ctx context.Context, req models.Pay
 		return errs.ErrValidateFailed
 	}
 
-	return s.db.Transaction(ctx, func(ctxTx context.Context) error {
-		if err := s.db.PayFuelUsageUsers(ctxTx, req.FuelUsageUserIDs); err != nil {
+	return s.db.Transaction(func(repo DatabaseAdaptor) error {
+		if err := repo.PayFuelUsageUsers(ctx, req.FuelUsageUserIDs); err != nil {
 			slog.ErrorContext(ctx, err.Error())
 			return err
 		}
 
-		if err := s.db.PayFuelRefills(ctxTx, req.FuelRefillIDs); err != nil {
+		if err := repo.PayFuelRefills(ctx, req.FuelRefillIDs); err != nil {
 			slog.ErrorContext(ctx, err.Error())
 			return err
 		}
